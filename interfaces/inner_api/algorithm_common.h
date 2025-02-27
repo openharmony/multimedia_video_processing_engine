@@ -127,17 +127,18 @@ struct ColorSpaceConverterParameter {
 };
 
 struct ColorSpaceConverterDisplayParameter {
-    ColorSpaceDescription inputColorSpace;  // 色彩空间信息
-    ColorSpaceDescription outputColorSpace; // 色彩空间信息
-    std::vector<uint8_t> staticMetadata;    // 静态元数据
-    std::vector<uint8_t> dynamicMetadata;   // 动态元数据
-    std::vector<float> layerLinearMatrix;   // 线性域转换矩阵，作用在原色域上
-    float tmoNits;                          // TMO目标亮度
-    float currentDisplayNits;               // 屏幕当前亮度，和tmoNits相除得到sdr亮度打折比
-    float sdrNits;                          // SDR亮度
-    int32_t width;                          // 宽度
-    int32_t height;                         // 高度
-    bool disableHdrFloatHeadRoom;           // 不使用HDRfp16方案做额外提亮
+    ColorSpaceDescription inputColorSpace;    // 色彩空间信息
+    ColorSpaceDescription outputColorSpace;   // 色彩空间信息
+    std::vector<uint8_t> staticMetadata;      // 静态元数据
+    std::vector<uint8_t> dynamicMetadata;     // 动态元数据
+    std::vector<float> layerLinearMatrix;     // 线性域转换矩阵，作用在原色域上
+    float tmoNits;                            // TMO目标亮度
+    float currentDisplayNits;                 // 屏幕当前亮度，和tmoNits相除得到sdr亮度打折比
+    float sdrNits;                            // SDR亮度
+    int32_t width;                            // 宽度
+    int32_t height;                           // 高度
+    bool disableHdrFloatHeadRoom;             // 不使用HDRfp16方案做额外提亮
+    std::vector<uint8_t> adaptiveFOVMetadata; // 缩放重适应元数据
 };
 
 struct MetadataGeneratorParameter {

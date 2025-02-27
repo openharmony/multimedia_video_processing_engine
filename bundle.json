@@ -112,6 +112,17 @@
             ],
             "header_base": "//foundation/multimedia/video_processing_engine/interfaces/kits/js"
           }
+        },
+        {
+          "type": "so",
+          "name": "//foundation/multimedia/video_processing_engine/framework:videoprocessingenginenapi",
+          "header":{
+            "header_files":[
+              "detail_enhance_napi_formal.h",
+              "native_module_ohos_imageprocessing.h"
+            ],
+            "header_base": "//foundation/multimedia/video_processing_engine/interfaces/kits/js"
+          }
         }
       ],
       "group_type": {

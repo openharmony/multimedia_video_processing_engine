@@ -449,3 +449,53 @@ ohos_shared_library("detailEnhancer") {
   relative_install_dir = "module/multimedia"
   part_name = "video_processing_engine"
 }
+
+ohos_shared_library("videoprocessingenginenapi") {
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    cfi_vcall_icall_only = true
+    debug = false
+  }
+
+  defines = [ "IMAGE_COLORSPACE_FLAG" ]
+
+  include_dirs = [
+    "$DFX_DIR/include",
+    "$INTERFACES_DIR/kits/js",
+    "$INTERFACES_INNER_API_DIR",
+    "$CAPI_DIR/image_processing/include/",
+    "$ALGORITHM_COMMON_DIR/include/",
+  ]
+  sources = [
+    "$CAPI_DIR/image_processing/detail_enhance_napi_formal.cpp",
+    "$INTERFACES_DIR/kits/js/native_module_ohos_imageprocessing.cpp",
+  ]
+
+  deps = [
+    ":videoprocessingengine",
+  ]
+
+  cflags = VIDEO_PROCESSING_ENGINE_CFLAGS
+  external_deps = [
+    "c_utils:utils",
+    "drivers_interface_display:display_commontype_idl_headers",
+    "graphic_surface:surface",
+    "hilog:libhilog",
+    "hitrace:hitrace_meter",
+    "image_framework:image_utils",
+    "image_framework:image_native",
+    "image_framework:pixelmap",
+    "image_framework:image",
+    "ipc:ipc_napi",
+    "media_foundation:native_media_core",
+    "media_foundation:media_foundation",
+    "media_foundation:image_processing",
+    "napi:ace_napi",
+  ]
+
+  output_name = "libvideoprocessingengine_napi"
+  subsystem_name = "multimedia"
+  relative_install_dir = "module/multimedia"
+  part_name = "video_processing_engine"
+}

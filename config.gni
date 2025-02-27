@@ -61,6 +61,9 @@ IMAGE_EVE_DIR                       = "$ALGORITHM_DIR/extensions/detail_enhancer
 IMAGE_LIBYUV_DIR                    = "$ALGORITHM_DIR/extensions/detail_enhancer/image/libyuv"
 VIDEO_AISR_DIR                      = "$ALGORITHM_DIR/extensions/detail_enhancer/video/ai_super_resolution"
 
+#contrast enhancer
+CONTRAST_ENHANCER_DIR               = "$ALGORITHM_DIR/contrast_enhancer"
+
 TEST_UTILS_PATH                     = "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/test/utils"
 UNIT_TEST_OUTPUT_PATH               = "video_processing_engine/unittest"
 MODULE_TEST_OUTPUT_PATH             = "video_processing_engine/moduletest"
