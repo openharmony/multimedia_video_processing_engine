@@ -1,0 +1,129 @@
+{
+  "name": "@ohos/video_processing_engine",
+  "description": "video_processing_engine",
+  "version": "4.1",
+  "license": "Apache License 2.0",
+  "publishAs": "code-segment",
+  "segment": {
+    "destPath": "foundation/multimedia/video_processing_engine"
+  },
+  "dirs": {},
+  "scripts": {},
+  "component": {
+    "name": "video_processing_engine",
+    "subsystem": "multimedia",
+    "syscap": [],
+    "features": [],
+    "adapted_system_type": [
+      "standard"
+    ],
+    "rom": "10000KB",
+    "ram": "10000KB",
+    "hisysevent_config": [],
+    "deps": {
+      "components": [
+        "c_utils",
+        "graphic_2d",
+        "graphic_surface",
+        "hilog",
+        "hitrace",
+        "drivers_interface_display",
+        "ffrt",
+        "init",
+        "hdf_core",
+        "image_framework",
+        "media_foundation",
+        "napi",
+        "ipc",
+        "safwk",
+        "samgr",
+        "eventhandler"
+      ],
+      "third_party": [
+        "skia",
+        "egl",
+        "opengles",
+        "bounds_checking_function",
+        "opencl-headers"
+      ]
+    },
+    "build": {
+      "sub_component": [
+        "//foundation/multimedia/video_processing_engine/framework:videoprocessingengine",
+        "//foundation/multimedia/video_processing_engine/services:video_processing_service_group"
+      ],
+      "inner_kits": [
+        {
+          "type": "so",
+          "name": "//foundation/multimedia/video_processing_engine/framework:videoprocessingengine",
+          "header": {
+            "header_files": [
+              "algorithm_common.h",
+              "algorithm_errors.h",
+              "colorspace_converter.h",
+              "colorspace_converter_display.h",
+              "metadata_generator.h",
+              "colorspace_converter_video.h",
+              "colorspace_converter_video_common.h",
+              "colorspace_converter_video_description.h",
+              "detail_enhancer_common.h",
+              "detail_enhancer_image.h",
+              "detail_enhancer_video_common.h",
+              "detail_enhancer_video.h"
+            ],
+            "header_base": "//foundation/multimedia/video_processing_engine/interfaces/inner_api"
+          }
+        },
+        {
+          "name": "//foundation/multimedia/video_processing_engine/services:videoprocessingservice_idl_headers",
+          "header": {
+            "header_files": [
+              "video_processing_service_manager_proxy.h"
+            ],
+            "header_base": "//foundation/multimedia/video_processing_engine/services"
+          }
+        },
+        {
+          "type": "so",
+          "name": "//foundation/multimedia/video_processing_engine/framework:image_processing_capi_impl",
+          "header":{
+            "header_files":[
+              "image_processing_capi_impl.h"
+            ],
+            "header_base": "//foundation/multimedia/video_processing_engine/framework/capi/image_processing/include"
+          }
+        },
+        {
+          "type": "so",
+          "name": "//foundation/multimedia/video_processing_engine/framework:video_processing_capi_impl",
+          "header":{
+            "header_files":[
+              "video_processing_capi_impl.h"
+            ],
+            "header_base": "//foundation/multimedia/video_processing_engine/framework/capi/video_processing/include"
+          }
+        },
+        {
+          "type": "so",
+          "name": "//foundation/multimedia/video_processing_engine/framework:detailEnhancer",
+          "header":{
+            "header_files":[
+              "detail_enhance_napi.h"
+            ],
+            "header_base": "//foundation/multimedia/video_processing_engine/interfaces/kits/js"
+          }
+        }
+      ],
+      "group_type": {
+        "base_group": [],
+        "fwk_group": [],
+        "service_group": []
+      },
+      "test": [
+        "//foundation/multimedia/video_processing_engine/test:demo_test",
+        "//foundation/multimedia/video_processing_engine/test:unit_test",
+        "//foundation/multimedia/video_processing_engine/test:module_test"
+      ]
+    }
+  }
+}

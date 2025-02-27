@@ -1,0 +1,63 @@
+# Copyright (c) 2023 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/test.gni")
+import("//foundation/multimedia/video_processing_engine/config.gni")
+
+ohos_unittest("vpe_framework_unit_test") {
+  module_out_path = UNIT_TEST_OUTPUT_PATH
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+
+  cflags = VIDEO_PROCESSING_ENGINE_CFLAGS
+
+  include_dirs = [
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR",
+    "$FRAMEWORK_DIR",
+    "$FRAMEWORK_DIR/common/include",
+    "$COLORSPACE_CONVERTER_DIR/include",
+    "$COLORSPACE_CONVERTER_DISPLAY_DIR/include",
+    "$DFX_DIR/include",
+    "$ALGORITHM_EXTENSION_MANAGER_DIR/include",
+    "$METADATA_GENERATOR_DIR/include",
+    "$PLUGIN_DIR/include",
+    "$INTERFACES_INNER_API_DIR",
+    "$SKIA_DIR",
+  ]
+
+  sources = [
+    # "vpe_framework_unit_test.cpp",
+    # "$PLUGIN_DIR/plugin_manager.cpp",
+    # "$ENGINE_DIR/video_processing_engine.cpp",
+    # "$DFX_DIR/trace.cpp",
+  ]
+
+  deps = [
+    "$FRAMEWORK_DIR:videoprocessingengine"
+  ]
+
+  external_deps = [
+    "c_utils:utils",
+    "graphic_surface:surface",
+    "hilog:libhilog",
+    "hitrace:hitrace_meter",
+    "drivers_interface_display:display_commontype_idl_headers",
+  ]
+
+  subsystem_name = "multimedia"
+  part_name = "video_processing_engine"
+}

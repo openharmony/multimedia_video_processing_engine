@@ -1,0 +1,451 @@
+# Copyright (c) 2025 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+import("//foundation/ability/idl_tool/idl_config.gni")
+import("//foundation/multimedia/video_processing_engine/config.gni")
+import("$CAPI_DIR/config.gni")
+
+config("export_config") {
+  include_dirs = [
+    "$AIHDR_ENHANCER_DIR/include",
+    "$INTERFACES_INNER_API_DIR",
+    "$DFX_DIR/include",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services/include",
+    "$DETAIL_ENHANCER_DIR/include",
+    "$COLORSPACE_CONVERTER_DIR/include",
+    "$METADATA_GENERATOR_DIR/include",
+    "$INTERFACES_INNER_API_DIR/native/colorspace",
+    "$COLORSPACE_CONVERTER_DISPLAY_DIR/include",
+    "$VIDEO_REFRESHRATE_PREDICTION_DIR/include",
+    "$ALGORITHM_DIR/common/include",
+  ]
+}
+config("video_process_config") {
+  cflags = [
+    "-std=c++17",
+    "-fno-rtti",
+    "-fno-exceptions",
+    "-Wall",
+    "-fno-common",
+    "-fstack-protector-strong",
+    "-Wshadow",
+    "-FPIC",
+    "-FS",
+    "-O2",
+    "-D_FORTIFY_SOURCE=2",
+    "-Wformat=2",
+
+    # "-Wfloat-equal",
+    "-Wdate-time",
+    "-Werror",
+    "-Wextra",
+    "-Wimplicit-fallthrough",
+    "-Wsign-compare",
+    "-Wunused-parameter",
+  ]
+
+  include_dirs = [
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR",
+    "$FRAMEWORK_DIR",
+    "$FRAMEWORK_DIR/common/include",
+    "$AIHDR_ENHANCER_DIR/include",
+    "$AIHDR_ENHANCER_VIDEO_DIR/include",
+    "$ALGORITHM_DIR/common/include",
+    "$ALGORITHM_DIR/extension_manager/include",
+    "$COLORSPACE_CONVERTER_DIR/include",
+    "$COLORSPACE_CONVERTER_DISPLAY_DIR/include",
+    "$COLORSPACE_CONVERTER_VIDEO_DIR/include",
+    "$METADATA_GENERATOR_DIR/include",
+    "$METADATA_GENERATOR_VIDEO_DIR/include",
+    "$DETAIL_ENHANCER_VIDEO_DIR/include",
+    "$VIDEO_REFRESHRATE_PREDICTION_DIR/include",
+    "$DETAIL_ENHANCER_DIR/include",
+    "$DFX_DIR/include",
+    "$FRAMEWORK_DIR/plugin",
+    "$FRAMEWORK_DIR/module",
+    "$INTERFACES_INNER_API_DIR",
+    "$INTERFACES_INNER_API_DIR/module",
+    "$INTERFACES_DIR/plugin",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services/include",
+
+    # temporary dir
+    "$SKIA_DIR",
+    "${target_gen_dir}/../services/",
+    "$SKIA_DIR/include/core",
+    "$SKIA_DIR/include/encode",
+    "$SKIA_DIR",
+    "$SKIA_DIR/src/ports/skia_ohos",
+    "$SKIA_DIR/src/ports",
+    "$SKIA_DIR/src/images",
+    "$SKIA_DIR/include/private",
+    "$SKIA_DIR/include/effects",
+    "$SKIA_DIR/third_party/externals/angle2/src/common",
+    "$SKIA_DIR/third_party/externals/angle2/src/",
+    "$SKIA_DIR/third_party/externals/angle2/src/common/third_party/base/",
+    "//foundation/graphic/graphic_2d/utils/color_manager/export",
+    "//base/startup/init/interfaces/innerkits/include/syspara/",
+  ]
+}
+
+ohos_prebuilt_shared_library("extream_vision_engine") {
+    if (is_asan && use_hwasan) {
+      source = "//binary/artifacts/display/AIPQ20/asan/libextream_vision_engine.so"
+    } else {
+      source = "//binary/artifacts/display/AIPQ20/libextream_vision_engine.so"
+    }
+    module_install_dir = "lib64/"
+    output = "libextream_vision_engine.so"
+    install_images = [ "system" ]
+    subsystem_name = "multimedia"
+    part_name = "video_processing_engine"
+    install_enable = true
+}
+
+ohos_prebuilt_shared_library("ai_super_resolution") {
+    if (is_asan && use_hwasan) {
+      source = "//binary/artifacts/display/AIPQ20/asan/libdisplay_aipq_imagesr.so"
+    } else {
+      source = "//binary/artifacts/display/AIPQ20/libdisplay_aipq_imagesr.so"
+    }
+    module_install_dir = "lib64/"
+    output = "libdisplay_aipq_imagesr.so"
+    install_images = [ "system" ]
+    subsystem_name = "multimedia"
+    part_name = "video_processing_engine"
+    install_enable = true
+}
+
+ohos_prebuilt_shared_library("aihdr_engine") {
+    if (is_asan && use_hwasan) {
+      source = "//binary/artifacts/display/AIPQ20/asan/libaihdr_engine.so"
+    } else {
+      source = "//binary/artifacts/display/AIPQ20/libaihdr_engine.so"
+    }
+    module_install_dir = "lib64/"
+    output = "libaihdr_engine.so"
+    install_images = [ "system" ]
+    subsystem_name = "multimedia"
+    part_name = "video_processing_engine"
+    install_enable = true
+}
+
+ohos_shared_library("videoprocessingengine") {
+  branch_protector_ret = "pac_ret"
+
+  install_enable = true
+
+  sanitize = {
+    boundary_sanitize = true
+    cfi = true
+    cfi_cross_dso = true
+    integer_overflow = true
+    ubsan = true
+    debug = false
+  }
+
+  configs = [ ":video_process_config" ]
+  public_configs = [ ":export_config" ]
+
+  include_dirs = []
+
+  sources = [
+    "$AIHDR_ENHANCER_DIR/aihdr_enhancer_fwk.cpp",
+    "$AIHDR_ENHANCER_VIDEO_DIR/aihdr_enhancer_video_impl.cpp",
+    "$ALGORITHM_DIR/common/algorithm_common.cpp",
+    "$ALGORITHM_DIR/common/algorithm_utils.cpp",
+    "$ALGORITHM_DIR/common/algorithm_video.cpp",
+    "$ALGORITHM_DIR/common/algorithm_video_common.cpp",
+    "$ALGORITHM_DIR/common/algorithm_video_impl.cpp",
+    "$ALGORITHM_DIR/common/frame_info.cpp",
+    "$ALGORITHM_DIR/common/vpe_parse_metadata.cpp",
+    "$ALGORITHM_DIR/extension_manager/extension_manager.cpp",
+    "$ALGORITHM_DIR/extension_manager/utils.cpp",
+    "$COLORSPACE_CONVERTER_DIR/colorspace_converter_fwk.cpp",
+    "$COLORSPACE_CONVERTER_VIDEO_DIR/colorspace_converter_video_impl.cpp",
+    "$COLORSPACE_CONVERTER_DISPLAY_DIR/colorspace_converter_display_fwk.cpp",
+    "$METADATA_GENERATOR_DIR/metadata_generator_fwk.cpp",
+    "$METADATA_GENERATOR_VIDEO_DIR/metadata_generator_video_impl.cpp",
+    "$DETAIL_ENHANCER_DIR/detail_enhancer_image_fwk.cpp",
+    "$DETAIL_ENHANCER_VIDEO_DIR/detail_enhancer_video_fwk.cpp",
+    "$DETAIL_ENHANCER_VIDEO_DIR/detail_enhancer_video_impl.cpp",
+    "$VIDEO_REFRESHRATE_PREDICTION_DIR/video_refreshrate_prediction_fwk.cpp",
+    "$DFX_DIR/vpe_trace.cpp",
+    "$DFX_DIR/vpe_log.cpp",
+    #client
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services/src/video_processing_client.cpp",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services/src/video_processing_load_callback.cpp",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services/src/surface_buffer_info.cpp",
+    "${target_gen_dir}/../services/video_processing_service_manager_proxy.cpp",
+    "${target_gen_dir}/../services/video_processing_service_manager_stub.cpp",
+    "$ALGORITHM_COMMON_DIR/image_opencl_wrapper.cpp",
+    "$ALGORITHM_COMMON_DIR/image_openclsetup.cpp"
+  ]
+
+  deps = [ "//third_party/skia:skia_ohos",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services:videoprocessingservice_interface",
+    ":aihdr_engine",
+    ":ai_super_resolution",
+    ":extream_vision_engine",
+    "//third_party/opencl-headers:libcl",
+    "//third_party/bounds_checking_function:libsec_static"]
+
+  external_deps = [
+    "c_utils:utils",
+    "drivers_interface_display:display_commontype_idl_headers",
+    "drivers_interface_display:libdisplay_commontype_proxy_2.1",
+    "graphic_surface:surface",
+    "graphic_surface:sync_fence",
+    "hilog:libhilog",
+    "hitrace:hitrace_meter",
+    "init:libbegetutil",
+    "hdf_core:libhdi",
+    "hdf_core:libhdf_host",
+    "hdf_core:libhdf_ipc_adapter",
+    "hdf_core:libhdf_utils",
+    "hdf_core:hdf_posix_osal",
+    "graphic_2d:2d_graphics",
+    "ipc:ipc_single",
+    "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
+    "media_foundation:media_foundation",
+    "graphic_2d:EGL",
+    "graphic_2d:GLESv3",
+  ]
+
+  subsystem_name = "multimedia"
+  part_name = "video_processing_engine"
+}
+
+config("video_processing_engine_capi_config") {
+  include_dirs = [
+    "$VIDEO_PROCESSING_ENGINE_NDK_DIR/interface/kits/c",
+    "$VIDEO_PROCESSING_ENGINE_NDK_DIR/interface/inner_api",
+  ]
+}
+
+ohos_shared_library("image_processing_capi_impl") {
+  sanitize = {
+    boundary_sanitize = true
+    cfi = true
+    cfi_cross_dso = true
+    integer_overflow = true
+    ubsan = true
+    debug = false
+  }
+
+  stack_protector_ret = true
+
+  cflags = VIDEO_PROCESSING_ENGINE_CFLAGS
+  cflags += [
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-DIMAGE_COLORSPACE_FLAG",
+  ]
+
+  ldflags = [ "-Wl,--gc-sections" ]
+
+  configs = [ ":video_processing_engine_capi_config" ]
+
+  include_dirs = [
+    #Interface
+    "$INTERFACES_CAPI_DIR",
+    "$INTERFACES_INNER_API_DIR",
+    #Common
+    "$DFX_DIR/include",
+    "$ALGORITHM_COMMON_DIR/include",
+    #CAPI implementation
+    "$CAPI_IMAGE_DIR/include",
+    "$CAPI_IMAGE_DETAIL_ENHANCER_DIR/include",
+    "$CAPI_COLORSPACE_CONVERTER_DIR/include",
+    "$CAPI_METADATA_GENERATOR_DIR/include",
+    "$DETAIL_ENHANCER_DIR/include",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services/include",
+    "${target_gen_dir}/../services/",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/framework/algorithm/common/include",
+  ]
+
+  sources = [
+    "$CAPI_IMAGE_DIR/image_environment_native.cpp",
+    "$CAPI_IMAGE_DIR/image_processing_capi_impl.cpp",
+    "$CAPI_IMAGE_DIR/image_processing_factory.cpp",
+    "$CAPI_IMAGE_DIR/image_processing_impl.cpp",
+    "$CAPI_IMAGE_DIR/image_processing_native_base.cpp",
+    "$CAPI_IMAGE_DIR/image_processing_utils.cpp",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/framework/algorithm/common/vpe_utils_common.cpp",
+    "$CAPI_IMAGE_DETAIL_ENHANCER_DIR/detail_enhancer_image_native.cpp",
+    "$CAPI_COLORSPACE_CONVERTER_DIR/colorspace_converter_image_native.cpp",
+    "$CAPI_METADATA_GENERATOR_DIR/metadata_generator_image_native.cpp",
+  ]
+
+  deps = [
+    ":videoprocessingengine",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services:videoprocessingservice_interface",
+  ]
+
+  external_deps = [
+    "c_utils:utils",
+    "graphic_surface:surface",
+    "hilog:libhilog",
+    "graphic_2d:2d_graphics",
+    "media_foundation:media_foundation",
+    "image_framework:pixelmap",
+    "image_framework:image_native",
+    "drivers_interface_display:display_commontype_idl_headers",
+    "ipc:ipc_single",
+    "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
+  ]
+
+  output_extension = "so"
+  subsystem_name = "multimedia"
+  innerapi_tags = [ "ndk" ]
+  part_name = "video_processing_engine"
+}
+
+ohos_shared_library("video_processing_capi_impl") {
+  sanitize = {
+    boundary_sanitize = true
+    cfi = true
+    cfi_cross_dso = true
+    integer_overflow = true
+    ubsan = true
+    debug = false
+  }
+
+  stack_protector_ret = true
+
+  cflags = VIDEO_PROCESSING_ENGINE_CFLAGS
+  cflags += [
+    "-ffunction-sections",
+    "-fdata-sections",
+  ]
+
+  ldflags = [ "-Wl,--gc-sections" ]
+
+  configs = [ ":video_processing_engine_capi_config" ]
+
+  include_dirs = [
+    #Interface
+    "$INTERFACES_CAPI_DIR",
+    "$INTERFACES_INNER_API_DIR",
+    #Common
+    "$DFX_DIR/include",
+    "$ALGORITHM_COMMON_DIR/include",
+    #CAPI implementation
+    "$CAPI_VIDEO_DIR/include/",
+    "$CAPI_VIDEO_DIR/aihdr_enhancer/include/",
+    "$CAPI_VIDEO_DETAIL_ENHANCER_DIR/include/",
+    "$CAPI_VIDEO_COLORSPACE_CONVERTER_DIR/include/",
+    "//foundation/graphic/graphic_surface/interfaces/inner_api/surface/",
+    "//foundation/graphic/graphic_surface/surface/include/",
+    "//foundation/graphic/graphic_2d/interfaces/inner_api",
+    "$CAPI_VIDEO_METADATA_GENERATOR_DIR/include/",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services/include",
+    "${target_gen_dir}/../services/",
+  ]
+
+  sources = [
+    #CAPI common
+    "$CAPI_VIDEO_DIR/video_environment_native.cpp",
+    "$CAPI_VIDEO_DIR/video_processing_callback_impl.cpp",
+    "$CAPI_VIDEO_DIR/video_processing_callback_native.cpp",
+    "$CAPI_VIDEO_DIR/video_processing_capi_impl.cpp",
+    "$CAPI_VIDEO_DIR/video_processing_capi_capability.cpp",
+    "$CAPI_VIDEO_DIR/video_processing_factory.cpp",
+    "$CAPI_VIDEO_DIR/video_processing_impl.cpp",
+    "$CAPI_VIDEO_DIR/video_processing_native_base.cpp",
+    "$CAPI_VIDEO_DIR/video_processing_utils.cpp",
+    #CAPI - features
+    #CAPI - detail enhancement
+    "$CAPI_VIDEO_DETAIL_ENHANCER_DIR/detail_enhancer_video_native.cpp",
+    "$CAPI_VIDEO_COLORSPACE_CONVERTER_DIR/colorSpace_converter_video_native.cpp",
+    "$CAPI_VIDEO_METADATA_GENERATOR_DIR/metadata_generator_video_native.cpp",
+    "$CAPI_VIDEO_DIR/aihdr_enhancer/aihdr_enhancer_video_native.cpp"
+  ]
+
+  deps = [
+    ":videoprocessingengine",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services:videoprocessingservice_interface",
+  ]
+
+  external_deps = [
+    "c_utils:utils",
+    "graphic_surface:surface",
+    "hilog:libhilog",
+    "hitrace:hitrace_meter",
+    "media_foundation:media_foundation",
+    "drivers_interface_display:display_commontype_idl_headers",
+    "graphic_2d:libgraphic_utils",
+    "graphic_2d:librender_service_client",
+    "ipc:ipc_single",
+    "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
+  ]
+
+  output_extension = "so"
+  subsystem_name = "multimedia"
+  innerapi_tags = [ "ndk" ]
+  part_name = "video_processing_engine"
+}
+
+ohos_shared_library("detailEnhancer") {
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    cfi_vcall_icall_only = true
+    debug = false
+  }
+
+  defines = [ "IMAGE_COLORSPACE_FLAG" ]
+
+  include_dirs = [
+    "$DFX_DIR/include",
+    "//foundation/multimedia/media_foundation/interface/kits/c",
+    "//foundation/multimedia/image_framework/interfaces/kits/native/include/image",
+    "//foundation/multimedia/image_framework/frameworks/kits/js/common/ndk/include",
+    "//foundation/multimedia/video_processing_engine/interfaces/kits/js",
+    "//foundation/multimedia/media_foundation/video_processing_engine/interface/kits/c",
+    "//foundation/multimedia/video_processing_engine/interfaces/inner_api",
+    "//foundation/multimedia/video_processing_engine/framework/capi/image_processing/include/",
+  ]
+  sources = [
+    "//foundation/multimedia/video_processing_engine/framework/capi/image_processing/detail_enhance_napi.cpp",
+    "//foundation/multimedia/image_framework/frameworks/innerkitsimpl/common/src/memory_manager.cpp",
+  ]
+
+  deps = [
+    ":videoprocessingengine",
+  ]
+
+  cflags = VIDEO_PROCESSING_ENGINE_CFLAGS
+  external_deps = [
+    "c_utils:utils",
+    "graphic_surface:surface",
+    "hilog:libhilog",
+    "hitrace:hitrace_meter",
+    "ipc:ipc_napi",
+    "media_foundation:native_media_core",
+    "napi:ace_napi",
+    "image_framework:image_utils",
+    "image_framework:image_native",
+    "image_framework:pixelmap",
+    "image_framework:image",
+    "drivers_interface_display:display_commontype_idl_headers",
+  ]
+
+  output_name = "libdetailenhancer_napi"
+  subsystem_name = "multimedia"
+  relative_install_dir = "module/multimedia"
+  part_name = "video_processing_engine"
+}

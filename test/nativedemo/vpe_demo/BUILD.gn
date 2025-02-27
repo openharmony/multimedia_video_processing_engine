@@ -1,0 +1,93 @@
+# Copyright (c) 2023 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+ 
+import("//build/ohos.gni")
+import("//foundation/multimedia/video_processing_engine/config.gni")
+ 
+ohos_executable("vpe_demo") {
+  install_enable = false
+ 
+  include_dirs = [
+    "./include",
+    "$INTERFACES_INNER_API_DIR",
+    "$TEST_UTILS_PATH/ColorSpaceConverter/sample"
+  ]
+ 
+  defines = []
+ 
+  cflags = VIDEO_PROCESSING_ENGINE_CFLAGS
+ 
+  cflags_cc = cflags
+  cflags_cc += [ "-std=c++17" ]
+ 
+  sources = [
+    "vpe_demo.cpp",
+  ]
+
+  deps = [
+    "$FRAMEWORK_DIR:videoprocessingengine",
+    "$TEST_UTILS_PATH/ColorSpaceConverter/sample:csc_test_utils"
+  ]
+  
+  external_deps = [
+    "c_utils:utils",
+    "graphic_surface:surface",
+    "drivers_interface_display:display_commontype_idl_headers",
+  ]
+ 
+  subsystem_name = "multimedia"
+  part_name = "video_processing_engine"
+}
+
+ohos_executable("detailEnh_demo") {
+  install_enable = false
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+
+  include_dirs = [
+    "./include",
+    "$INTERFACES_INNER_API_DIR",
+    "$TEST_UTILS_PATH/DetailEnhancer/sample",
+    "$TEST_UTILS_PATH/DetailEnhancer/sample",
+    "//foundation/multimedia/media_foundation/interface/inner_api/meta"
+  ]
+ 
+  defines = []
+ 
+  cflags = VIDEO_PROCESSING_ENGINE_CFLAGS
+ 
+  cflags_cc = cflags
+  cflags_cc += [ "-std=c++17" ]
+ 
+  sources = [
+    "detail_enhancer_demo.cpp",
+  ]
+ 
+  deps = [
+    "$FRAMEWORK_DIR:videoprocessingengine",
+    "$TEST_UTILS_PATH/DetailEnhancer/sample:detailEnh_test_utils"
+  ]
+  
+  external_deps = [
+    "c_utils:utils",
+    "graphic_surface:surface",
+    "drivers_interface_display:display_commontype_idl_headers",
+  ]
+
+  subsystem_name = "multimedia"
+  part_name = "video_processing_engine"
+}

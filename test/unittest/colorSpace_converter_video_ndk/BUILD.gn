@@ -1,0 +1,77 @@
+# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/test.gni")
+import("//foundation/multimedia/video_processing_engine/config.gni")
+
+ohos_unittest("colorSpace_converter_video_ndk_unit_test") {
+  module_out_path = UNIT_TEST_OUTPUT_PATH
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+
+  cflags = VIDEO_PROCESSING_ENGINE_CFLAGS
+
+  include_dirs = [
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR",
+    "$FRAMEWORK_DIR",
+    "$ALGORITHM_DIR/common/include",
+    "$ALGORITHM_DIR/extension_manager/include",
+    "$INTERFACES_INNER_API_DIR",
+    "$TEST_UTILS_PATH/ColorSpaceConverter/sample",
+    "$ALGORITHM_DIR/colorspace_converter/include",
+    "$FRAMEWORK_DIR/capi/video_processing/include",
+    "$FRAMEWORK_DIR/capi/video_processing/colorspace_converter/include/",
+    "$ALGORITHM_DIR/colorspace_converter_video/include",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services/include",
+    "$TEST_UTILS_PATH/ColorSpaceConverter/sample/video",
+    "//foundation/multimedia/media_foundation/interface/kits/c/",
+    "//foundation/multimedia/media_foundation/video_processing_engine/interface/kits/c/",
+    "//foundation/multimedia/media_foundation/video_processing_engine/",
+    "//foundation/multimedia/media_foundation/video_processing_engine/framework/dfx/include/",
+    "//foundation/multimedia/media_foundation/video_processing_engine/framework/capi/video_processing/include/",
+    "//foundation/multimedia/media_foundation/video_processing_engine/interface/inner_api/",
+    "//foundation/multimedia/video_processing_engine/interfaces/inner_api/",
+    "//foundation/multimedia/video_processing_engine/framework/algorithm/colorspace_converter_video/include/",
+    "//foundation/graphic/graphic_2d/interfaces/inner_api/",
+    "//foundation/graphic/graphic_2d_ext/ohcore/graphic_compat_layer/include/utils/",
+  ]
+
+  sources = [ "colorSpace_converter_video_ndk_unit_test.cpp" ]
+
+  deps = [
+    "$FRAMEWORK_DIR:videoprocessingengine",
+    "$FRAMEWORK_DIR:video_processing_capi_impl",
+    ]
+
+  external_deps = [
+    "c_utils:utils",
+    "drivers_interface_display:display_commontype_idl_headers",
+    "graphic_surface:surface",
+    "graphic_surface:sync_fence",
+    "graphic_2d:libgraphic_utils",
+    "graphic_2d:librender_service_client",
+    "hilog:libhilog",
+    "hitrace:hitrace_meter",
+    "media_foundation:native_media_core",
+    "media_foundation:video_processing",
+    "ipc:ipc_core",
+    "memory_utils:libdmabufheap",
+  ]
+
+  subsystem_name = "multimedia"
+  part_name = "video_processing_engine"
+}

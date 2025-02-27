@@ -1,0 +1,16 @@
+{
+    "process": "video_processing_service",
+    "systemability": [
+        {
+            "name": 66134,
+            "libpath": "libvideoprocessingservice.z.so",
+            "run-on-create": false,
+            "auto-restart": true,
+            "distributed": false,
+            "start-on-demand":{
+            },
+            "stop-on-demand":{
+            }
+        }
+    ]
+}

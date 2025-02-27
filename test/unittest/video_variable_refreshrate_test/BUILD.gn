@@ -1,0 +1,57 @@
+# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/test.gni")
+import("//foundation/multimedia/video_processing_engine/config.gni")
+
+ohos_unittest("video_variable_refreshrate_unit_test") {
+  module_out_path = UNIT_TEST_OUTPUT_PATH
+
+  sanitize = {
+    boundary_sanitize = true
+    cfi = true
+    cfi_cross_dso = true
+    integer_overflow = true
+    ubsan = true
+    debug = false
+  }
+
+  cflags = VIDEO_PROCESSING_ENGINE_CFLAGS
+
+  include_dirs = [
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/interfaces/inner_api",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/framework/algorithm/common/include",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/framework/algorithm/extension_manager/include",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/framework/algorithm/video_variable_refresh_rate/include",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/framework/dfx/include",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/test/unittest/utils",
+  ]
+
+  sources = [ "video_variable_refreshrate_unit_test.cpp", 
+            ]
+
+  external_deps = [
+    "c_utils:utils",
+    "drivers_interface_display:display_commontype_idl_headers",
+    "drivers_interface_display:display_composer_idl_headers_1.1",
+    "drivers_interface_display:libdisplay_composer_hdi_impl",
+    "graphic_surface:surface",
+    "hilog:libhilog",
+    "hitrace:hitrace_meter",
+    "opencl-headers:libcl",
+    "video_processing_engine:videoprocessingengine",
+  ]
+
+  subsystem_name = "multimedia"
+  part_name = "video_processing_engine_ext"
+}
