@@ -1,0 +1,103 @@
+# Copyright (c) 2023 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/config/ohos/config.gni")
+import("//build/ohos.gni")
+import("//foundation/ability/idl_tool/idl_config.gni")
+import("//foundation/multimedia/video_processing_engine/config.gni")
+
+group("video_processing_service_group") {
+  deps = [
+    ":videoprocessingservice",
+    "sa_profile:video_processing_service",
+    "sa_profile:video_processing_service_etc"
+  ]
+}
+
+idl_interface_sources = [
+  "${target_gen_dir}/video_processing_service_manager_proxy.cpp",
+  "${target_gen_dir}/video_processing_service_manager_stub.cpp",
+]
+
+idl_gen_interface("videoprocessingservice_interface") {
+    src_idl = rebase_path("IVideoProcessingServiceManager.idl")
+    dst_file = string_join(",", idl_interface_sources)
+    log_domainid = "0x00010256"
+    log_tag = "VideoProcessingService"
+}
+
+config("videoprocessingservice_config") {
+  visibility = [ ":*" ]
+  include_dirs = [
+    "include",
+    "${target_gen_dir}",
+  ]
+  cflags = []
+  if (target_cpu == "arm") {
+    cflags += [ "-DBINDER_IPC_32BIT" ]
+  }
+}
+
+ohos_shared_library("videoprocessingservice") {
+  install_enable = true
+  
+  sanitize = {
+    boundary_sanitize = true
+    cfi = true
+    cfi_cross_dso = true
+    integer_overflow = true
+    ubsan = true
+    debug = false
+  }
+
+  configs = [ ":videoprocessingservice_config" ]
+  output_values = get_target_outputs(":videoprocessingservice_interface")
+  sources = [
+    "src/surface_buffer_info.cpp",
+    "src/video_processing_server.cpp",
+    "src/event_handler_factory.cpp",
+  ]
+  sources += filter_include(output_values, [ "*.cpp" ])
+  defines = [ "AMS_LOG_TAG = \"VideoProcessingService\"" ]
+
+  include_dirs = [
+    "include",
+    "${target_gen_dir}",
+    "//foundation/multimedia/video_processing_engine/framework/dfx/include",
+    "//foundation/systemabilitymgr/safwk/services/safwk/include",
+    "//foundation/systemabilitymgr/samgr/interfaces/innerkits/samgr_proxy/include",
+    "//foundation/communication/ipc/interfaces/innerkits/ipc_core/include",
+  ]
+
+  deps = [
+    ":videoprocessingservice_interface",
+  ]
+
+  external_deps = [
+    "c_utils:utils",
+    "hilog:libhilog",
+    "hitrace:hitrace_meter",
+    "ipc:ipc_single",
+    "graphic_surface:surface",
+    "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
+    "eventhandler:libeventhandler",
+  ]
+  subsystem_name = "multimedia"
+  part_name = "video_processing_engine"
+}
+
+group("videoprocessingservice_idl_headers") {
+  public_configs = [ ":videoprocessingservice_config" ]
+  deps = [ ":videoprocessingservice_interface" ]
+}

@@ -1,0 +1,91 @@
+# Copyright (c) 2023 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+
+declare_args() {
+  vpe_support_demo_test = true
+  vpe_support_unit_test = true
+  vpe_support_module_test = true
+  cscv_support_demo_test = true
+  cscv_support_unit_test = true
+  video_support_demo_test = true
+  image_processing_unit_test = true
+  detail_enhancer_video_unit_test = true
+  detail_enhancer_unit_test = true
+  detail_enhancer_video_ndk_unit_test = true
+  colorSpace_converter_video_ndk_unit_test = true
+  metadata_gen_video_ndk_unit_test = true
+  video_variable_refreshrate_unit_test = true
+  aihdr_enhancer_video_unit_test = true
+  aihdr_enhancer_unit_test = true
+}
+
+group("demo_test") {
+  testonly = true
+  deps = []
+  if (vpe_support_demo_test) {
+    deps += [ "nativedemo/vpe_demo:vpe_demo" ]
+  }
+}
+
+group("unit_test") {
+  testonly = true
+  deps = []
+  if (vpe_support_unit_test) {
+    deps += [ "unittest/vpe_framework:vpe_framework_unit_test" ]
+  }
+  if (image_processing_unit_test) {
+    deps += [ "unittest/image_processing:image_processing_unit_test" ]
+  }
+  if (detail_enhancer_unit_test) {
+    deps += [ "unittest/detail_enhancer:detail_enhancer_unit_test" ]
+  }
+  if (detail_enhancer_video_unit_test) {
+    deps += [ "unittest/detail_enhancer_video:detail_enhancer_video_unit_test" ]
+  }
+  if (detail_enhancer_video_ndk_unit_test) {
+    deps += [ "unittest/detail_enhancer_video_ndk:detail_enhancer_video_ndk_unit_test" ]
+  }
+  if (cscv_support_unit_test) {
+    deps += [ "unittest/colorspace_converter_video:colorspace_converter_video_unit_test" ]
+  }
+  if (colorSpace_converter_video_ndk_unit_test) {
+    deps += [ "unittest/colorSpace_converter_video_ndk:colorSpace_converter_video_ndk_unit_test" ]
+  }
+  if (metadata_gen_video_ndk_unit_test) {
+    deps += [ "unittest/metadata_gen_video_ndk:metadata_gen_video_ndk_unit_test" ]
+  }
+  if (video_variable_refreshrate_unit_test) {
+    deps += [ "unittest/video_variable_refreshrate_test:video_variable_refreshrate_unit_test" ]
+  }
+  if (aihdr_enhancer_video_unit_test) {
+    deps += [ "unittest/aihdr_enhancer_video:aihdr_enhancer_video_unit_test" ]
+  }
+  if (aihdr_enhancer_unit_test) {
+    deps += [ "unittest/aihdr_enhancer_video:aihdr_enhancer_video_unit_test" ]
+  }
+}
+
+group("module_test") {
+  testonly = true
+  deps = []
+  if (vpe_support_module_test) {
+    deps += [
+      "moduletest/colorspace_converter:colorspace_converter_module_test",
+      "moduletest/metadata_generator:metadata_generator_module_test",
+      "moduletest/colorspace_converter_video:colorspace_converter_video_module_test",
+      "moduletest/metadata_generator_video:metadata_generator_video_module_test",
+    ]
+  }
+}

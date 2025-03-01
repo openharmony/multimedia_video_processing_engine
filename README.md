@@ -1,37 +1,68 @@
-# multimedia_video_processing_engine
+# VPE引擎
 
-#### 介绍
-针对视频、图片以及渲染的内容的HDR、清晰和流畅低功耗的用户体验，系统层提供统一的公共基础能力，实现简单、一致、高效的视频处理服务。
+## 简介
+VPE（Video Processing Engine）引擎是处理视频和图像数据的媒体引擎，包括细节增强、对比度增强、亮度增强、动态范围增强等基础能力，为转码、分享、显示后处理等提供色彩空间转换、缩放超分、动态元数据集生成等基础算法。
 
-#### 软件架构
-软件架构说明
+VPE引擎的主要结构如下图所示：
 
+![VPE引擎架构图](./figures/videoProcessingEngine_architecture.png)
 
-#### 安装教程
+## 目录
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+仓目录结构如下：
 
-#### 使用说明
+```
+/foundation/multimedia/video_processing_engine/
+├── framework                                  # 框架代码
+│   ├── algorithm                              # 算法框架
+│       ├── aihdr_enhancer                     # 图像HDR增强算法框架
+│       ├── aihdr_enhancer_video               # 视频HDR增强算法框架
+│       ├── colorspace_converter               # 图像颜色空间转换算法框架
+│       ├── colorspace_converter_display       # 图像颜色空间显示算法框架
+│       ├── colorspace_converter_video         # 视频颜色空间转换算法框架
+│       ├── detail_enhancer                    # 图像细节增强算法框架
+│       ├── detail_enhancer_video              # 视频细节增强算法框架
+│       ├── extension_manager                  # 插件管理
+│       ├── metadata_generator                 # 图像元数据生成算法框架
+│       ├── metadata_generator_video           # 视频元数据生成算法框架
+│       ├── video_variable_refresh_rate        # 视频可变帧率算法框架
+│   ├── capi                                   # CAPI层
+│       ├── image_processing                   # 图像CAPI
+│       ├── video_processing                   # 视频CAPI
+│   ├── dfx                                    # dfx代码
+├── interfaces                                 # 接口层
+│   ├── inner_api                              # 系统内部接口
+│   ├── kits                                   # 应用接口
+├── services                                   # 服务代码
+├── sertestvices                               # 测试代码
+```
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+## 编译构建
 
-#### 参与贡献
+编译32位ARM系统VPE引擎
+```
+./build.sh --product-name {product_name} --ccache --build-target video_processing_engine
+```
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+编译64位ARM系统VPE引擎
+```
+./build.sh --product-name {product_name} --ccache --target-cpu arm64 --build-target video_processing_engine
+```
 
+{product_name}为当前支持的平台，比如rk3568。
 
-#### 特技
+## 说明
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+### 使用说明
+VPE引擎作为OpenHarmony的组件，提供系统的视频图像能力，包含色彩空间转换、动态元数据生成以及细节增强等能力，供开发者进行图像和视频处理操作。
+
+## 相关仓
+
+- [graphic_graphic_2d](https://gitee.com/openharmony/graphic_graphic_2d)
+- [graphic_graphic_surface](https://gitee.com/openharmony/graphic_graphic_surface)
+- [multimedia_image_framework](https://gitee.com/openharmony/multimedia_image_framework)
+- [multimedia_media_foundation](https://gitee.com/openharmony/multimedia_media_foundation)
+- [third_party_egl](https://gitee.com/openharmony/third_party_egl)
+- [third_party_opengles](https://gitee.com/openharmony/third_party_opengles)
+- [third_party_opencl-headers](https://gitee.com/openharmony/third_party_opencl-headers)
+- [third_party_skia](https://gitee.com/openharmony/third_party_skia)
