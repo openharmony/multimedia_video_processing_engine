@@ -160,15 +160,15 @@ VideoProcessing_ErrorCode ColorSpaceConverterVideoNative::OnStart()
         int(RenderIntent::RENDER_INTENT_ABSOLUTE_COLORIMETRIC));
     ret = colorSpaceConverter_->Configure(format);
     if (ret != VPE_ALGO_ERR_OK) {
-        return VideoProcessingUtils::InnerErrorToNDK(static_cast<VPEAlgoErrCode>(ret));
+        return VideoProcessingUtils::InnerErrorToCAPI(static_cast<VPEAlgoErrCode>(ret));
     }
     ret = colorSpaceConverter_->Prepare();
     if (ret != VPE_ALGO_ERR_OK) {
-        return VideoProcessingUtils::InnerErrorToNDK(static_cast<VPEAlgoErrCode>(ret));
+        return VideoProcessingUtils::InnerErrorToCAPI(static_cast<VPEAlgoErrCode>(ret));
     }
     ret = colorSpaceConverter_->Start();
     if (ret != VPE_ALGO_ERR_OK) {
-        return VideoProcessingUtils::InnerErrorToNDK(static_cast<VPEAlgoErrCode>(ret));
+        return VideoProcessingUtils::InnerErrorToCAPI(static_cast<VPEAlgoErrCode>(ret));
     }
     return VIDEO_PROCESSING_SUCCESS;
 }
@@ -179,7 +179,7 @@ VideoProcessing_ErrorCode ColorSpaceConverterVideoNative::OnStop()
     CHECK_AND_RETURN_RET_LOG(isInitialized_.load(), VIDEO_PROCESSING_ERROR_INITIALIZE_FAILED,
         "Initialization failed!");
 
-    return VideoProcessingUtils::InnerErrorToNDK(
+    return VideoProcessingUtils::InnerErrorToCAPI(
         static_cast<VPEAlgoErrCode>(colorSpaceConverter_->Stop()));
 }
 
@@ -189,7 +189,7 @@ VideoProcessing_ErrorCode ColorSpaceConverterVideoNative::OnRenderOutputBuffer(u
     CHECK_AND_RETURN_RET_LOG(isInitialized_.load(), VIDEO_PROCESSING_ERROR_INITIALIZE_FAILED,
         "Initialization failed!");
 
-    return VideoProcessingUtils::InnerErrorToNDK(
+    return VideoProcessingUtils::InnerErrorToCAPI(
         static_cast<VPEAlgoErrCode>(colorSpaceConverter_->ReleaseOutputBuffer(index, true)));
 }
 
@@ -202,14 +202,14 @@ ColorSpaceConverterVideoNative::NativeCallback::NativeCallback(
 void ColorSpaceConverterVideoNative::NativeCallback::OnError(int32_t errorCode)
 {
     SendCallback([this, &errorCode]() {
-        owner_->OnError(VideoProcessingUtils::InnerErrorToNDK(static_cast<VPEAlgoErrCode>(errorCode)));
+        owner_->OnError(VideoProcessingUtils::InnerErrorToCAPI(static_cast<VPEAlgoErrCode>(errorCode)));
     });
 }
 
 void ColorSpaceConverterVideoNative::NativeCallback::OnState(int32_t state)
 {
     SendCallback([this, &state]() {
-        owner_->OnState(VideoProcessingUtils::InnerStateToNDK(static_cast<VPEAlgoState>(state)));
+        owner_->OnState(VideoProcessingUtils::InnerStateToCAPI(static_cast<VPEAlgoState>(state)));
     });
 }
 

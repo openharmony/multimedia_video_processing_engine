@@ -26,12 +26,12 @@ namespace OHOS {
 namespace Media {
 namespace VideoProcessingEngine {
 /**
- * Utility funcions for video processing NDK.
+ * Utility funcions for video processing CAPI.
  */
 class VideoProcessingUtils {
 public:
-    static VideoProcessing_ErrorCode InnerErrorToNDK(VPEAlgoErrCode errorCode);
-    static VideoProcessing_State InnerStateToNDK(VPEAlgoState state);
+    static VideoProcessing_ErrorCode InnerErrorToCAPI(VPEAlgoErrCode errorCode);
+    static VideoProcessing_State InnerStateToCAPI(VPEAlgoState state);
     static std::string ToString(VideoProcessing_ErrorCode errorCode);
     static std::string ToString(VideoProcessing_State state);
 };

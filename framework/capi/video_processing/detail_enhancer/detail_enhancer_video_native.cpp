@@ -99,11 +99,11 @@ VideoProcessing_ErrorCode DetailEnhancerVideoNative::SetParameter(const OHOS::Me
     int level;
     CHECK_AND_RETURN_RET_LOG(parameter.GetIntValue(VIDEO_DETAIL_ENHANCER_PARAMETER_KEY_QUALITY_LEVEL, level),
         VIDEO_PROCESSING_ERROR_INVALID_PARAMETER, "No quality level!");
-    int innerLevel = NDKLevelToInner(level);
+    int innerLevel = CAPILevelToInner(level);
     CHECK_AND_RETURN_RET_LOG(innerLevel != -1, VIDEO_PROCESSING_ERROR_INVALID_PARAMETER, "Quality level is invalid!");
     DetailEnhancerParameters param{};
     param.level = static_cast<DetailEnhancerLevel>(innerLevel);
-    auto result = VideoProcessingUtils::InnerErrorToNDK(detailEnhancer_->SetParameter(param, VIDEO));
+    auto result = VideoProcessingUtils::InnerErrorToCAPI(detailEnhancer_->SetParameter(param, VIDEO));
     if (result == VIDEO_PROCESSING_SUCCESS) {
         level_ = level;
     }
@@ -128,7 +128,7 @@ VideoProcessing_ErrorCode DetailEnhancerVideoNative::OnStart()
     CHECK_AND_RETURN_RET_LOG(isInitialized_.load(), VIDEO_PROCESSING_ERROR_INITIALIZE_FAILED,
         "Initialization failed!");
 
-    return VideoProcessingUtils::InnerErrorToNDK(detailEnhancer_->Start());
+    return VideoProcessingUtils::InnerErrorToCAPI(detailEnhancer_->Start());
 }
 
 VideoProcessing_ErrorCode DetailEnhancerVideoNative::OnStop()
@@ -136,7 +136,7 @@ VideoProcessing_ErrorCode DetailEnhancerVideoNative::OnStop()
     CHECK_AND_RETURN_RET_LOG(isInitialized_.load(), VIDEO_PROCESSING_ERROR_INITIALIZE_FAILED,
         "Initialization failed!");
 
-    return VideoProcessingUtils::InnerErrorToNDK(detailEnhancer_->Stop());
+    return VideoProcessingUtils::InnerErrorToCAPI(detailEnhancer_->Stop());
 }
 
 VideoProcessing_ErrorCode DetailEnhancerVideoNative::OnRenderOutputBuffer(uint32_t index)
@@ -144,10 +144,10 @@ VideoProcessing_ErrorCode DetailEnhancerVideoNative::OnRenderOutputBuffer(uint32
     CHECK_AND_RETURN_RET_LOG(isInitialized_.load(), VIDEO_PROCESSING_ERROR_INITIALIZE_FAILED,
         "Initialization failed!");
 
-    return VideoProcessingUtils::InnerErrorToNDK(detailEnhancer_->ReleaseOutputBuffer(index, true));
+    return VideoProcessingUtils::InnerErrorToCAPI(detailEnhancer_->ReleaseOutputBuffer(index, true));
 }
 
-int DetailEnhancerVideoNative::NDKLevelToInner(int level) const
+int DetailEnhancerVideoNative::CAPILevelToInner(int level) const
 {
     auto it = LEVEL_MAP.find(level);
     if (it == LEVEL_MAP.end()) [[unlikely]] {
@@ -165,14 +165,14 @@ DetailEnhancerVideoNative::NativeCallback::NativeCallback(const std::shared_ptr<
 void DetailEnhancerVideoNative::NativeCallback::OnError(VPEAlgoErrCode errorCode)
 {
     SendCallback([this, &errorCode]() {
-        owner_->OnError(VideoProcessingUtils::InnerErrorToNDK(errorCode));
+        owner_->OnError(VideoProcessingUtils::InnerErrorToCAPI(errorCode));
     });
 }
 
 void DetailEnhancerVideoNative::NativeCallback::OnState(VPEAlgoState state)
 {
     SendCallback([this, &state]() {
-        owner_->OnState(VideoProcessingUtils::InnerStateToNDK(state));
+        owner_->OnState(VideoProcessingUtils::InnerStateToCAPI(state));
     });
 }
 

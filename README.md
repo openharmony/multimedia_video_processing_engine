@@ -26,9 +26,9 @@ VPE引擎的主要结构如下图所示：
 │       ├── metadata_generator                 # 图像元数据生成算法框架
 │       ├── metadata_generator_video           # 视频元数据生成算法框架
 │       ├── video_variable_refresh_rate        # 视频可变帧率算法框架
-│   ├── capi                                   # NDK层
-│       ├── image_processing                   # 图像NDK
-│       ├── video_processing                   # 视频NDK
+│   ├── capi                                   # CAPI层
+│       ├── image_processing                   # 图像CAPI
+│       ├── video_processing                   # 视频CAPI
 │   ├── dfx                                    # dfx代码
 ├── interfaces                                 # 接口层
 │   ├── inner_api                              # 系统内部接口

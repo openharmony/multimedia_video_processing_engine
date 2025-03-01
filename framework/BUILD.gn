@@ -229,8 +229,8 @@ ohos_shared_library("videoprocessingengine") {
 
 config("video_processing_engine_capi_config") {
   include_dirs = [
-    "$VIDEO_PROCESSING_ENGINE_NDK_DIR/interface/kits/c",
-    "$VIDEO_PROCESSING_ENGINE_NDK_DIR/interface/inner_api",
+    "$VIDEO_PROCESSING_ENGINE_CAPI_DIR/interface/kits/c",
+    "$VIDEO_PROCESSING_ENGINE_CAPI_DIR/interface/inner_api",
   ]
 }
 

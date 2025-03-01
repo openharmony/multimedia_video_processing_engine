@@ -103,13 +103,13 @@ int32_t AihdrEnhancerVideoNative::OnStart()
 
     int32_t ret = 0;
     ret = aihdrEnhancer_->Configure();
-    CHECK_AND_RETURN_RET_LOG(ret == 0, VideoProcessingUtils::InnerErrorToNDK(static_cast<VPEAlgoErrCode>(ret)),
+    CHECK_AND_RETURN_RET_LOG(ret == 0, VideoProcessingUtils::InnerErrorToCAPI(static_cast<VPEAlgoErrCode>(ret)),
         "Configure fail!");
     ret = aihdrEnhancer_->Prepare();
-    CHECK_AND_RETURN_RET_LOG(ret == 0, VideoProcessingUtils::InnerErrorToNDK(static_cast<VPEAlgoErrCode>(ret)),
+    CHECK_AND_RETURN_RET_LOG(ret == 0, VideoProcessingUtils::InnerErrorToCAPI(static_cast<VPEAlgoErrCode>(ret)),
         "Prepare fail!");
     ret = aihdrEnhancer_->Start();
-    CHECK_AND_RETURN_RET_LOG(ret == 0, VideoProcessingUtils::InnerErrorToNDK(static_cast<VPEAlgoErrCode>(ret)),
+    CHECK_AND_RETURN_RET_LOG(ret == 0, VideoProcessingUtils::InnerErrorToCAPI(static_cast<VPEAlgoErrCode>(ret)),
         "Start fail!");
     return 0;
 }

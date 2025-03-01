@@ -26,9 +26,9 @@ The structure of the repository directory is as follows:
 │       ├── metadata_generator                 # Image metadata generation algorithm framework
 │       ├── metadata_generator_video           # Video metadata generation algorithm framework
 │       ├── video_variable_refresh_rate        # Video variable frame rate algorithm framework
-│   ├── capi                                   # NDK layer
-│       ├── image_processing                   # Image NDK
-│       ├── video_processing                   # Video NDK
+│   ├── capi                                   # CAPI layer
+│       ├── image_processing                   # Image CAPI
+│       ├── video_processing                   # Video CAPI
 │   ├── dfx                                    # DFX code
 ├── interfaces                                 # API layer
 │   ├── inner_api                              # Internal APIs

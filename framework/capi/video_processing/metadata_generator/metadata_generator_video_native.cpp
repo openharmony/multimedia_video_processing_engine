@@ -100,15 +100,15 @@ VideoProcessing_ErrorCode MetadataGeneratorVideoNative::OnStart()
     int32_t ret = 0;
     ret = metadataGenerator_->Configure();
     if (ret != VPE_ALGO_ERR_OK) {
-        return VideoProcessingUtils::InnerErrorToNDK(static_cast<VPEAlgoErrCode>(ret));
+        return VideoProcessingUtils::InnerErrorToCAPI(static_cast<VPEAlgoErrCode>(ret));
     }
     ret = metadataGenerator_->Prepare();
     if (ret != VPE_ALGO_ERR_OK) {
-        return VideoProcessingUtils::InnerErrorToNDK(static_cast<VPEAlgoErrCode>(ret));
+        return VideoProcessingUtils::InnerErrorToCAPI(static_cast<VPEAlgoErrCode>(ret));
     }
     ret = metadataGenerator_->Start();
     if (ret != VPE_ALGO_ERR_OK) {
-        return VideoProcessingUtils::InnerErrorToNDK(static_cast<VPEAlgoErrCode>(ret));
+        return VideoProcessingUtils::InnerErrorToCAPI(static_cast<VPEAlgoErrCode>(ret));
     }
     return VIDEO_PROCESSING_SUCCESS;
 }
@@ -119,7 +119,7 @@ VideoProcessing_ErrorCode MetadataGeneratorVideoNative::OnStop()
     CHECK_AND_RETURN_RET_LOG(isInitialized_.load(), VIDEO_PROCESSING_ERROR_INITIALIZE_FAILED,
         "Initialization failed!");
 
-    return VideoProcessingUtils::InnerErrorToNDK(static_cast<VPEAlgoErrCode>(metadataGenerator_->Stop()));
+    return VideoProcessingUtils::InnerErrorToCAPI(static_cast<VPEAlgoErrCode>(metadataGenerator_->Stop()));
 }
 
 VideoProcessing_ErrorCode MetadataGeneratorVideoNative::OnRenderOutputBuffer(uint32_t index)
@@ -128,7 +128,7 @@ VideoProcessing_ErrorCode MetadataGeneratorVideoNative::OnRenderOutputBuffer(uin
     CHECK_AND_RETURN_RET_LOG(isInitialized_.load(), VIDEO_PROCESSING_ERROR_INITIALIZE_FAILED,
         "Initialization failed!");
 
-    return VideoProcessingUtils::InnerErrorToNDK(
+    return VideoProcessingUtils::InnerErrorToCAPI(
         static_cast<VPEAlgoErrCode>(metadataGenerator_->ReleaseOutputBuffer(index, true)));
 }
 
@@ -141,14 +141,14 @@ MetadataGeneratorVideoNative::NativeCallback::NativeCallback(
 void MetadataGeneratorVideoNative::NativeCallback::OnError(int32_t errorCode)
 {
     SendCallback([this, &errorCode]() {
-        owner_->OnError(VideoProcessingUtils::InnerErrorToNDK(static_cast<VPEAlgoErrCode>(errorCode)));
+        owner_->OnError(VideoProcessingUtils::InnerErrorToCAPI(static_cast<VPEAlgoErrCode>(errorCode)));
     });
 }
 
 void MetadataGeneratorVideoNative::NativeCallback::OnState(int32_t state)
 {
     SendCallback([this, &state]() {
-        owner_->OnState(VideoProcessingUtils::InnerStateToNDK(static_cast<VPEAlgoState>(state)));
+        owner_->OnState(VideoProcessingUtils::InnerStateToCAPI(static_cast<VPEAlgoState>(state)));
     });
 }
 

@@ -26,7 +26,7 @@ namespace OHOS {
 namespace Media {
 namespace VideoProcessingEngine {
 /**
- * Implementation for video processing callback NDK.
+ * Implementation for video processing callback CAPI.
  */
 class VideoProcessingCallbackNative {
 public:

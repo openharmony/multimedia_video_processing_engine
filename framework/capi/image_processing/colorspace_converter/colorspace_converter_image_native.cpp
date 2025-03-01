@@ -87,7 +87,7 @@ ImageProcessing_ErrorCode ColorspaceConverterImageNative::ConvertColorSpace(
 {
     ColorSpaceConverterParameter parameter;
     parameter.renderIntent = RenderIntent::RENDER_INTENT_ABSOLUTE_COLORIMETRIC;
-    auto ret = ImageProcessingUtils::InnerErrorToNDK(colorspaceConverter_->SetParameter(parameter));
+    auto ret = ImageProcessingUtils::InnerErrorToCAPI(colorspaceConverter_->SetParameter(parameter));
     CHECK_AND_RETURN_RET_LOG(ret == IMAGE_PROCESSING_SUCCESS, ret, "cSetParameter failed!");
     CHECK_AND_RETURN_RET_LOG(isInitialized_.load(), IMAGE_PROCESSING_ERROR_INITIALIZE_FAILED,
         "ConvertColorSpace image is not initialized!");
@@ -99,7 +99,7 @@ ImageProcessing_ErrorCode ColorspaceConverterImageNative::ConvertColorSpace(
     CHECK_AND_RETURN_RET_LOG(ret == IMAGE_PROCESSING_SUCCESS, ret, "convert to surface buffer failed!");
     ret = ConvertPixelmapToSurfaceBuffer(destinationImage, destinationImageSurfaceBuffer);
     CHECK_AND_RETURN_RET_LOG(ret == IMAGE_PROCESSING_SUCCESS, ret, "convert to surface buffer failed!");
-    ret = ImageProcessingUtils::InnerErrorToNDK(
+    ret = ImageProcessingUtils::InnerErrorToCAPI(
         colorspaceConverter_->Process(sourceImageSurfaceBuffer, destinationImageSurfaceBuffer));
     CHECK_AND_RETURN_RET_LOG(ret == IMAGE_PROCESSING_SUCCESS, ret, "process failed!");
     return IMAGE_PROCESSING_SUCCESS;
@@ -112,7 +112,7 @@ ImageProcessing_ErrorCode ColorspaceConverterImageNative::Compose(
 {
     ColorSpaceConverterParameter parameter;
     parameter.renderIntent = RenderIntent::RENDER_INTENT_ABSOLUTE_COLORIMETRIC;
-    auto ret = ImageProcessingUtils::InnerErrorToNDK(colorspaceConverter_->SetParameter(parameter));
+    auto ret = ImageProcessingUtils::InnerErrorToCAPI(colorspaceConverter_->SetParameter(parameter));
     CHECK_AND_RETURN_RET_LOG(ret == IMAGE_PROCESSING_SUCCESS, ret, "cSetParameter failed!");
     CHECK_AND_RETURN_RET_LOG(isInitialized_.load(), IMAGE_PROCESSING_ERROR_INITIALIZE_FAILED,
         "Compose image is not initialized!");
@@ -127,7 +127,7 @@ ImageProcessing_ErrorCode ColorspaceConverterImageNative::Compose(
     CHECK_AND_RETURN_RET_LOG(ret == IMAGE_PROCESSING_SUCCESS, ret, "convert to surface buffer failed!");
     ret = ConvertPixelmapToSurfaceBuffer(destinationImage, destinationImageSurfaceBuffer);
     CHECK_AND_RETURN_RET_LOG(ret == IMAGE_PROCESSING_SUCCESS, ret, "convert to surface buffer failed!");
-    ret = ImageProcessingUtils::InnerErrorToNDK(
+    ret = ImageProcessingUtils::InnerErrorToCAPI(
         colorspaceConverter_->ComposeImage(sourceImageSurfaceBuffer, sourceGainmapSurfaceBuffer,
         destinationImageSurfaceBuffer, false));
     CHECK_AND_RETURN_RET_LOG(ret == IMAGE_PROCESSING_SUCCESS, ret, "process failed!");
@@ -141,7 +141,7 @@ ImageProcessing_ErrorCode ColorspaceConverterImageNative::Decompose(
 {
     ColorSpaceConverterParameter parameter;
     parameter.renderIntent = RenderIntent::RENDER_INTENT_ABSOLUTE_COLORIMETRIC;
-    auto ret = ImageProcessingUtils::InnerErrorToNDK(colorspaceConverter_->SetParameter(parameter));
+    auto ret = ImageProcessingUtils::InnerErrorToCAPI(colorspaceConverter_->SetParameter(parameter));
     CHECK_AND_RETURN_RET_LOG(ret == IMAGE_PROCESSING_SUCCESS, ret, "cSetParameter failed!");
     CHECK_AND_RETURN_RET_LOG(isInitialized_.load(), IMAGE_PROCESSING_ERROR_INITIALIZE_FAILED,
         "Decompose image is not initialized!");
@@ -156,7 +156,7 @@ ImageProcessing_ErrorCode ColorspaceConverterImageNative::Decompose(
     CHECK_AND_RETURN_RET_LOG(ret == IMAGE_PROCESSING_SUCCESS, ret, "convert to surface buffer failed!");
     ret = ConvertPixelmapToSurfaceBuffer(destinationGainmap, destinationGainmapSurfaceBuffer);
     CHECK_AND_RETURN_RET_LOG(ret == IMAGE_PROCESSING_SUCCESS, ret, "convert to surface buffer failed!");
-    ret = ImageProcessingUtils::InnerErrorToNDK(
+    ret = ImageProcessingUtils::InnerErrorToCAPI(
         colorspaceConverter_->DecomposeImage(sourceImageSurfaceBuffer, destinationImageSurfaceBuffer,
         destinationGainmapSurfaceBuffer));
     CHECK_AND_RETURN_RET_LOG(ret == IMAGE_PROCESSING_SUCCESS, ret, "process failed!");

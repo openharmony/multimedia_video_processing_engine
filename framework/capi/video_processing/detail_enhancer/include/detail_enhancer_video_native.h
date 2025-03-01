@@ -28,7 +28,7 @@ namespace OHOS {
 namespace Media {
 namespace VideoProcessingEngine {
 /**
- * Detail enhancer NDK interface implementaion.
+ * Detail enhancer CAPI interface implementaion.
  */
 class DetailEnhancerVideoNative : public VideoProcessingNativeTemplate<DetailEnhancerVideoNative> {
 public:
@@ -65,7 +65,7 @@ private:
         const std::shared_ptr<DetailEnhancerVideoNative> owner_{};
     };
 
-    int NDKLevelToInner(int level) const;
+    int CAPILevelToInner(int level) const;
 
     mutable std::mutex lock_{};
     // Guarded by lock_ begin

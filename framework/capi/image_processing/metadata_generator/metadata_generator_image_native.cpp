@@ -115,7 +115,7 @@ ImageProcessing_ErrorCode MetadataGeneratorImageNative::GenerateMetadata(
 {
     MetadataGeneratorParameter parameterMT;
     parameterMT.algoType = MetadataGeneratorAlgoType::META_GEN_ALGO_TYPE_IMAGE;
-    auto ret = ImageProcessingUtils::InnerErrorToNDK(metadataGenerator_->SetParameter(parameterMT));
+    auto ret = ImageProcessingUtils::InnerErrorToCAPI(metadataGenerator_->SetParameter(parameterMT));
     CHECK_AND_RETURN_RET_LOG(ret == IMAGE_PROCESSING_SUCCESS, ret, "cSetParameter failed!");
     CHECK_AND_RETURN_RET_LOG(isInitialized_.load(), IMAGE_PROCESSING_ERROR_INITIALIZE_FAILED,
         "Detail enhancer image is not initialized!");
@@ -123,7 +123,7 @@ ImageProcessing_ErrorCode MetadataGeneratorImageNative::GenerateMetadata(
     sptr<SurfaceBuffer> sourceImageSurfaceBuffer = nullptr;
     ret = ConvertPixelmapToSurfaceBuffer(sourceImage, sourceImageSurfaceBuffer);
     CHECK_AND_RETURN_RET_LOG(ret == IMAGE_PROCESSING_SUCCESS, ret, "convert to surface buffer failed!");
-    ret = ImageProcessingUtils::InnerErrorToNDK(
+    ret = ImageProcessingUtils::InnerErrorToCAPI(
         metadataGenerator_->Process(sourceImageSurfaceBuffer));
     CHECK_AND_RETURN_RET_LOG(ret == IMAGE_PROCESSING_SUCCESS, ret, "process failed!");
     return ret;

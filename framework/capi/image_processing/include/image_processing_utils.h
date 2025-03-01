@@ -27,7 +27,7 @@ namespace Media {
 namespace VideoProcessingEngine {
 class ImageProcessingUtils {
 public:
-    static ImageProcessing_ErrorCode InnerErrorToNDK(VPEAlgoErrCode errorCode);
+    static ImageProcessing_ErrorCode InnerErrorToCAPI(VPEAlgoErrCode errorCode);
     static std::string ToString(ImageProcessing_ErrorCode errorCode);
     static sptr<SurfaceBuffer> GetSurfaceBufferFromPixelMap(const std::shared_ptr<OHOS::Media::PixelMap>& pixelmap);
     static ImageProcessing_ErrorCode ConvertPixelmapToSurfaceBuffer(

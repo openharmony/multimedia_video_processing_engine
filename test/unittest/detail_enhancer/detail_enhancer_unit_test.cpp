@@ -591,8 +591,9 @@ HWTEST_F(DetailEnhancerUnitTest, detailenhancer_process_21, TestSize.Level1)
     detailEnh->SetParameter(param);
     int32_t outputWidth = 2048;
     int32_t outputHeight = 1536;
+    int32_t outputFormat = OHOS::GRAPHIC_PIXEL_FMT_YCBCR_420_P;
     auto input = CreateSurfaceBuffer(DEFAULT_FORMAT_YCBCRSP, 1024, 768);
-    auto output = CreateSurfaceBuffer(DEFAULT_FORMAT_YCBCRSP, outputWidth, outputHeight);
+    auto output = CreateSurfaceBuffer(outputFormat, outputWidth, outputHeight);
     int32_t ret = detailEnh->Process(input, output);
     EXPECT_NE(ret, VPE_ALGO_ERR_OK);
 }
@@ -608,8 +609,9 @@ HWTEST_F(DetailEnhancerUnitTest, detailenhancer_process_22, TestSize.Level1)
     detailEnh->SetParameter(param);
     int32_t outputWidth = 2048;
     int32_t outputHeight = 1536;
+    int32_t outputFormat = OHOS::GRAPHIC_PIXEL_FMT_YCBCR_420_P;
     auto input = CreateSurfaceBuffer(DEFAULT_FORMAT_YCBCRSP, 4096, 3072);
-    auto output = CreateSurfaceBuffer(DEFAULT_FORMAT_YCBCRSP, outputWidth, outputHeight);
+    auto output = CreateSurfaceBuffer(outputFormat, outputWidth, outputHeight);
     int32_t ret = detailEnh->Process(input, output);
     EXPECT_NE(ret, VPE_ALGO_ERR_OK);
 }

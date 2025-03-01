@@ -27,7 +27,7 @@ namespace OHOS {
 namespace Media {
 namespace VideoProcessingEngine {
 /**
- * Metadata generator NDK interface implementaion.
+ * Metadata generator CAPI interface implementaion.
  */
 class MetadataGeneratorVideoNative : public VideoProcessingNativeTemplate<MetadataGeneratorVideoNative> {
 public:

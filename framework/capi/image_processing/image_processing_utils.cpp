@@ -43,7 +43,7 @@ const std::unordered_map<VPEAlgoErrCode, ImageProcessing_ErrorCode> ERROR_MAP = 
     { VPE_ALGO_ERR_INVALID_STATE,               IMAGE_PROCESSING_ERROR_OPERATION_NOT_PERMITTED },
     { VPE_ALGO_ERR_EXTEND_START,                IMAGE_PROCESSING_ERROR_OPERATION_NOT_PERMITTED },
 };
-const std::unordered_map<ImageProcessing_ErrorCode, std::string> NDK_ERROR_STR_MAP = {
+const std::unordered_map<ImageProcessing_ErrorCode, std::string> CAPI_ERROR_STR_MAP = {
     { IMAGE_PROCESSING_SUCCESS,                         VPE_TO_STR(IMAGE_PROCESSING_SUCCESS) },
     { IMAGE_PROCESSING_ERROR_INVALID_PARAMETER,         VPE_TO_STR(IMAGE_PROCESSING_ERROR_INVALID_PARAMETER) },
     { IMAGE_PROCESSING_ERROR_UNKNOWN,                   VPE_TO_STR(IMAGE_PROCESSING_ERROR_UNKNOWN) },
@@ -58,7 +58,7 @@ const std::unordered_map<ImageProcessing_ErrorCode, std::string> NDK_ERROR_STR_M
 };
 }
 
-ImageProcessing_ErrorCode ImageProcessingUtils::InnerErrorToNDK(VPEAlgoErrCode errorCode)
+ImageProcessing_ErrorCode ImageProcessingUtils::InnerErrorToCAPI(VPEAlgoErrCode errorCode)
 {
     auto it = ERROR_MAP.find(errorCode);
     if (it == ERROR_MAP.end()) [[unlikely]] {
@@ -70,8 +70,8 @@ ImageProcessing_ErrorCode ImageProcessingUtils::InnerErrorToNDK(VPEAlgoErrCode e
 
 std::string ImageProcessingUtils::ToString(ImageProcessing_ErrorCode errorCode)
 {
-    auto it = NDK_ERROR_STR_MAP.find(errorCode);
-    if (it == NDK_ERROR_STR_MAP.end()) [[unlikely]] {
+    auto it = CAPI_ERROR_STR_MAP.find(errorCode);
+    if (it == CAPI_ERROR_STR_MAP.end()) [[unlikely]] {
         VPE_LOGE("Invalid error code:%{public}d", errorCode);
         return "Unsupported error:" + std::to_string(static_cast<int>(errorCode));
     }

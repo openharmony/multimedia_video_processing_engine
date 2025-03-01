@@ -27,7 +27,7 @@ namespace OHOS {
 namespace Media {
 namespace VideoProcessingEngine {
 /**
- * ColorSpace converter NDK interface implementaion.
+ * ColorSpace converter CAPI interface implementaion.
  */
 class ColorSpaceConverterVideoNative : public VideoProcessingNativeTemplate<ColorSpaceConverterVideoNative> {
 public:

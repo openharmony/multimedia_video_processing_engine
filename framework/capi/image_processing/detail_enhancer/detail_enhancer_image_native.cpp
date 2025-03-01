@@ -27,13 +27,13 @@ using namespace OHOS;
 using namespace OHOS::Media::VideoProcessingEngine;
 
 namespace {
-const std::unordered_map<int, int> NDK_TO_INNER_LEVEL_MAP = {
+const std::unordered_map<int, int> CAPI_TO_INNER_LEVEL_MAP = {
     { IMAGE_DETAIL_ENHANCER_QUALITY_LEVEL_NONE,     DETAIL_ENH_LEVEL_NONE },
     { IMAGE_DETAIL_ENHANCER_QUALITY_LEVEL_LOW,      DETAIL_ENH_LEVEL_LOW },
     { IMAGE_DETAIL_ENHANCER_QUALITY_LEVEL_MEDIUM,   DETAIL_ENH_LEVEL_MEDIUM },
     { IMAGE_DETAIL_ENHANCER_QUALITY_LEVEL_HIGH,     DETAIL_ENH_LEVEL_HIGH },
 };
-const std::unordered_map<int, int> INNER_TO_NDK_LEVEL_MAP = {
+const std::unordered_map<int, int> INNER_TO_CAPI_LEVEL_MAP = {
     { DETAIL_ENH_LEVEL_NONE,    IMAGE_DETAIL_ENHANCER_QUALITY_LEVEL_NONE },
     { DETAIL_ENH_LEVEL_LOW,     IMAGE_DETAIL_ENHANCER_QUALITY_LEVEL_LOW },
     { DETAIL_ENH_LEVEL_MEDIUM,  IMAGE_DETAIL_ENHANCER_QUALITY_LEVEL_MEDIUM },
@@ -74,11 +74,11 @@ ImageProcessing_ErrorCode DetailEnhancerImageNative::SetParameter(const OHOS::Me
     int level;
     CHECK_AND_RETURN_RET_LOG(parameter.GetIntValue(IMAGE_DETAIL_ENHANCER_PARAMETER_KEY_QUALITY_LEVEL, level),
         IMAGE_PROCESSING_ERROR_INVALID_PARAMETER, "No quality level!");
-    int innerLevel = LevelTransfer(level, NDK_TO_INNER_LEVEL_MAP);
+    int innerLevel = LevelTransfer(level, CAPI_TO_INNER_LEVEL_MAP);
     CHECK_AND_RETURN_RET_LOG(innerLevel != -1, IMAGE_PROCESSING_ERROR_INVALID_PARAMETER, "Quality level is invalid!");
     DetailEnhancerParameters param{};
     param.level = static_cast<DetailEnhancerLevel>(innerLevel);
-    return ImageProcessingUtils::InnerErrorToNDK(detailEnhancer_->SetParameter(param));
+    return ImageProcessingUtils::InnerErrorToCAPI(detailEnhancer_->SetParameter(param));
 }
 
 ImageProcessing_ErrorCode DetailEnhancerImageNative::GetParameter(OHOS::Media::Format& parameter)
@@ -90,8 +90,8 @@ ImageProcessing_ErrorCode DetailEnhancerImageNative::GetParameter(OHOS::Media::F
         .level{},
     };
     auto ret = detailEnhancer_->GetParameter(param);
-    CHECK_AND_RETURN_RET_LOG(ret == VPE_ALGO_ERR_OK, ImageProcessingUtils::InnerErrorToNDK(ret), "param is not set");
-    int level = LevelTransfer(param.level, INNER_TO_NDK_LEVEL_MAP);
+    CHECK_AND_RETURN_RET_LOG(ret == VPE_ALGO_ERR_OK, ImageProcessingUtils::InnerErrorToCAPI(ret), "param is not set");
+    int level = LevelTransfer(param.level, INNER_TO_CAPI_LEVEL_MAP);
     CHECK_AND_RETURN_RET_LOG(level != -1, IMAGE_PROCESSING_ERROR_INVALID_PARAMETER, "Quality level is invalid!");
     parameter.PutIntValue(IMAGE_DETAIL_ENHANCER_PARAMETER_KEY_QUALITY_LEVEL, level);
     return IMAGE_PROCESSING_SUCCESS;
@@ -112,7 +112,7 @@ ImageProcessing_ErrorCode DetailEnhancerImageNative::Process(const std::shared_p
         "destinationImageSurfaceBuffer create failed!");
     auto ret = CheckParameter();
     CHECK_AND_RETURN_RET_LOG(ret == IMAGE_PROCESSING_SUCCESS, ret, "check parameter failed!");
-    ret = ImageProcessingUtils::InnerErrorToNDK(
+    ret = ImageProcessingUtils::InnerErrorToCAPI(
         detailEnhancer_->Process(sourceImageSurfaceBuffer, destinationImageSurfaceBuffer, true));
     CHECK_AND_RETURN_RET_LOG(ret == IMAGE_PROCESSING_SUCCESS, ret, "process failed!");
     ret = ImageProcessingUtils::SetSurfaceBufferToPixelMap(destinationImageSurfaceBuffer, destinationImage);
