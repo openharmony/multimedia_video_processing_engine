@@ -84,6 +84,7 @@ private:
     std::shared_ptr<AihdrEnhancer> csc_{nullptr};
     std::mutex mutex_;
     bool getUsage_{false};
+    std::atomic<bool> initBuffer_{false};
 
     // task相关
     std::mutex mtxTaskDone_;

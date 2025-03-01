@@ -37,8 +37,8 @@ void ReadFileYuv42016(std::string yuvFilePath, sptr<SurfaceBuffer> &buffer, int 
     CHECK_AND_RETURN_LOG(yuvFile != nullptr, "Fatal: No memory");
     yuvFile->open(yuvFilePath, ios::in | ios::binary);
     yuvFile->seekg(0, ios::beg);
-    long ySize = width * height;
-    long uvSize = width * height / 4;
+    long ySize = static_cast<long>(width) * static_cast<long>(height);
+    long uvSize = ySize / 4;
     uint16_t *yBuffer = new uint16_t[ySize + STRIDE * uvSize];
     uint16_t *uBuffer = new uint16_t[uvSize];
     uint16_t *vBuffer = new uint16_t[uvSize];
@@ -46,9 +46,11 @@ void ReadFileYuv42016(std::string yuvFilePath, sptr<SurfaceBuffer> &buffer, int 
     yuvFile->read(reinterpret_cast<char *>(uBuffer), uvSize * sizeof(uint16_t));
     yuvFile->read(reinterpret_cast<char *>(vBuffer), uvSize * sizeof(uint16_t));
 
-    memcpy_s(reinterpret_cast<char *>(buffer->GetVirAddr()), (ySize + uvSize * STRIDE) * sizeof(uint16_t), yBuffer,
-        (ySize + uvSize * STRIDE) * sizeof(uint16_t));
-
+    errno_t ret = memcpy_s(reinterpret_cast<char *>(buffer->GetVirAddr()), (ySize + uvSize * STRIDE) * sizeof(uint16_t),
+        yBuffer, (ySize + uvSize * STRIDE) * sizeof(uint16_t));
+    if (ret != EOK) {
+        printf("memcpy_s failed, err = %d\n", ret);
+    }
     delete[] yBuffer;
     delete[] uBuffer;
     delete[] vBuffer;
@@ -61,8 +63,8 @@ void ReadFileYuv42010ToNv1216(std::string yuvFilePath, sptr<SurfaceBuffer> &buff
     CHECK_AND_RETURN_LOG(yuvFile != nullptr, "Fatal: No memory");
     yuvFile->open(yuvFilePath, ios::in | ios::binary);
     yuvFile->seekg(0, ios::beg);
-    long ySize = width * height;
-    long uvSize = width * height / 4;
+    long ySize = static_cast<long>(width) * static_cast<long>(height);
+    long uvSize = ySize / 4;
     uint16_t *yBuffer = new uint16_t[ySize + STRIDE * uvSize];
     uint16_t *uBuffer = new uint16_t[uvSize];
     uint16_t *vBuffer = new uint16_t[uvSize];
@@ -81,9 +83,11 @@ void ReadFileYuv42010ToNv1216(std::string yuvFilePath, sptr<SurfaceBuffer> &buff
         uvBufferPtr[numTwo * j + 1] = vBuffer[j] << num10To16;
     }
 
-    memcpy_s(reinterpret_cast<char *>(buffer->GetVirAddr()), (ySize + uvSize * STRIDE) * sizeof(uint16_t), yBuffer,
-        (ySize + uvSize * STRIDE) * sizeof(uint16_t));
-
+    errno_t ret = memcpy_s(reinterpret_cast<char *>(buffer->GetVirAddr()), (ySize + uvSize * STRIDE) * sizeof(uint16_t),
+        yBuffer, (ySize + uvSize * STRIDE) * sizeof(uint16_t));
+    if (ret != EOK) {
+        printf("memcpy_s failed, err = %d\n", ret);
+    }
     delete[] yBuffer;
     delete[] uBuffer;
     delete[] vBuffer;
@@ -123,7 +127,10 @@ static void SaveMetaDataToBin(int frameId, const char *fileName, unsigned char *
     if (len != metadataPayloadSize) {
         printf("write file Error:%s!", fileName);
     }
-    fclose(fileOut);
+    int fcloseResult = fclose(fileOut);
+    if (fcloseResult != 0) {
+        printf("fclose Error:%s!", fileName);
+    }
 }
 
 void SaveMetadataFromSurBuffer(const sptr<SurfaceBuffer> &input, int frame, const string &metadataBin)
@@ -282,7 +289,11 @@ void SetMeatadata(sptr<SurfaceBuffer> &buffer, uint32_t value)
 {
     std::vector<uint8_t> metadata;
     metadata.resize(sizeof(value));
-    (void)memcpy_s(metadata.data(), metadata.size(), &value, sizeof(value));
+    errno_t ret = memcpy_s(metadata.data(), metadata.size(), &value, sizeof(value));
+    if (ret != EOK) {
+        printf("memcpy_s failed, err = %d\n", ret);
+        return;
+    }
     uint32_t err = buffer->SetMetadata(ATTRKEY_HDR_METADATA_TYPE, metadata);
     printf("Buffer set metadata type, ret: %u\n", err);
 }
@@ -290,7 +301,11 @@ void SetMeatadata(sptr<SurfaceBuffer> &buffer, const CM_ColorSpaceInfo &colorspa
 {
     std::vector<uint8_t> metadata;
     metadata.resize(sizeof(CM_ColorSpaceInfo));
-    (void)memcpy_s(metadata.data(), metadata.size(), &colorspaceInfo, sizeof(CM_ColorSpaceInfo));
+    errno_t ret = memcpy_s(metadata.data(), metadata.size(), &colorspaceInfo, sizeof(CM_ColorSpaceInfo));
+    if (ret != EOK) {
+        printf("memcpy_s failed, err = %d\n", ret);
+        return;
+    }
     uint32_t err = buffer->SetMetadata(ATTRKEY_COLORSPACE_INFO, metadata);
     printf("Buffer set colorspace info, ret: %u\n", err);
 }
@@ -298,7 +313,11 @@ void SetMeatadata(sptr<SurfaceBuffer> &buffer, int key, const float &data)
 {
     std::vector<uint8_t> metadata;
     metadata.resize(sizeof(float));
-    (void)memcpy_s(metadata.data(), metadata.size(), &data, sizeof(float));
+    errno_t ret = memcpy_s(metadata.data(), metadata.size(), &data, sizeof(float));
+    if (ret != EOK) {
+        printf("memcpy_s failed, err = %d\n", ret);
+        return;
+    }
     uint32_t err = buffer->SetMetadata(key, metadata);
     printf("Buffer set colorspace info, ret: %u\n", err);
 }
@@ -306,7 +325,11 @@ void SetMeatadata(sptr<SurfaceBuffer> &buffer, int key, const int &data)
 {
     std::vector<uint8_t> metadata;
     metadata.resize(sizeof(int));
-    (void)memcpy_s(metadata.data(), metadata.size(), &data, sizeof(int));
+    errno_t ret = memcpy_s(metadata.data(), metadata.size(), &data, sizeof(int));
+    if (ret != EOK) {
+        printf("memcpy_s failed, err = %d\n", ret);
+        return;
+    }
     uint32_t err = buffer->SetMetadata(key, metadata);
     printf("Buffer set colorspace info, ret: %u\n", err);
 }

@@ -92,7 +92,7 @@ int32_t AihdrEnhancerVideoImpl::SetCallback(const std::shared_ptr<AihdrEnhancerV
 int32_t AihdrEnhancerVideoImpl::AttachToNewSurface(sptr<Surface> newSurface)
 {
     std::lock_guard<std::mutex> lockrender(renderQueMutex_);
-     for (auto it = outputBufferAvilQueBak_.begin(); it != outputBufferAvilQueBak_.end(); ++it) {
+    for (auto it = outputBufferAvilQueBak_.begin(); it != outputBufferAvilQueBak_.end(); ++it) {
         auto buffer = it->second;
         GSError err = newSurface->AttachBufferToQueue(buffer->memory);
         CHECK_AND_RETURN_RET_LOG(err == GSERROR_OK, VPE_ALGO_ERR_UNKNOWN, "outputbuffer AttachToNewSurface fail");
@@ -423,6 +423,10 @@ bool AihdrEnhancerVideoImpl::WaitProcessing()
         cvTaskStart_.wait(lock, [this]() {
             std::lock_guard<std::mutex> inQueueLock(onBqMutex_);
             std::lock_guard<std::mutex> outQueueLock(renderQueMutex_);
+            if (initBuffer_.load()) {
+                InitBuffers();
+                initBuffer_.store(false);
+            }
             return ((inputBufferAvilQue_.size() > 0 && outputBufferAvilQue_.size() > 0) || !isRunning_.load());
         });
     }
@@ -600,7 +604,7 @@ GSError AihdrEnhancerVideoImpl::OnConsumerBufferAvailable()
         requestCfg_.width = buffer->memory->GetWidth();
         requestCfg_.height = buffer->memory->GetHeight();
         requestCfg_.format = buffer->memory->GetFormat();
-        InitBuffers();
+        initBuffer_.store(true);
     }
 
     if (state_ == VPEAlgoState::RUNNING) {

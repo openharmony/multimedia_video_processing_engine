@@ -94,6 +94,7 @@ public:
     GSError SetMeatadata(sptr<SurfaceBuffer> &buffer, uint32_t value);
     GSError SetMeatadata(sptr<SurfaceBuffer> &buffer, CM_ColorSpaceInfo &colorspaceInfo);
     void OutputBufferAvailable(uint32_t index, MdgBufferFlag flag);
+    void InitCfg(BufferRequestConfig &requestCfg, BufferFlushConfig &flushCfg);
     GSError OnProducerBufferReleased();
     std::shared_ptr<CscVCB> cscvCb_ = nullptr;
 };
@@ -144,6 +145,23 @@ GSError MdgDemoTest::OnProducerBufferReleased()
     return GSERROR_OK;
 }
 
+void MdgDemoTest::InitCfg(BufferRequestConfig &requestCfg, BufferFlushConfig &flushCfg)
+{
+    GraphicPixelFormat surfacePixelFmt = GRAPHIC_PIXEL_FMT_YCBCR_P010;
+    requestCfg.format = surfacePixelFmt;
+    requestCfg.usage = BUFFER_USAGE_CPU_READ | BUFFER_USAGE_CPU_WRITE
+        | BUFFER_USAGE_HW_RENDER | BUFFER_USAGE_HW_TEXTURE;
+    requestCfg.width = DEFAULT_WIDTH;
+    requestCfg.height = DEFAULT_HEIGHT;
+    requestCfg.timeout = 0;
+    requestCfg.strideAlignment = 16; // alignment 16
+    flushCfg.damage.x = 0;
+    flushCfg.damage.y = 0;
+    flushCfg.damage.w = DEFAULT_WIDTH;
+    flushCfg.damage.h = DEFAULT_HEIGHT;
+    flushCfg.timestamp = 0;
+}
+
 HWTEST_F(MdgDemoTest, DEMO_RUN_TEST, TestSize.Level1)
 {
     BufferFlushConfig flushCfg_{};
@@ -151,19 +169,7 @@ HWTEST_F(MdgDemoTest, DEMO_RUN_TEST, TestSize.Level1)
     // input SDR
     CM_ColorSpaceInfo inColspcInfo = COLORSPACE_INFO_HDR_BT2020;
     CM_HDR_Metadata_Type inMetaType = CM_VIDEO_HDR_VIVID;
-    GraphicPixelFormat surfacePixelFmt = GRAPHIC_PIXEL_FMT_YCBCR_P010;
-    requestCfg_.format = surfacePixelFmt;
-    requestCfg_.usage = BUFFER_USAGE_CPU_READ | BUFFER_USAGE_CPU_WRITE
-        | BUFFER_USAGE_HW_RENDER | BUFFER_USAGE_HW_TEXTURE;
-    requestCfg_.width = DEFAULT_WIDTH;
-    requestCfg_.height = DEFAULT_HEIGHT;
-    requestCfg_.timeout = 0;
-    requestCfg_.strideAlignment = 16;
-    flushCfg_.damage.x = 0;
-    flushCfg_.damage.y = 0;
-    flushCfg_.damage.w = DEFAULT_WIDTH;
-    flushCfg_.damage.h = DEFAULT_HEIGHT;
-    flushCfg_.timestamp = 0;
+    InitCfg(requestCfg_, flushCfg_);
     sptr<Surface> surface1 = cscv_->CreateInputSurface();
     outSurface_ = Surface::CreateSurfaceAsConsumer("ConvertInputSurface2");
     sptr<IBufferConsumerListener> listener = new ImageProcessBufferConsumerListener();
@@ -180,7 +186,7 @@ HWTEST_F(MdgDemoTest, DEMO_RUN_TEST, TestSize.Level1)
     ASSERT_EQ(cscv_->Configure(), VPE_ALGO_ERR_OK);
     ASSERT_EQ(cscv_->Prepare(), VPE_ALGO_ERR_OK);
     ASSERT_EQ(cscv_->Start(), VPE_ALGO_ERR_OK);
-    int frames = 10; // 10
+    int frames = 10; // 10 frame
     while (frames) {
         sptr<SyncFence> fence{nullptr};
         sptr<SurfaceBuffer> buffer2;

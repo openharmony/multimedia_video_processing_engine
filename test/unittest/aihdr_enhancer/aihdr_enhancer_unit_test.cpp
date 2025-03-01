@@ -117,12 +117,12 @@ HWTEST_F(AihdrEnhancerUnitTest, aihdrenhancer_getparameter_01, TestSize.Level1)
 {
     auto aihdrEnh = AihdrEnhancer::Create();
     int param = 1;
-    int param_temp = 0;
-    auto res_set = aihdrEnh->SetParameter(param);
-    auto res_get = aihdrEnh->GetParameter(param_temp);
-    EXPECT_EQ(res_set, VPE_ALGO_ERR_OK);
-    EXPECT_EQ(res_get, VPE_ALGO_ERR_OK);
-    EXPECT_EQ(param, param_temp);
+    int paramTemp = 0;
+    auto resSet = aihdrEnh->SetParameter(param);
+    auto resGet = aihdrEnh->GetParameter(paramTemp);
+    EXPECT_EQ(resSet, VPE_ALGO_ERR_OK);
+    EXPECT_EQ(resGet, VPE_ALGO_ERR_OK);
+    EXPECT_EQ(param, paramTemp);
 }
 
 // process

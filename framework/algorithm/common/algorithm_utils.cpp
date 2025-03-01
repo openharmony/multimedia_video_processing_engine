@@ -88,7 +88,7 @@ bool AlgorithmUtils::CopySurfaceBufferToSurfaceBuffer(const sptr<SurfaceBuffer>&
         return false;
     }
     std::vector<uint8_t> attrInfo{};
-	std::vector<uint32_t> keys{};
+    std::vector<uint32_t> keys{};
     GSError ret;
     if (srcBuffer->ListMetadataKeys(keys) == GSERROR_OK && !keys.empty()) {
         for (size_t i = 0; i < keys.size(); i++) {

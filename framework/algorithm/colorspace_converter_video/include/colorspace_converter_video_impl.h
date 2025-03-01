@@ -86,6 +86,7 @@ private:
     Format format_;
     Format outputFormat_;
     bool getUsage_{false};
+    std::atomic<bool> initBuffer_{false};
 
       // task
     std::mutex mtxTaskDone_;

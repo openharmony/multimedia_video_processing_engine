@@ -93,7 +93,10 @@ sptr<SurfaceBuffer> CreateSurfaceBuffer(uint32_t pixelFormat, int32_t width, int
     inputCfg.format = pixelFormat;
     inputCfg.timeout = 0;
     GSError err = buffer->Alloc(inputCfg);
-
+    if (GSERROR_OK != err) {
+        printf("Alloc surface buffer failed\n");
+        return nullptr;
+    }
     using namespace HDI::Display::Graphic::Common;
     std::vector<uint8_t> vec;
     V2_0::BlobDataType data;
@@ -101,13 +104,13 @@ sptr<SurfaceBuffer> CreateSurfaceBuffer(uint32_t pixelFormat, int32_t width, int
     CHECK_AND_RETURN_RET_LOG(ret == GSERROR_OK && (vec.size() == sizeof(V2_0::BlobDataType)),
         nullptr, "VRR got decode mv type from handle failed");
     ret = memcpy_s(&data, sizeof(V2_0::BlobDataType), vec.data(), vec.size());
-    if (GSERROR_OK != err) {
-        printf("Alloc surface buffer failed\n");
+    if (ret != 0) {
+        printf("Alloc motion vector failed\n");
         return nullptr;
     }
     ret = memcpy_s((void *)(data.vaddr + data.offset), mvLength, mvBuffer, mvLength);
-    if (GSERROR_OK != err) {
-        printf("Alloc surface buffer failed\n");
+    if (ret != 0) {
+        printf("Set motion vector failed\n");
         return nullptr;
     }
     printf("Alloc surface buffer with motion vecotr success\n");

@@ -433,6 +433,10 @@ bool MetadataGeneratorVideoImpl::WaitProcessing()
         cvTaskStart_.wait(lock, [this]() {
             std::lock_guard<std::mutex> inQueueLock(onBqMutex_);
             std::lock_guard<std::mutex> outQueueLock(renderQueMutex_);
+            if (initBuffer_.load()) {
+                InitBuffers();
+                initBuffer_.store(false);
+            }
             return ((inputBufferAvilQue_.size() > 0 && outputBufferAvilQue_.size() > 0) || !isRunning_.load());
         });
     }
@@ -610,7 +614,7 @@ GSError MetadataGeneratorVideoImpl::OnConsumerBufferAvailable()
         requestCfg_.width = buffer->memory->GetWidth();
         requestCfg_.height = buffer->memory->GetHeight();
         requestCfg_.format = buffer->memory->GetFormat();
-        InitBuffers();
+        initBuffer_.store(true);
     }
 
     if (state_ == VPEAlgoState::RUNNING) {

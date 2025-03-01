@@ -80,14 +80,14 @@ bool DetailEnhanceNapi::PrepareNapiEnv(napi_env env, napi_callback_info info, st
     return true;
 }
 
- std::shared_ptr<DetailEnhancerImage> DetailEnhancerImageCreate()
- {
+std::shared_ptr<DetailEnhancerImage> DetailEnhancerImageCreate()
+{
     auto detailEnh = DetailEnhancerImage::Create();
     if (detailEnh == nullptr) {
         return nullptr;
     }
     return detailEnh;
- }
+}
 
 napi_value DetailEnhanceNapi::Init(napi_env env, napi_callback_info info)
 {
