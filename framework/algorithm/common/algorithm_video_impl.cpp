@@ -74,12 +74,30 @@ VPEAlgoErrCode VpeVideoImpl::SetOutputSurface(const sptr<Surface>& surface)
         "Invalid input: surface is invalid!");
 
     std::lock_guard<std::mutex> lock(lock_);
+    if (producer_ == surface) {
+        VPE_LOGD("Oops! The same surface!");
+        return VPE_ALGO_ERR_OK;
+    }
+    if (producer_ != nullptr) {
+        producer_->UnRegisterReleaseListener();
+        producer_->CleanCache(true);
+    }
+    surface->UnRegisterReleaseListener();
+    surface->CleanCache(true);
     GSError err = surface->RegisterReleaseListener([this](sptr<SurfaceBuffer>&) { return OnProducerBufferReleased(); });
     CHECK_AND_RETURN_RET_LOG(err == GSERROR_OK, VPE_ALGO_ERR_UNKNOWN, "RegisterReleaseListener failed!");
-    surface->SetQueueSize(BUFFER_QUEUE_SIZE);
     VPE_LOGI("Set output buffer queue size to %{public}u", BUFFER_QUEUE_SIZE);
+    surface->SetQueueSize(BUFFER_QUEUE_SIZE);
+    surface->Connect();
+    AttachBuffers(surface);
+    if (state_.load() != VPEState::IDLE) {
+        cvTrigger_.notify_one();
+    }
     producer_ = surface;
-    auto ret = UpdateRequestCfg(surface, requestCfg_);
+    VPEAlgoErrCode ret = VPE_ALGO_ERR_OK;
+    if (isEnable_.load()) {
+        ret = UpdateRequestCfg(surface, requestCfg_);
+    }
     VPE_LOGD("requestCfg_({ %{public}s })", ToString(requestCfg_).c_str());
     return ret;
 }
@@ -114,32 +132,36 @@ VPEAlgoErrCode VpeVideoImpl::Stop()
 {
     auto err = ExecuteWhenRunning([this]() {
         state_ = VPEState::STOPPING;
-        cv_.notify_one();
+        cvTrigger_.notify_one();
         return VPE_ALGO_ERR_OK;
     }, "Already stop!");
     return err;
 }
 
+VPEAlgoErrCode VpeVideoImpl::Release()
+{
+    return Deinitialize();
+}
+
 VPEAlgoErrCode VpeVideoImpl::Flush()
 {
-    return ExecuteWhenNotIdle(
-        [this]() {
-            std::queue<SurfaceBufferInfo> tempQueue1;
-            std::queue<SurfaceBufferInfo> tempQueue2;
-            {
-                std::lock_guard<std::mutex> bufferLock(bufferLock_);
-                consumerBufferQueue_.swap(tempQueue1);
-                while (!renderBufferQueue_.empty()) {
-                    producerBufferQueue_.push(renderBufferQueue_.front());
-                    renderBufferQueue_.pop();
-                }
-                attachBufferQueue_.swap(tempQueue2);
-                attachBufferIDs_.clear();
-            }
-            ClearConsumerLocked(tempQueue1);
-            ClearConsumerLocked(tempQueue2);
-            return VPE_ALGO_ERR_OK;
-        }, "Flush must be called during running!");
+    std::unique_lock<std::mutex> lock(lock_);
+    cvDone_.wait(lock, [this]() { return !isProcessing_.load(); });
+    std::queue<SurfaceBufferInfo> tempQueue1;
+    std::queue<SurfaceBufferInfo> tempQueue2;
+    {
+        std::lock_guard<std::mutex> bufferLock(bufferLock_);
+        consumerBufferQueue_.swap(tempQueue1);
+        while (!renderBufferQueue_.empty()) {
+            producerBufferQueue_.push(renderBufferQueue_.front());
+            renderBufferQueue_.pop();
+        }
+        attachBufferQueue_.swap(tempQueue2);
+        attachBufferIDs_.clear();
+    }
+    ClearConsumerLocked(tempQueue1);
+    ClearConsumerLocked(tempQueue2);
+    return VPE_ALGO_ERR_OK;
 }
 
 VPEAlgoErrCode VpeVideoImpl::Enable()
@@ -155,6 +177,13 @@ VPEAlgoErrCode VpeVideoImpl::Enable()
 
     auto ret = UpdateRequestCfg(producer_, requestCfg_);
     VPE_LOGD("requestCfg_({ %{public}s })", ToString(requestCfg_).c_str());
+    if (requestCfg_.usage == orgRequestCfg_.usage &&
+        requestCfg_.format == orgRequestCfg_.format &&
+        requestCfg_.width == orgRequestCfg_.width &&
+        requestCfg_.height == orgRequestCfg_.height) {
+        producer_->CleanCache(false);
+        ClearBufferQueues();
+    }
     return ret;
 }
 
@@ -179,7 +208,7 @@ VPEAlgoErrCode VpeVideoImpl::NotifyEos()
                 bufferInfo.bufferFlag = VPE_BUFFER_FLAG_EOS;
                 consumerBufferQueue_.push(bufferInfo);
             }
-            cv_.notify_one();
+            cvTrigger_.notify_one();
             return VPE_ALGO_ERR_OK;
         }, "Notify EOS must be called during running!");
 }
@@ -216,7 +245,12 @@ VPEAlgoErrCode VpeVideoImpl::Initialize()
         while (isRunning_.load()) {
             {
                 std::unique_lock<std::mutex> bufferLock(bufferLock_);
-                if (!cv_.wait_for(bufferLock, 200s, [this] {
+                if (!cvTrigger_.wait_for(bufferLock, 200s, [this] {
+                        VPE_LOGD("run:%d stopping:%d consumerBQ:%{public}zu producerBQ:%{public}zu "
+                            "renderBQ:%{public}zu flushBQ:%{public}zu attachBQ:%{public}zu",
+                            isRunning_.load(), state_.load() == VPEState::STOPPING,
+                            consumerBufferQueue_.size(), producerBufferQueue_.size(),
+                            renderBufferQueue_.size(), flushBufferQueue_.size(), attachBufferQueue_.size());
                         return !isRunning_.load() || state_.load() == VPEState::STOPPING ||
                             (!producerBufferQueue_.empty() && !consumerBufferQueue_.empty());
                     })) {
@@ -230,23 +264,27 @@ VPEAlgoErrCode VpeVideoImpl::Initialize()
                 }
                 if (producerBufferQueue_.empty() || consumerBufferQueue_.empty()) {
                     CheckSpuriousWakeup();
+                    VPE_LOGD("Empty! consumerBQ:%{public}zu producerBQ:%{public}zu", consumerBufferQueue_.size(),
+                        producerBufferQueue_.size());
                     continue;
                 }
             }
+            VPE_LOGD("ProcessBuffers");
             ProcessBuffers();
             CheckStopping();
         };
     });
     auto errorCode = OnInitialize();
     isInitialized_ = true;
-    VPE_LOGD("OnInitialize() return %{public}d.", errorCode);
+    VPE_LOGD("OnInitialize() return %{public}d. this:%{public}p", errorCode, this);
     return errorCode;
 }
 
 VPEAlgoErrCode VpeVideoImpl::Deinitialize()
 {
-    std::lock_guard<std::mutex> lock(lock_);
-    VPE_LOGD("Start to deinitializing...");
+    std::unique_lock<std::mutex> lock(lock_);
+    VPE_LOGD("Start to deinitializing... this:%{public}p", this);
+    cvDone_.wait(lock, [this]() { return !isProcessing_.load(); });
     if (!isInitialized_.load()) {
         VPE_LOGD("Already deinitialize!");
         return VPE_ALGO_ERR_OK;
@@ -257,7 +295,7 @@ VPEAlgoErrCode VpeVideoImpl::Deinitialize()
         state_ = VPEState::STOPPING;
     }
     isRunning_ = false;
-    cv_.notify_one();
+    cvTrigger_.notify_one();
     if (worker_.joinable()) {
         worker_.join();
     }
@@ -273,7 +311,7 @@ VPEAlgoErrCode VpeVideoImpl::Deinitialize()
         producer_->CleanCache(true);
         producer_ = nullptr;
     }
-    VPE_LOGD("OnDeinitialize() return %{public}d.", errorCode);
+    VPE_LOGD("OnDeinitialize() return %{public}d. this:%{public}p", errorCode, this);
     return errorCode;
 }
 
@@ -402,24 +440,37 @@ GSError VpeVideoImpl::OnConsumerBufferAvailable()
         }
         consumerBufferQueue_.push(bufferInfo);
     }
-    cv_.notify_one();
+    cvTrigger_.notify_one();
     return GSERROR_OK;
 }
 
 GSError VpeVideoImpl::OnProducerBufferReleased()
 {
+    VPE_LOGD("step in");
     std::lock_guard<std::mutex> lock(lock_);
     CHECK_AND_RETURN_RET_LOG(consumer_ != nullptr || producer_ != nullptr, GSERROR_OK,
         "Input or output surface is null!");
 
     {
         std::lock_guard<std::mutex> bufferLock(bufferLock_);
+        if (flushBufferQueue_.empty()) {
+            VPE_LOGD("NO flush buffer!");
+            return GSERROR_OK;
+        }
         GSError err = GSERROR_OK;
-        CHECK_AND_RETURN_RET_LOG(RequestBuffer(err), err, "Failed to request buffer!");
+        SurfaceBufferInfo bufferInfo{};
+        CHECK_AND_RETURN_RET_LOG(RequestBuffer(bufferInfo, err), err, "Failed to request buffer!");
+        PopBuffer(flushBufferQueue_, bufferInfo.buffer->GetSeqNum(), bufferInfo,
+            [this](sptr<SurfaceBuffer>& buffer) {
+                CHECK_AND_RETURN_LOG(buffer != nullptr, "OnProducerBufferReleased: Flush buffer is null!");
+                VPE_LOGD("OnProducerBufferReleased: Pop flush buffer { %{public}s } flushBQ=%{public}zu",
+                    ToString(buffer).c_str(), flushBufferQueue_.size());
+            });
     }
     if (state_.load() != VPEState::IDLE) {
-        cv_.notify_one();
+        cvTrigger_.notify_one();
     }
+    VPE_LOGD("step out");
     return GSERROR_OK;
 }
 
@@ -437,10 +488,19 @@ VPEAlgoErrCode VpeVideoImpl::RenderOutputBufferLocked(uint32_t index, int64_t re
         flushcfg.damage.h = bufferInfo.buffer->GetHeight();
         flushcfg.timestamp = (renderTimestamp == -1) ? bufferInfo.timestamp : renderTimestamp;
         auto ret = producer_->FlushBuffer(bufferInfo.buffer, -1, flushcfg);
-        VPE_LOGD("producer_->FlushBuffer({ %{public}s })=%{public}d", ToString(bufferInfo.buffer).c_str(), ret);
+        VPE_LOGD("producer_->FlushBuffer({ %{public}s })=%{public}d flushBQ=%{public}zu",
+            ToString(bufferInfo.buffer).c_str(), ret, flushBufferQueue_.size() + 1);
+        bufferLock.lock();
+        flushBufferQueue_.push(bufferInfo);
     } else {
+        VPE_LOGD("reback { %{public}s } producerBQ=%{public}zu",
+            ToString(bufferInfo.buffer).c_str(), producerBufferQueue_.size() + 1);
         bufferLock.lock();
         producerBufferQueue_.push(bufferInfo);
+        bufferLock.unlock();
+        if (state_.load() != VPEState::IDLE) {
+            cvTrigger_.notify_one();
+        }
     }
     return VPE_ALGO_ERR_OK;
 }
@@ -467,9 +527,8 @@ sptr<Surface> VpeVideoImpl::CreateConsumerSurfaceLocked()
     return producerSurface;
 }
 
-bool VpeVideoImpl::RequestBuffer(GSError& errorCode)
+bool VpeVideoImpl::RequestBuffer(SurfaceBufferInfo& bufferInfo, GSError& errorCode)
 {
-    SurfaceBufferInfo bufferInfo{};
     int releaseFence = -1;
     errorCode = producer_->RequestBuffer(bufferInfo.buffer, releaseFence, requestCfg_);
     if (errorCode != GSERROR_OK || bufferInfo.buffer == nullptr) {
@@ -511,8 +570,36 @@ void VpeVideoImpl::PrepareBuffers()
 {
     for (uint32_t i = 0; i < producer_->GetQueueSize(); i++) {
         GSError errorCode;
-        RequestBuffer(errorCode);
+        SurfaceBufferInfo bufferInfo{};
+        RequestBuffer(bufferInfo, errorCode);
         VPE_LOGD("<%{public}u> RequestBuffer({ %{public}s })=%{public}d", i, ToString(requestCfg_).c_str(), errorCode);
+    }
+}
+
+void VpeVideoImpl::AttachBuffers(const sptr<Surface>& producer)
+{
+    std::lock_guard<std::mutex> bufferLock(bufferLock_);
+    std::queue<SurfaceBufferInfo> tempQueue;
+    producerBufferQueue_.swap(tempQueue);
+    AttachBuffers(producer, tempQueue);
+    AttachBuffers(producer, flushBufferQueue_);
+}
+
+void VpeVideoImpl::AttachBuffers(const sptr<Surface>& producer, std::queue<SurfaceBufferInfo>& bufferQueue)
+{
+    for (; !bufferQueue.empty(); bufferQueue.pop()) {
+        auto bufferInfo = bufferQueue.front();
+        if (bufferInfo.buffer == nullptr) {
+            VPE_LOGW("buffer is null!");
+            continue;
+        }
+        auto errorCode = producer->AttachBufferToQueue(bufferInfo.buffer);
+        if (errorCode != GSERROR_OK) {
+            VPE_LOGW("Failed to producer->AttachBufferToQueue({ %{public}s })=%{public}d",
+                ToString(bufferInfo.buffer).c_str(), errorCode);
+            continue;
+        }
+        producerBufferQueue_.push(bufferInfo);
     }
 }
 
@@ -525,8 +612,9 @@ void VpeVideoImpl::ProcessBuffers()
             return;
         }
         consumer = consumer_;
+        isProcessing_ = true;
     }
-    while (state_.load() != VPEState::IDLE) {
+    while (isRunning_.load()) {
         SurfaceBufferInfo srcBufferInfo;
         SurfaceBufferInfo dstBufferInfo;
         {
@@ -555,6 +643,14 @@ void VpeVideoImpl::ProcessBuffers()
             BypassBuffer(srcBufferInfo, dstBufferInfo);
         }
     }
+    VPE_LOGD("consumerBQ:%{public}zu producerBQ:%{public}zu renderBQ:%{public}zu flushBQ:%{public}zu "
+        "attachBQ:%{public}zu", consumerBufferQueue_.size(), producerBufferQueue_.size(), renderBufferQueue_.size(),
+        flushBufferQueue_.size(), attachBufferQueue_.size());
+    {
+        std::lock_guard<std::mutex> lock(lock_);
+        isProcessing_ = false;
+    }
+    cvDone_.notify_all();
 }
 
 bool VpeVideoImpl::ProcessBuffer(sptr<Surface>& consumer, SurfaceBufferInfo& srcBufferInfo,
@@ -647,6 +743,7 @@ void VpeVideoImpl::SetRequestCfgLocked(const sptr<SurfaceBuffer>& buffer)
     requestCfg_.format = buffer->GetFormat();
     requestCfg_.width = buffer->GetWidth();
     requestCfg_.height = buffer->GetHeight();
+    orgRequestCfg_ = requestCfg_;
 }
 
 void VpeVideoImpl::CheckSpuriousWakeup()
@@ -683,7 +780,8 @@ void VpeVideoImpl::ClearQueue(std::queue<SurfaceBufferInfo>& bufferQueue)
 void VpeVideoImpl::ClearConsumerLocked(std::queue<SurfaceBufferInfo>& bufferQueue)
 {
     while (!bufferQueue.empty()) {
-        consumer_->ReleaseBuffer(bufferQueue.front().buffer, -1);
+        auto bufferInfo = bufferQueue.front();
+        consumer_->ReleaseBuffer(bufferInfo.buffer, -1);
         bufferQueue.pop();
     }
 }
@@ -736,9 +834,10 @@ VPEAlgoErrCode VpeVideoImpl::ExecuteWithCheck(std::function<bool(void)>&& checke
 
 void VpeVideoImpl::ConsumerListener::OnBufferAvailable()
 {
-    if (owner_ == nullptr) {
+    std::shared_ptr<VpeVideoImpl> owner = owner_.lock();
+    if (owner == nullptr) {
         VPE_LOGE("Video processing is null!");
         return;
     }
-    owner_->OnConsumerBufferAvailable();
+    owner->OnConsumerBufferAvailable();
 }

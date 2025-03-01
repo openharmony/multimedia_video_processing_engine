@@ -43,6 +43,7 @@ public:
     sptr<Surface> GetInputSurface() override;
     VPEAlgoErrCode Start() override;
     VPEAlgoErrCode Stop() override;
+    VPEAlgoErrCode Release() override;
     VPEAlgoErrCode Flush() override;
     VPEAlgoErrCode Enable() override;
     VPEAlgoErrCode Disable() override;
@@ -96,7 +97,7 @@ private:
         void OnBufferAvailable() final;
 
     private:
-        std::shared_ptr<VpeVideoImpl> owner_;
+        std::weak_ptr<VpeVideoImpl> owner_;
     };
 
     void OnErrorLocked(VPEAlgoErrCode errorCode);
@@ -109,8 +110,10 @@ private:
 
     VPEAlgoErrCode RenderOutputBufferLocked(uint32_t index, int64_t renderTimestamp, bool render);
     sptr<Surface> CreateConsumerSurfaceLocked();
-    bool RequestBuffer(GSError& errorCode);
+    bool RequestBuffer(SurfaceBufferInfo& bufferInfo, GSError& errorCode);
     void PrepareBuffers();
+    void AttachBuffers(const sptr<Surface>& producer);
+    void AttachBuffers(const sptr<Surface>& producer, std::queue<SurfaceBufferInfo>& bufferQueue);
     void ProcessBuffers();
     bool ProcessBuffer(sptr<Surface>& consumer, SurfaceBufferInfo& srcBufferInfo, SurfaceBufferInfo& dstBufferInfo);
     void BypassBuffer(SurfaceBufferInfo& srcBufferInfo, SurfaceBufferInfo& dstBufferInfo);
@@ -136,12 +139,14 @@ private:
     uint32_t type_{};
 
     // For thread control
-    std::condition_variable cv_{};
+    std::condition_variable cvTrigger_{};
+    std::condition_variable cvDone_{};
 
     mutable std::mutex lock_{};
     // Guarded by lock_ begin
     std::atomic<bool> isInitialized_{false};
     std::atomic<bool> isRunning_{false};
+    std::atomic<bool> isProcessing_{false};
     std::atomic<bool> isEnable_{true};
     std::atomic<bool> isEnableChange_{true};
     std::atomic<VPEState> state_{VPEState::IDLE};
@@ -150,6 +155,7 @@ private:
     sptr<Surface> consumer_{};
     sptr<Surface> producer_{};
     BufferRequestConfig requestCfg_{};
+    BufferRequestConfig orgRequestCfg_{};
     // Guarded by lock_ end
 
     mutable std::mutex bufferLock_{};
@@ -158,6 +164,7 @@ private:
     std::queue<SurfaceBufferInfo> consumerBufferQueue_{};
     std::queue<SurfaceBufferInfo> producerBufferQueue_{};
     std::queue<SurfaceBufferInfo> renderBufferQueue_{};
+    std::queue<SurfaceBufferInfo> flushBufferQueue_{};
     std::queue<SurfaceBufferInfo> attachBufferQueue_{};
     std::set<uint32_t> attachBufferIDs_{};
     // Guarded by bufferLock_ end

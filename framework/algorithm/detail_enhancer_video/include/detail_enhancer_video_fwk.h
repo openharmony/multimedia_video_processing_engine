@@ -30,7 +30,7 @@ public:
     static std::shared_ptr<VpeVideoImpl> Create();
 
     explicit DetailEnhancerVideoFwk(uint32_t type) : VpeVideoImpl(type) {}
-    virtual ~DetailEnhancerVideoFwk() = default;
+    ~DetailEnhancerVideoFwk() = default;
     DetailEnhancerVideoFwk(const DetailEnhancerVideoFwk&) = delete;
     DetailEnhancerVideoFwk& operator=(const DetailEnhancerVideoFwk&) = delete;
     DetailEnhancerVideoFwk(DetailEnhancerVideoFwk&&) = delete;

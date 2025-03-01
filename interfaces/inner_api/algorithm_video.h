@@ -94,11 +94,22 @@ public:
 
     /**
      * @brief Stop video processing.
+     *
+     * This method must be called during running.
+     *
      * @return If successful, returns {@link VPE_ALGO_ERR_OK}. On error, retuns an error code.
      * @since 5.1
      * @version 5.1
      */
     virtual VPEAlgoErrCode Stop();
+
+    /**
+     * @brief Releases all resources before destructor. All methods are unavailable after calling this.
+     * @return If successful, returns {@link VPE_ALGO_ERR_OK}. On error, retuns an error code.
+     * @since 5.1
+     * @version 5.1
+     */
+    virtual VPEAlgoErrCode Release();
 
     /**
      * @brief Flush both input and output buffers for video processing.

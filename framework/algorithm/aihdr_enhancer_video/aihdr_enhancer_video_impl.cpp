@@ -396,9 +396,9 @@ void AihdrEnhancerVideoImpl::Process(std::shared_ptr<SurfaceBufferWrapper> input
         VPETrace cscTrace("AihdrEnhancerVideoImpl::csc_->Process");
         ret = csc_->Process(surfaceOutputBuffer);
     }
-	if (ret != 0 && cb_) {
-		cb_->OnError(ret);
-	}
+    if (ret != 0 && cb_) {
+        cb_->OnError(ret);
+    }
     inputSurface_->ReleaseBuffer(surfaceInputBuffer, -1);
     if (!ret) {
         std::unique_lock<std::mutex> lockOnBq(renderQueMutex_);

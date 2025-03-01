@@ -82,6 +82,11 @@ VPEAlgoErrCode VpeVideo::Stop()
     return VPE_ALGO_ERR_OK;
 }
 
+VPEAlgoErrCode VpeVideo::Release()
+{
+    return VPE_ALGO_ERR_OK;
+}
+
 VPEAlgoErrCode VpeVideo::Flush()
 {
     return VPE_ALGO_ERR_OK;

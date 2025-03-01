@@ -111,7 +111,7 @@ int32_t MetadataGeneratorVideoImpl::SetCallback(const std::shared_ptr<MetadataGe
 int32_t MetadataGeneratorVideoImpl::AttachToNewSurface(sptr<Surface> newSurface)
 {
     std::lock_guard<std::mutex> lockrender(renderQueMutex_);
-     for (auto it = outputBufferAvilQueBak_.begin(); it != outputBufferAvilQueBak_.end(); ++it) {
+    for (auto it = outputBufferAvilQueBak_.begin(); it != outputBufferAvilQueBak_.end(); ++it) {
         auto buffer = it->second;
         GSError err = newSurface->AttachBufferToQueue(buffer->memory);
         CHECK_AND_RETURN_RET_LOG(err == GSERROR_OK, VPE_ALGO_ERR_UNKNOWN, "outputbuffer AttachToNewSurface fail");
@@ -406,9 +406,9 @@ void MetadataGeneratorVideoImpl::Process(std::shared_ptr<SurfaceBufferWrapper> i
         VPETrace cscTrace("MetadataGeneratorVideoImpl::csc_->Process");
         ret = csc_->Process(surfaceOutputBuffer);
     }
-	if (ret != 0 && cb_) {
-		cb_->OnError(ret);
-	}
+    if (ret != 0 && cb_) {
+        cb_->OnError(ret);
+    }
     inputSurface_->ReleaseBuffer(surfaceInputBuffer, -1);
     if (!ret) {
         std::unique_lock<std::mutex> lockOnBq(renderQueMutex_);

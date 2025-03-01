@@ -60,7 +60,11 @@ void SetMeatadata(sptr<SurfaceBuffer> &buffer, uint32_t value)
 {
     std::vector<uint8_t> metadata;
     metadata.resize(sizeof(value));
-    (void)memcpy_s(metadata.data(), metadata.size(), &value, sizeof(value));
+    errno_t ret = memcpy_s(metadata.data(), metadata.size(), &value, sizeof(value));
+    if (ret != EOK) {
+        printf("memcpy_s failed, err = %d\n", ret);
+        return;
+    }
     GSError err = buffer->SetMetadata(ATTRKEY_HDR_METADATA_TYPE, metadata);
     if (err != 0) {
         printf("Buffer set metadata type, ret: %d\n", static_cast<int32_t>(err));
@@ -71,7 +75,11 @@ void SetMeatadata(sptr<SurfaceBuffer> &buffer, const CM_ColorSpaceInfo &colorspa
 {
     std::vector<uint8_t> metadata;
     metadata.resize(sizeof(CM_ColorSpaceInfo));
-    (void)memcpy_s(metadata.data(), metadata.size(), &colorspaceInfo, sizeof(CM_ColorSpaceInfo));
+    errno_t ret = memcpy_s(metadata.data(), metadata.size(), &colorspaceInfo, sizeof(CM_ColorSpaceInfo));
+    if (ret != EOK) {
+        printf("memcpy_s failed, err = %d\n", ret);
+        return;
+    }
     GSError err = buffer->SetMetadata(ATTRKEY_COLORSPACE_INFO, metadata);
     if (err != 0) {
         printf("Buffer set colorspace info, ret: %d\n", static_cast<int32_t>(err));
@@ -111,8 +119,11 @@ void PrintMetadataType(sptr<SurfaceBuffer> &buffer, int32_t bufferHandleAttrKey)
         return;
     }
     int32_t value;
-    (void)memcpy_s(&value, sizeof(value), metadata.data(), metadata.size());
-
+    errno_t ret = memcpy_s(&value, sizeof(value), metadata.data(), metadata.size());
+    if (ret != EOK) {
+        printf("memcpy_s failed, err = %d\n", ret);
+        return;
+    }
     std::string bufferHandleStr = bufferHandleAttrKey == ATTRKEY_COLORSPACE_TYPE ? "colorspace" : "metadata";
     printf("Buffer %s type %d\n", bufferHandleStr.c_str(), value);
 }
