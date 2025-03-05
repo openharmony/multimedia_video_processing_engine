@@ -76,6 +76,11 @@ VPEAlgoErrCode DetailEnhancerVideoImpl::Stop()
     return detailEnhancerVideo_->Stop();
 }
 
+VPEAlgoErrCode DetailEnhancerVideoImpl::Release()
+{
+    return detailEnhancerVideo_->Release();
+}
+
 VPEAlgoErrCode DetailEnhancerVideoImpl::RenderOutputBuffer([[maybe_unused]] uint32_t index)
 {
     return VPE_ALGO_ERR_OK;

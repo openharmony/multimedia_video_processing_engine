@@ -38,16 +38,9 @@ ohos_unittest("colorSpace_converter_video_ndk_unit_test") {
     "$ALGORITHM_DIR/colorspace_converter_video/include",
     "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services/include",
     "$TEST_UTILS_PATH/ColorSpaceConverter/sample/video",
-    "//foundation/multimedia/media_foundation/interface/kits/c/",
-    "//foundation/multimedia/media_foundation/video_processing_engine/interface/kits/c/",
-    "//foundation/multimedia/media_foundation/video_processing_engine/",
-    "//foundation/multimedia/media_foundation/video_processing_engine/framework/dfx/include/",
-    "//foundation/multimedia/media_foundation/video_processing_engine/framework/capi/video_processing/include/",
-    "//foundation/multimedia/media_foundation/video_processing_engine/interface/inner_api/",
-    "//foundation/multimedia/video_processing_engine/interfaces/inner_api/",
-    "//foundation/multimedia/video_processing_engine/framework/algorithm/colorspace_converter_video/include/",
-    "//foundation/graphic/graphic_2d/interfaces/inner_api/",
-    "//foundation/graphic/graphic_2d_ext/ohcore/graphic_compat_layer/include/utils/",
+    "$FRAMEWORK_DIR/dfx/include/",
+    "$FRAMEWORK_DIR/capi/video_processing/include/",
+    "$COLORSPACE_CONVERTER_VIDEO_DIR/include/",
   ]
 
   sources = [ "colorSpace_converter_video_ndk_unit_test.cpp" ]
@@ -66,6 +59,7 @@ ohos_unittest("colorSpace_converter_video_ndk_unit_test") {
     "graphic_2d:librender_service_client",
     "hilog:libhilog",
     "hitrace:hitrace_meter",
+    "media_foundation:media_foundation",
     "media_foundation:native_media_core",
     "media_foundation:video_processing",
     "ipc:ipc_core",

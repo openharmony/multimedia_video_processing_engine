@@ -36,7 +36,6 @@ ohos_unittest("vpe_framework_unit_test") {
     "$METADATA_GENERATOR_DIR/include",
     "$PLUGIN_DIR/include",
     "$INTERFACES_INNER_API_DIR",
-    "$SKIA_DIR",
   ]
 
   sources = [

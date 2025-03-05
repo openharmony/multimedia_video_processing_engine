@@ -249,6 +249,8 @@ int32_t AihdrEnhancerVideoImpl::Prepare()
 
 void AihdrEnhancerVideoImpl::InitBuffers()
 {
+    std::lock_guard<std::mutex> lock(mutex_);
+    CHECK_AND_RETURN_LOG(outputSurface_ != nullptr, "outputSurface_ is nullptr");
     flushCfg_.damage.x = 0;
     flushCfg_.damage.y = 0;
     flushCfg_.damage.w = requestCfg_.width;

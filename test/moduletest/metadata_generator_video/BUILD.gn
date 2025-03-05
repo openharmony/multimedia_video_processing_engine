@@ -22,7 +22,6 @@ ohos_moduletest("metadata_generator_video_module_test") {
     ".",
     "$INTERFACES_INNER_API_DIR",
     "$DFX_DIR/include",
-    "//foundation/graphic/graphic_2d/interfaces/inner_api",
     "$METADATA_GENERATOR_VIDEO_DIR/include",
   ]
  
@@ -53,7 +52,7 @@ ohos_moduletest("metadata_generator_video_module_test") {
     "hitrace:hitrace_meter",
     "drivers_interface_display:display_commontype_idl_headers",
   ]
- 
+
   subsystem_name = "multimedia"
   part_name = "video_processing_engine"
 }

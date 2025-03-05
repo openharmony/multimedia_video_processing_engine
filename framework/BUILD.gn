@@ -29,6 +29,8 @@ config("export_config") {
     "$COLORSPACE_CONVERTER_DISPLAY_DIR/include",
     "$VIDEO_REFRESHRATE_PREDICTION_DIR/include",
     "$ALGORITHM_DIR/common/include",
+    "$METADATA_GENERATOR_VIDEO_DIR/include",
+    "$ALGORITHM_EXTENSION_MANAGER_DIR/include",
   ]
 }
 config("video_process_config") {
@@ -93,8 +95,6 @@ config("video_process_config") {
     "$SKIA_DIR/third_party/externals/angle2/src/common",
     "$SKIA_DIR/third_party/externals/angle2/src/",
     "$SKIA_DIR/third_party/externals/angle2/src/common/third_party/base/",
-    "//foundation/graphic/graphic_2d/utils/color_manager/export",
-    "//base/startup/init/interfaces/innerkits/include/syspara/",
   ]
 }
 
@@ -192,13 +192,13 @@ ohos_shared_library("videoprocessingengine") {
     "$ALGORITHM_COMMON_DIR/image_openclsetup.cpp"
   ]
 
-  deps = [ "//third_party/skia:skia_ohos",
+  deps = [
     "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services:videoprocessingservice_interface",
     ":aihdr_engine",
     ":ai_super_resolution",
     ":extream_vision_engine",
     "//third_party/opencl-headers:libcl",
-    "//third_party/bounds_checking_function:libsec_static"]
+  ]
 
   external_deps = [
     "c_utils:utils",
@@ -347,9 +347,6 @@ ohos_shared_library("video_processing_capi_impl") {
     "$CAPI_VIDEO_DIR/aihdr_enhancer/include/",
     "$CAPI_VIDEO_DETAIL_ENHANCER_DIR/include/",
     "$CAPI_VIDEO_COLORSPACE_CONVERTER_DIR/include/",
-    "//foundation/graphic/graphic_surface/interfaces/inner_api/surface/",
-    "//foundation/graphic/graphic_surface/surface/include/",
-    "//foundation/graphic/graphic_2d/interfaces/inner_api",
     "$CAPI_VIDEO_METADATA_GENERATOR_DIR/include/",
     "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services/include",
     "${target_gen_dir}/../services/",
@@ -411,17 +408,12 @@ ohos_shared_library("detailEnhancer") {
 
   include_dirs = [
     "$DFX_DIR/include",
-    "//foundation/multimedia/media_foundation/interface/kits/c",
-    "//foundation/multimedia/image_framework/interfaces/kits/native/include/image",
-    "//foundation/multimedia/image_framework/frameworks/kits/js/common/ndk/include",
     "//foundation/multimedia/video_processing_engine/interfaces/kits/js",
-    "//foundation/multimedia/media_foundation/video_processing_engine/interface/kits/c",
     "//foundation/multimedia/video_processing_engine/interfaces/inner_api",
     "//foundation/multimedia/video_processing_engine/framework/capi/image_processing/include/",
   ]
   sources = [
     "//foundation/multimedia/video_processing_engine/framework/capi/image_processing/detail_enhance_napi.cpp",
-    "//foundation/multimedia/image_framework/frameworks/innerkitsimpl/common/src/memory_manager.cpp",
   ]
 
   deps = [
@@ -436,6 +428,7 @@ ohos_shared_library("detailEnhancer") {
     "hitrace:hitrace_meter",
     "ipc:ipc_napi",
     "media_foundation:native_media_core",
+    "media_foundation:media_foundation",
     "napi:ace_napi",
     "image_framework:image_utils",
     "image_framework:image_native",

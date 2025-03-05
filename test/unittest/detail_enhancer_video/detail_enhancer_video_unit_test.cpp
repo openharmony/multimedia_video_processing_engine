@@ -143,6 +143,7 @@ HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_init_01, TestSize.Level1)
 {
     auto detailEnhVideo = DetailEnhancerVideo::Create();
     EXPECT_NE(detailEnhVideo, nullptr);
+    detailEnhVideo->Release();
 }
 
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_02, TestSize.Level1)
@@ -151,6 +152,7 @@ HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_02, TestSize.Level1)
     std::shared_ptr<DetailEnhancerVideoCallback> cb = nullptr;
     auto ret = detailEnhVideo->RegisterCallback(cb);
     EXPECT_NE(ret, VPE_ALGO_ERR_OK);
+    detailEnhVideo->Release();
 }
 
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_03, TestSize.Level1)
@@ -162,6 +164,7 @@ HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_03, TestSize.Level1)
     };
     auto ret = detailEnhVideo->SetParameter(param, VIDEO);
     EXPECT_EQ(ret, VPE_ALGO_ERR_OK);
+    detailEnhVideo->Release();
 }
 
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_04, TestSize.Level1)
@@ -173,6 +176,7 @@ HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_04, TestSize.Level1)
     };
     auto ret = detailEnhVideo->SetParameter(param, VIDEO);
     EXPECT_EQ(ret, VPE_ALGO_ERR_OK);
+    detailEnhVideo->Release();
 }
 
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_05, TestSize.Level1)
@@ -184,6 +188,7 @@ HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_05, TestSize.Level1)
     };
     auto ret = detailEnhVideo->SetParameter(param, VIDEO);
     EXPECT_EQ(ret, VPE_ALGO_ERR_OK);
+    detailEnhVideo->Release();
 }
 
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_06, TestSize.Level1)
@@ -191,6 +196,7 @@ HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_06, TestSize.Level1)
     auto detailEnhVideo = DetailEnhancerVideo::Create();
     auto ret = detailEnhVideo->GetInputSurface();
     EXPECT_NE(ret, nullptr);
+    detailEnhVideo->Release();
 }
 
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_07, TestSize.Level1)
@@ -199,6 +205,7 @@ HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_07, TestSize.Level1)
     auto ret = detailEnhVideo->GetInputSurface();
     ret = detailEnhVideo->GetInputSurface();
     EXPECT_EQ(ret, nullptr);
+    detailEnhVideo->Release();
 }
 
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_08, TestSize.Level1)
@@ -207,6 +214,7 @@ HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_08, TestSize.Level1)
     sptr<Surface> surface = nullptr;
     auto ret = detailEnhVideo->SetOutputSurface(surface);
     EXPECT_NE(ret, VPE_ALGO_ERR_OK);
+    detailEnhVideo->Release();
 }
 
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_09, TestSize.Level1)
@@ -215,161 +223,173 @@ HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_09, TestSize.Level1)
 
     auto ret = detailEnhVideo->RenderOutputBuffer(0);
     EXPECT_EQ(ret, VPE_ALGO_ERR_OK);
+    detailEnhVideo->Release();
 }
 
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_10, TestSize.Level1)
 {
-    auto detailEnh = DetailEnhancerVideo::Create();
-    auto ret = detailEnh->NotifyEos();
+    auto detailEnhVideo = DetailEnhancerVideo::Create();
+    auto ret = detailEnhVideo->NotifyEos();
     EXPECT_NE(ret, VPE_ALGO_ERR_OK);
+    detailEnhVideo->Release();
 }
 
 // set parameter to midium
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_11, TestSize.Level1)
 {
-    auto detailEnh = DetailEnhancerVideo::Create();
+    auto detailEnhVideo = DetailEnhancerVideo::Create();
     DetailEnhancerParameters param {
         .uri = "",
         .level = DETAIL_ENH_LEVEL_MEDIUM,
     };
-    auto res = detailEnh->SetParameter(param, VIDEO);
+    auto res = detailEnhVideo->SetParameter(param, VIDEO);
     EXPECT_EQ(res, VPE_ALGO_ERR_OK);
+    detailEnhVideo->Release();
 }
 
 // set parameter to low
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_12, TestSize.Level1)
 {
-    auto detailEnh = DetailEnhancerVideo::Create();
+    auto detailEnhVideo = DetailEnhancerVideo::Create();
     DetailEnhancerParameters param {
         .uri = "",
         .level = DETAIL_ENH_LEVEL_LOW,
     };
-    auto res = detailEnh->SetParameter(param, VIDEO);
+    auto res = detailEnhVideo->SetParameter(param, VIDEO);
     EXPECT_EQ(res, VPE_ALGO_ERR_OK);
+    detailEnhVideo->Release();
 }
 
 // set parameter to none
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_13, TestSize.Level1)
 {
-    auto detailEnh = DetailEnhancerVideo::Create();
+    auto detailEnhVideo = DetailEnhancerVideo::Create();
     DetailEnhancerParameters param {
         .uri = "",
         .level = DETAIL_ENH_LEVEL_NONE,
     };
-    auto res = detailEnh->SetParameter(param, VIDEO);
+    auto res = detailEnhVideo->SetParameter(param, VIDEO);
     EXPECT_EQ(res, VPE_ALGO_ERR_OK);
+    detailEnhVideo->Release();
 }
 
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_14, TestSize.Level1)
 {
-    auto detailEnh = DetailEnhancerVideo::Create();
+    auto detailEnhVideo = DetailEnhancerVideo::Create();
     DetailEnhancerParameters param {
         .uri = "",
         .level = DETAIL_ENH_LEVEL_HIGH,
     };
-    auto res = detailEnh->SetParameter(param, VIDEO);
-    res = detailEnh->SetParameter(param, VIDEO);
+    auto res = detailEnhVideo->SetParameter(param, VIDEO);
+    res = detailEnhVideo->SetParameter(param, VIDEO);
     EXPECT_EQ(res, VPE_ALGO_ERR_OK);
+    detailEnhVideo->Release();
 }
 
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_15, TestSize.Level1)
 {
-    auto detailEnh = DetailEnhancerVideo::Create();
+    auto detailEnhVideo = DetailEnhancerVideo::Create();
     std::shared_ptr<DetailEnhancerVideoCallback> cb = std::make_shared<DetailEnhancerVideoCallbackImpl>();
-    auto res = detailEnh->RegisterCallback(cb);
+    auto res = detailEnhVideo->RegisterCallback(cb);
     EXPECT_EQ(res, VPE_ALGO_ERR_OK);
+    detailEnhVideo->Release();
 }
 
 
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_16, TestSize.Level1)
 {
-    auto detailEnh = DetailEnhancerVideo::Create();
+    auto detailEnhVideo = DetailEnhancerVideo::Create();
     std::shared_ptr<DetailEnhancerVideoCallback> cb = std::make_shared<DetailEnhancerVideoCallbackImpl>();
-    auto res = detailEnh->RegisterCallback(cb);
+    auto res = detailEnhVideo->RegisterCallback(cb);
     DetailEnhancerParameters param {
         .uri = "",
         .level = DETAIL_ENH_LEVEL_HIGH,
     };
-    res = detailEnh->SetParameter(param, VIDEO);
-    auto ret = detailEnh->GetInputSurface();
-    res = detailEnh->Start();
+    res = detailEnhVideo->SetParameter(param, VIDEO);
+    auto ret = detailEnhVideo->GetInputSurface();
+    res = detailEnhVideo->Start();
     EXPECT_NE(res, VPE_ALGO_ERR_OK);
+    detailEnhVideo->Release();
 }
 
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_17, TestSize.Level1)
 {
-    auto detailEnh = DetailEnhancerVideo::Create();
-    auto res = detailEnh->Stop();
+    auto detailEnhVideo = DetailEnhancerVideo::Create();
+    auto res = detailEnhVideo->Stop();
     EXPECT_NE(res, VPE_ALGO_ERR_OK);
+    detailEnhVideo->Release();
 }
 
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_18, TestSize.Level1)
 {
-    auto detailEnh = DetailEnhancerVideo::Create();
+    auto detailEnhVideo = DetailEnhancerVideo::Create();
     std::shared_ptr<DetailEnhancerVideoCallback> cb = std::make_shared<DetailEnhancerVideoCallbackImpl>();
-    auto res = detailEnh->RegisterCallback(cb);
+    auto res = detailEnhVideo->RegisterCallback(cb);
     DetailEnhancerParameters param {
         .uri = "",
         .level = DETAIL_ENH_LEVEL_HIGH,
     };
-    res = detailEnh->SetParameter(param, VIDEO);
-    auto surface1 = detailEnh->GetInputSurface();
-    res = detailEnh->SetOutputSurface(surface1);
-    res = detailEnh->Start();
-    res = detailEnh->NotifyEos();
+    res = detailEnhVideo->SetParameter(param, VIDEO);
+    auto surface1 = detailEnhVideo->GetInputSurface();
+    res = detailEnhVideo->SetOutputSurface(surface1);
+    res = detailEnhVideo->Start();
+    res = detailEnhVideo->NotifyEos();
     EXPECT_EQ(res, VPE_ALGO_ERR_OK);
+    detailEnhVideo->Release();
 }
 
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_19, TestSize.Level1)
 {
-    auto detailEnh = DetailEnhancerVideo::Create();
+    auto detailEnhVideo = DetailEnhancerVideo::Create();
     std::shared_ptr<DetailEnhancerVideoCallback> cb = std::make_shared<DetailEnhancerVideoCallbackImpl>();
-    auto res = detailEnh->RegisterCallback(cb);
+    auto res = detailEnhVideo->RegisterCallback(cb);
     DetailEnhancerParameters param {
         .uri = "",
         .level = DETAIL_ENH_LEVEL_HIGH,
     };
-    res = detailEnh->SetParameter(param, VIDEO);
-    auto surface1 = detailEnh->GetInputSurface();
-    res = detailEnh->SetOutputSurface(surface1);
-    res = detailEnh->Start();
-    res = detailEnh->ReleaseOutputBuffer(100, true); // 100 index
+    res = detailEnhVideo->SetParameter(param, VIDEO);
+    auto surface1 = detailEnhVideo->GetInputSurface();
+    res = detailEnhVideo->SetOutputSurface(surface1);
+    res = detailEnhVideo->Start();
+    res = detailEnhVideo->ReleaseOutputBuffer(100, true); // 100 index
     EXPECT_NE(res, VPE_ALGO_ERR_OK);
+    detailEnhVideo->Release();
 }
 
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_20, TestSize.Level1)
 {
-    auto detailEnh = DetailEnhancerVideo::Create();
+    auto detailEnhVideo = DetailEnhancerVideo::Create();
     std::shared_ptr<DetailEnhancerVideoCallback> cb = std::make_shared<DetailEnhancerVideoCallbackImpl>();
-    auto res = detailEnh->RegisterCallback(cb);
+    auto res = detailEnhVideo->RegisterCallback(cb);
     DetailEnhancerParameters param {
         .uri = "",
         .level = DETAIL_ENH_LEVEL_HIGH,
     };
-    res = detailEnh->SetParameter(param, VIDEO);
-    auto surface1 = detailEnh->GetInputSurface();
-    res = detailEnh->SetOutputSurface(surface1);
-    res = detailEnh->Start();
-    res = detailEnh->ReleaseOutputBuffer(100, false); // 100 index
+    res = detailEnhVideo->SetParameter(param, VIDEO);
+    auto surface1 = detailEnhVideo->GetInputSurface();
+    res = detailEnhVideo->SetOutputSurface(surface1);
+    res = detailEnhVideo->Start();
+    res = detailEnhVideo->ReleaseOutputBuffer(100, false); // 100 index
     EXPECT_NE(res, VPE_ALGO_ERR_OK);
+    detailEnhVideo->Release();
 }
 
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_21, TestSize.Level1)
 {
     OHNativeWindowBuffer *ohNativeWindowBuffer;
-    auto detailEnh = DetailEnhancerVideo::Create();
+    auto detailEnhVideo = DetailEnhancerVideo::Create();
     std::shared_ptr<DetailEnhancerVideoCallback> cb = std::make_shared<DetailEnhancerVideoCallbackImpl>();
-    auto res = detailEnh->RegisterCallback(cb);
+    auto res = detailEnhVideo->RegisterCallback(cb);
     DetailEnhancerParameters param {
         .uri = "",
         .level = DETAIL_ENH_LEVEL_HIGH,
     };
-    res = detailEnh->SetParameter(param, VIDEO);
-    auto surface = detailEnh->GetInputSurface();
+    res = detailEnhVideo->SetParameter(param, VIDEO);
+    auto surface = detailEnhVideo->GetInputSurface();
     auto detailEnh2 = DetailEnhancerVideo::Create();
     auto surface2 = detailEnh2->GetInputSurface();
-    res = detailEnh->SetOutputSurface(surface2);
-    res = detailEnh->Start();
+    res = detailEnhVideo->SetOutputSurface(surface2);
+    res = detailEnhVideo->Start();
     EXPECT_EQ(res, VPE_ALGO_ERR_OK);
 
     int fenceFd = -1;
@@ -383,25 +403,26 @@ HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_21, TestSize.Level1)
     ret = FlushSurf(ohNativeWindowBuffer);
     ASSERT_EQ(ret, VPE_ALGO_ERR_OK);
     OH_NativeWindow_DestroyNativeWindow(nativeWindow);
+    detailEnhVideo->Release();
 }
 
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_22, TestSize.Level1)
 {
     OHNativeWindowBuffer *ohNativeWindowBuffer;
-    auto detailEnh = DetailEnhancerVideo::Create();
+    auto detailEnhVideo = DetailEnhancerVideo::Create();
     std::shared_ptr<DetailEnhancerVideoCallback> cb = std::make_shared<DetailEnhancerVideoCallbackImpl>();
-    auto res = detailEnh->RegisterCallback(cb);
+    auto res = detailEnhVideo->RegisterCallback(cb);
     DetailEnhancerParameters param {
         .uri = "",
         .level = DETAIL_ENH_LEVEL_HIGH,
     };
-    res = detailEnh->SetParameter(param, VIDEO);
-    auto surface = detailEnh->GetInputSurface();
+    res = detailEnhVideo->SetParameter(param, VIDEO);
+    auto surface = detailEnhVideo->GetInputSurface();
     auto detailEnh2 = DetailEnhancerVideo::Create();
     auto surface2 = detailEnh2->GetInputSurface();
     surface2->SetRequestWidthAndHeight(10, 10);
-    res = detailEnh->SetOutputSurface(surface2);
-    res = detailEnh->Start();
+    res = detailEnhVideo->SetOutputSurface(surface2);
+    res = detailEnhVideo->Start();
     EXPECT_EQ(res, VPE_ALGO_ERR_OK);
 
     int fenceFd = -1;
@@ -415,25 +436,26 @@ HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_22, TestSize.Level1)
     ret = FlushSurf(ohNativeWindowBuffer);
     ASSERT_EQ(ret, VPE_ALGO_ERR_OK);
     OH_NativeWindow_DestroyNativeWindow(nativeWindow);
+    detailEnhVideo->Release();
 }
 
 HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_23, TestSize.Level1)
 {
     OHNativeWindowBuffer *ohNativeWindowBuffer;
-    auto detailEnh = DetailEnhancerVideo::Create();
+    auto detailEnhVideo = DetailEnhancerVideo::Create();
     std::shared_ptr<DetailEnhancerVideoCallback> cb = std::make_shared<DetailEnhancerVideoCallbackImpl>();
-    auto res = detailEnh->RegisterCallback(cb);
+    auto res = detailEnhVideo->RegisterCallback(cb);
     DetailEnhancerParameters param {
         .uri = "",
         .level = DETAIL_ENH_LEVEL_HIGH,
     };
-    res = detailEnh->SetParameter(param, VIDEO);
-    auto surface = detailEnh->GetInputSurface();
+    res = detailEnhVideo->SetParameter(param, VIDEO);
+    auto surface = detailEnhVideo->GetInputSurface();
     auto detailEnh2 = DetailEnhancerVideo::Create();
     auto surface2 = detailEnh2->GetInputSurface();
     surface2->SetRequestWidthAndHeight(10, 0);
-    res = detailEnh->SetOutputSurface(surface2);
-    res = detailEnh->Start();
+    res = detailEnhVideo->SetOutputSurface(surface2);
+    res = detailEnhVideo->Start();
     EXPECT_EQ(res, VPE_ALGO_ERR_OK);
 
     int fenceFd = -1;
@@ -447,6 +469,7 @@ HWTEST_F(DetailEnhancerVideoUnitTest, detailenhancer_23, TestSize.Level1)
     ret = FlushSurf(ohNativeWindowBuffer);
     ASSERT_EQ(ret, VPE_ALGO_ERR_OK);
     OH_NativeWindow_DestroyNativeWindow(nativeWindow);
+    detailEnhVideo->Release();
 }
 
 } // namespace VideoProcessingEngine
