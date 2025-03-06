@@ -26,6 +26,7 @@
 #include <set>
 #include <string>
 #include <thread>
+#include <unordered_map>
 
 #include "refbase.h"
 #include "surface.h"
@@ -100,7 +101,7 @@ private:
         std::weak_ptr<VpeVideoImpl> owner_;
     };
 
-    void OnErrorLocked(VPEAlgoErrCode errorCode);
+    void OnError(VPEAlgoErrCode errorCode);
     void OnStateLocked(VPEAlgoState state);
     void OnEffectChange(uint32_t type);
     void OnOutputBufferAvailable(uint32_t index, const VpeBufferInfo& info);
@@ -108,20 +109,26 @@ private:
     GSError OnConsumerBufferAvailable();
     GSError OnProducerBufferReleased();
 
-    VPEAlgoErrCode RenderOutputBufferLocked(uint32_t index, int64_t renderTimestamp, bool render);
+    VPEAlgoErrCode UpdateProducerLocked();
+    VPEAlgoErrCode RenderOutputBuffer(uint32_t index, int64_t renderTimestamp, bool render);
     sptr<Surface> CreateConsumerSurfaceLocked();
     bool RequestBuffer(SurfaceBufferInfo& bufferInfo, GSError& errorCode);
     void PrepareBuffers();
-    void AttachBuffers(const sptr<Surface>& producer);
+    void AttachAndRefreshProducerBuffers(const sptr<Surface>& producer);
     void AttachBuffers(const sptr<Surface>& producer, std::queue<SurfaceBufferInfo>& bufferQueue);
+    void RefreshProducerBuffers(std::queue<SurfaceBufferInfo>& bufferQueue,
+        std::function<bool(SurfaceBufferInfo&)>&& refresher);
     void ProcessBuffers();
-    bool ProcessBuffer(sptr<Surface>& consumer, SurfaceBufferInfo& srcBufferInfo, SurfaceBufferInfo& dstBufferInfo);
+    bool ProcessBuffer(SurfaceBufferInfo& srcBufferInfo, SurfaceBufferInfo& dstBufferInfo);
     void BypassBuffer(SurfaceBufferInfo& srcBufferInfo, SurfaceBufferInfo& dstBufferInfo);
-    void OutputBuffer(const SurfaceBufferInfo& bufferInfo, const SurfaceBufferInfo& bufferImage, bool isProcessed,
+    void OutputBuffer(const SurfaceBufferInfo& bufferInfo, const SurfaceBufferInfo& bufferImage,
         std::function<void(void)>&& getReadyToRender);
+    void NotifyEnableStatus(uint32_t type, const std::string& status);
     bool PopBuffer(std::queue<SurfaceBufferInfo>& bufferQueue, uint32_t index, SurfaceBufferInfo& bufferInfo,
         std::function<void(sptr<SurfaceBuffer>&)>&& func);
+    void PrintBufferSize() const;
     void SetRequestCfgLocked(const sptr<SurfaceBuffer>& buffer);
+    bool WaitTrigger();
     void CheckSpuriousWakeup();
     bool CheckStopping();
     bool CheckStoppingLocked();
@@ -146,24 +153,39 @@ private:
     // Guarded by lock_ begin
     std::atomic<bool> isInitialized_{false};
     std::atomic<bool> isRunning_{false};
-    std::atomic<bool> isProcessing_{false};
     std::atomic<bool> isEnable_{true};
     std::atomic<bool> isEnableChange_{true};
+    std::atomic<bool> hasConsumer_{false};
     std::atomic<VPEState> state_{VPEState::IDLE};
+    uint32_t lastConsumerBufferId_{};
+    GraphicTransformType lastTransform_{};
+    ScalingMode lastScalingMode_{};
+    bool isForceUpdateProducer_{true};
     std::thread worker_{};
     std::shared_ptr<VpeVideoCallback> cb_{};
     sptr<Surface> consumer_{};
-    sptr<Surface> producer_{};
+    sptr<Surface> producer_{}; // Also guarded by producerLock_
     BufferRequestConfig requestCfg_{};
     BufferRequestConfig orgRequestCfg_{};
     // Guarded by lock_ end
+    mutable std::mutex producerLock_{};
+
+    mutable std::mutex taskLock_{};
+    // Guarded by taskLock_ begin
+    std::atomic<bool> isProcessing_{false};
+    // Guarded by taskLock_ end
+
+    mutable std::mutex consumerBufferLock_{};
+    // Guarded by consumerBufferLock_ begin
+    std::atomic<bool> isBufferQueueReady_{false};
+    std::atomic<bool> needPrepareBuffers_{false};
+    std::queue<SurfaceBufferInfo> consumerBufferQueue_{};
+    // Guarded by consumerBufferLock_ end
 
     mutable std::mutex bufferLock_{};
     // Guarded by bufferLock_ begin
-    bool isBufferQueueReady_{};
-    std::queue<SurfaceBufferInfo> consumerBufferQueue_{};
     std::queue<SurfaceBufferInfo> producerBufferQueue_{};
-    std::queue<SurfaceBufferInfo> renderBufferQueue_{};
+    std::unordered_map<uint32_t, SurfaceBufferInfo> renderBufferQueue_{};
     std::queue<SurfaceBufferInfo> flushBufferQueue_{};
     std::queue<SurfaceBufferInfo> attachBufferQueue_{};
     std::set<uint32_t> attachBufferIDs_{};

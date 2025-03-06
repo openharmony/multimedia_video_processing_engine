@@ -40,6 +40,7 @@ public:
     VPEAlgoErrCode SetParameter(const DetailEnhancerParameters& parameter, SourceType type) override;
     VPEAlgoErrCode Start() override;
     VPEAlgoErrCode Stop() override;
+    VPEAlgoErrCode Release() override;
     VPEAlgoErrCode RenderOutputBuffer(uint32_t index) override;
     VPEAlgoErrCode ReleaseOutputBuffer(uint32_t index, bool render) override;
 

@@ -22,7 +22,6 @@ ohos_moduletest("colorspace_converter_video_module_test") {
     ".",
     "$INTERFACES_INNER_API_DIR",
     "$DFX_DIR/include",
-    "//foundation/graphic/graphic_2d/interfaces/inner_api",
     "$COLORSPACE_CONVERTER_VIDEO_DIR/include",
   ]
  

@@ -63,7 +63,6 @@ ohos_executable("detailEnh_demo") {
     "$INTERFACES_INNER_API_DIR",
     "$TEST_UTILS_PATH/DetailEnhancer/sample",
     "$TEST_UTILS_PATH/DetailEnhancer/sample",
-    "//foundation/multimedia/media_foundation/interface/inner_api/meta"
   ]
  
   defines = []
@@ -85,6 +84,7 @@ ohos_executable("detailEnh_demo") {
   external_deps = [
     "c_utils:utils",
     "graphic_surface:surface",
+    "media_foundation:media_foundation",
     "drivers_interface_display:display_commontype_idl_headers",
   ]
 
