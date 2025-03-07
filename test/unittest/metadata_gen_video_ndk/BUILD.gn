@@ -38,13 +38,16 @@ ohos_unittest("metadata_gen_video_ndk_unit_test") {
     "$ALGORITHM_DIR/colorspace_converter_video/include",
     "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services/include",
     "$TEST_UTILS_PATH/ColorSpaceConverter/sample/video",
+    "//foundation/multimedia/media_foundation/interface/kits/c/",
+    "//foundation/graphic/graphic_2d/interfaces/inner_api/",
+    "//foundation/graphic/graphic_2d_ext/ohcore/graphic_compat_layer/include/utils/",
   ]
 
   sources = [ "metadata_gen_video_ndk_unit_test.cpp" ]
 
   deps = [
     "$FRAMEWORK_DIR:videoprocessingengine",
-    "$FRAMEWORK_DIR:video_processing_capi_impl",
+    "$FRAMEWORK_DIR:video_processing",
     ]
 
   external_deps = [
@@ -58,7 +61,6 @@ ohos_unittest("metadata_gen_video_ndk_unit_test") {
     "hitrace:hitrace_meter",
     "media_foundation:media_foundation",
     "media_foundation:native_media_core",
-    "media_foundation:video_processing",
     "ipc:ipc_core",
     "memory_utils:libdmabufheap",
   ]

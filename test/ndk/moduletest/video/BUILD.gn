@@ -13,7 +13,6 @@
 
 import("//build/test.gni")
 import("//foundation/multimedia/media_foundation/config.gni")
-import("//foundation/multimedia/media_foundation/video_processing_engine/config.gni")
 
 video_moduletest_native_include_dirs = [
   "$vpe_interface_capi_dir",

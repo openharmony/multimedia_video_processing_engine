@@ -43,7 +43,7 @@ ohos_unittest("image_processing_unit_test") {
   sources = [ "image_processing_unit_test.cpp" ]
  
   deps = [
-
+    "$FRAMEWORK_DIR:image_processing",
     ]
  
   external_deps = [
@@ -53,7 +53,6 @@ ohos_unittest("image_processing_unit_test") {
     "hilog:libhilog",
     "hitrace:hitrace_meter",
     "media_foundation:native_media_core",
-    "media_foundation:image_processing",
     "image_framework:pixelmap",
   ]
  

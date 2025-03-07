@@ -23,6 +23,7 @@
 #include "surface_type.h"
 
 #include "video_processing_types.h"
+#include "algorithm_common.h"
 
 namespace OHOS {
 namespace Media {
@@ -60,6 +61,10 @@ public:
     static bool IsColorSpaceConversionSupported(const VideoProcessing_ColorSpaceInfo* sourceVideoInfo,
         const VideoProcessing_ColorSpaceInfo* destinationVideoInfo);
     static bool IsMetadataGenerationSupported(const VideoProcessing_ColorSpaceInfo* sourceVideoInfo);
+    static VideoProcessing_ErrorCode OpenGLInit();
+    static std::shared_ptr<OpenGLContext> GetOpenGLContext();
+private:
+    static std::shared_ptr<OpenGLContext> openglContext_;
 };
 } // namespace VideoProcessingEngine
 } // namespace Media

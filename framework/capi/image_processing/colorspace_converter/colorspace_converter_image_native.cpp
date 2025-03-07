@@ -17,7 +17,7 @@
 
 #include <unordered_map>
 
-#include "image_processing_capi_impl.h"
+#include "image_processing_capi_capability.h"
 #include "detail_enhancer_common.h"
 #include "detail_enhancer_image_fwk.h"
 #include "image_processing_utils.h"

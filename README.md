@@ -1,4 +1,4 @@
-# VPE引擎
+# VPE引擎（multimedia_video_processing_engine）
 
 ## 简介
 VPE（Video Processing Engine）引擎是处理视频和图像数据的媒体引擎，包括细节增强、对比度增强、亮度增强、动态范围增强等基础能力，为转码、分享、显示后处理等提供色彩空间转换、缩放超分、动态元数据集生成等基础算法。

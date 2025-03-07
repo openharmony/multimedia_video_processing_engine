@@ -13,7 +13,7 @@
 
 import("//build/config/ohos/config.gni")
 import("//build/ohos.gni")
-import("//foundation/ability/idl_tool/idl_config.gni")
+import("//build/config/components/idl_tool/idl.gni")
 import("//foundation/multimedia/video_processing_engine/config.gni")
 
 group("video_processing_service_group") {

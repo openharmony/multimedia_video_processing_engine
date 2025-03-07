@@ -36,15 +36,14 @@ ohos_unittest("detail_enhancer_video_ndk_unit_test") {
     "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/../media_foundation/interface/kits/c",
     "$ALGORITHM_DIR/detail_enhancer_video/include",
     "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services/include",
-    "//foundation/multimedia/media_foundation/video_processing_engine/interface/kits/c",
   ]
 
   sources = [ "detail_enhancer_video_ndk_unit_test.cpp" ]
 
   deps = [
     "$FRAMEWORK_DIR:videoprocessingengine",
-    "//foundation/multimedia/media_foundation/video_processing_engine/framework:video_processing",
-    "//foundation/multimedia/media_foundation/video_processing_engine/interface/kits/c/video_processing:libvideo_processing_ndk",
+    "$FRAMEWORK_DIR:video_processing",
+    "//foundation/multimedia/video_processing_engine/interfaces/kits/c/video_processing:libvideo_processing_ndk",
     ]
 
   external_deps = [

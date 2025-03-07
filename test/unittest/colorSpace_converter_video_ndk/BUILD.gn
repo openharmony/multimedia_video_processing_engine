@@ -41,13 +41,16 @@ ohos_unittest("colorSpace_converter_video_ndk_unit_test") {
     "$FRAMEWORK_DIR/dfx/include/",
     "$FRAMEWORK_DIR/capi/video_processing/include/",
     "$COLORSPACE_CONVERTER_VIDEO_DIR/include/",
+    "//foundation/multimedia/media_foundation/interface/kits/c/",
+    "//foundation/graphic/graphic_2d/interfaces/inner_api/",
+    "//foundation/graphic/graphic_2d_ext/ohcore/graphic_compat_layer/include/utils/",
   ]
 
   sources = [ "colorSpace_converter_video_ndk_unit_test.cpp" ]
 
   deps = [
     "$FRAMEWORK_DIR:videoprocessingengine",
-    "$FRAMEWORK_DIR:video_processing_capi_impl",
+    "$FRAMEWORK_DIR:video_processing",
     ]
 
   external_deps = [
@@ -59,9 +62,7 @@ ohos_unittest("colorSpace_converter_video_ndk_unit_test") {
     "graphic_2d:librender_service_client",
     "hilog:libhilog",
     "hitrace:hitrace_meter",
-    "media_foundation:media_foundation",
     "media_foundation:native_media_core",
-    "media_foundation:video_processing",
     "ipc:ipc_core",
     "memory_utils:libdmabufheap",
   ]
