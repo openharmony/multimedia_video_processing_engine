@@ -37,14 +37,14 @@
         "ipc",
         "safwk",
         "samgr",
-        "eventhandler"
+        "eventhandler",
+        "bounds_checking_function",
+        "opencl-headers"
       ],
       "third_party": [
         "skia",
         "egl",
-        "opengles",
-        "bounds_checking_function",
-        "opencl-headers"
+        "opengles"
       ]
     },
     "build": {

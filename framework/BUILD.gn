@@ -197,9 +197,7 @@ ohos_shared_library("videoprocessingengine") {
     "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services:videoprocessingservice_interface",
     ":aihdr_engine",
     ":ai_super_resolution",
-    ":extream_vision_engine",
-    "//third_party/opencl-headers:libcl",
-    "//third_party/bounds_checking_function:libsec_static",
+    ":extream_vision_engine"
   ]
 
   if (has_skia) {
@@ -227,6 +225,8 @@ ohos_shared_library("videoprocessingengine") {
     "media_foundation:media_foundation",
     "graphic_2d:EGL",
     "graphic_2d:GLESv3",
+    "bounds_checking_function:libsec_static",
+    "opencl-headers:libcl"
   ]
 
   subsystem_name = "multimedia"
