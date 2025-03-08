@@ -79,66 +79,62 @@ config("video_process_config") {
     "$INTERFACES_INNER_API_DIR/module",
     "$INTERFACES_DIR/plugin",
     "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services/include",
-
-    # temporary dir
-    "$SKIA_DIR",
     "${target_gen_dir}/../services/",
-    "$SKIA_DIR/include/core",
-    "$SKIA_DIR/include/encode",
-    "$SKIA_DIR",
-    "$SKIA_DIR/src/ports/skia_ohos",
-    "$SKIA_DIR/src/ports",
-    "$SKIA_DIR/src/images",
-    "$SKIA_DIR/include/private",
-    "$SKIA_DIR/include/effects",
-    "$SKIA_DIR/third_party/externals/angle2/src/common",
-    "$SKIA_DIR/third_party/externals/angle2/src/",
-    "$SKIA_DIR/third_party/externals/angle2/src/common/third_party/base/",
-    "//foundation/graphic/graphic_2d/utils/color_manager/export",
-    "//base/startup/init/interfaces/innerkits/include/syspara/",
   ]
 }
 
-ohos_prebuilt_shared_library("extream_vision_engine") {
-    if (is_asan && use_hwasan) {
-      source = "//binary/artifacts/display/AIPQ20/asan/libextream_vision_engine.so"
-    } else {
-      source = "//binary/artifacts/display/AIPQ20/libextream_vision_engine.so"
-    }
-    module_install_dir = "lib64/"
-    output = "libextream_vision_engine.so"
-    install_images = [ "system" ]
-    subsystem_name = "multimedia"
-    part_name = "video_processing_engine"
-    install_enable = true
-}
+if (defined(global_parts_info) &&
+  defined(global_parts_info.multimedia_video_processing_engine_ext)) {
+  ohos_prebuilt_shared_library("extream_vision_engine") {
+      if (is_asan && use_hwasan) {
+        source = "//binary/artifacts/display/AIPQ20/asan/libextream_vision_engine.so"
+      } else {
+        source = "//binary/artifacts/display/AIPQ20/libextream_vision_engine.so"
+      }
+      module_install_dir = "lib64/"
+      output = "libextream_vision_engine.so"
+      install_images = [ "system" ]
+      subsystem_name = "multimedia"
+      part_name = "video_processing_engine"
+      install_enable = true
+  }
 
-ohos_prebuilt_shared_library("ai_super_resolution") {
-    if (is_asan && use_hwasan) {
-      source = "//binary/artifacts/display/AIPQ20/asan/libdisplay_aipq_imagesr.so"
-    } else {
-      source = "//binary/artifacts/display/AIPQ20/libdisplay_aipq_imagesr.so"
-    }
-    module_install_dir = "lib64/"
-    output = "libdisplay_aipq_imagesr.so"
-    install_images = [ "system" ]
-    subsystem_name = "multimedia"
-    part_name = "video_processing_engine"
-    install_enable = true
-}
+  ohos_prebuilt_shared_library("ai_super_resolution") {
+      if (is_asan && use_hwasan) {
+        source = "//binary/artifacts/display/AIPQ20/asan/libdisplay_aipq_imagesr.so"
+      } else {
+        source = "//binary/artifacts/display/AIPQ20/libdisplay_aipq_imagesr.so"
+      }
+      module_install_dir = "lib64/"
+      output = "libdisplay_aipq_imagesr.so"
+      install_images = [ "system" ]
+      subsystem_name = "multimedia"
+      part_name = "video_processing_engine"
+      install_enable = true
+  }
 
-ohos_prebuilt_shared_library("aihdr_engine") {
-    if (is_asan && use_hwasan) {
-      source = "//binary/artifacts/display/AIPQ20/asan/libaihdr_engine.so"
-    } else {
-      source = "//binary/artifacts/display/AIPQ20/libaihdr_engine.so"
-    }
-    module_install_dir = "lib64/"
-    output = "libaihdr_engine.so"
-    install_images = [ "system" ]
-    subsystem_name = "multimedia"
-    part_name = "video_processing_engine"
-    install_enable = true
+  ohos_prebuilt_shared_library("aihdr_engine") {
+      if (is_asan && use_hwasan) {
+        source = "//binary/artifacts/display/AIPQ20/asan/libaihdr_engine.so"
+      } else {
+        source = "//binary/artifacts/display/AIPQ20/libaihdr_engine.so"
+      }
+      module_install_dir = "lib64/"
+      output = "libaihdr_engine.so"
+      install_images = [ "system" ]
+      subsystem_name = "multimedia"
+      part_name = "video_processing_engine"
+      install_enable = true
+  }
+} else {
+  group("extream_vision_engine") {
+  }
+
+  group("ai_super_resolution") {
+  }
+
+  group("aihdr_engine") {
+  }
 }
 
 ohos_shared_library("videoprocessingengine") {
@@ -217,7 +213,7 @@ ohos_shared_library("videoprocessingengine") {
     "hdf_core:libhdf_host",
     "hdf_core:libhdf_ipc_adapter",
     "hdf_core:libhdf_utils",
-    "hdf_core:hdf_posix_osal",
+    #"hdf_core:hdf_posix_osal",
     "graphic_2d:2d_graphics",
     "ipc:ipc_single",
     "safwk:system_ability_fwk",
@@ -444,9 +440,6 @@ ohos_shared_library("detailEnhancer") {
 
   include_dirs = [
     "$DFX_DIR/include",
-    "//foundation/multimedia/media_foundation/interface/kits/c",
-    "//foundation/multimedia/image_framework/interfaces/kits/native/include/image",
-    "//foundation/multimedia/image_framework/frameworks/kits/js/common/ndk/include",
     "//foundation/multimedia/video_processing_engine/interfaces/kits/js",
     "//foundation/multimedia/video_processing_engine/interfaces/inner_api",
     "//foundation/multimedia/video_processing_engine/framework/capi/image_processing/include/",

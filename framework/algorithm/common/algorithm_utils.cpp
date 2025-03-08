@@ -16,6 +16,7 @@
 #include "algorithm_utils.h"
 
 #include <unordered_map>
+#include "securec.h"
 #include "vpe_log.h"
 using namespace OHOS::Media::VideoProcessingEngine;
 

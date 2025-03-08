@@ -16,7 +16,7 @@
 #include "vpe_utils_common.h"
 
 #include <unordered_map>
-
+#include "securec.h"
 #include "algorithm_utils.h"
 #include "surface_buffer_impl.h"
 #include "surface_type.h"

@@ -35,9 +35,7 @@ ohos_unittest("image_processing_unit_test") {
     "$ALGORITHM_DIR/detail_enhancer/include",
     "$FRAMEWORK_DIR/capi/image_processing/detail_enhancer/include",
     "$INTERFACES_DIR/kits/c",
-    "$FRAMEWORK_DIR/capi/image_processing/include",
-    "//foundation/multimedia/media_foundation/interface/kits/c",
-    "//foundation/multimedia/image_framework/interfaces/kits/native/include/image"
+    "$FRAMEWORK_DIR/capi/image_processing/include"
   ]
  
   sources = [ "image_processing_unit_test.cpp" ]

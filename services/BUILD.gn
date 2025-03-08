@@ -73,10 +73,7 @@ ohos_shared_library("videoprocessingservice") {
   include_dirs = [
     "include",
     "${target_gen_dir}",
-    "//foundation/multimedia/video_processing_engine/framework/dfx/include",
-    "//foundation/systemabilitymgr/safwk/services/safwk/include",
-    "//foundation/systemabilitymgr/samgr/interfaces/innerkits/samgr_proxy/include",
-    "//foundation/communication/ipc/interfaces/innerkits/ipc_core/include",
+    "//foundation/multimedia/video_processing_engine/framework/dfx/include"
   ]
 
   deps = [

@@ -14,6 +14,7 @@
 #include "vpe_parse_metadata.h"
 #include <cstdint>
 #include <vector>
+#include "securec.h"
 #include "vpe_log.h"
 
 namespace OHOS {

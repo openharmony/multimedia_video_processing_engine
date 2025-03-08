@@ -38,9 +38,6 @@ ohos_unittest("metadata_gen_video_ndk_unit_test") {
     "$ALGORITHM_DIR/colorspace_converter_video/include",
     "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services/include",
     "$TEST_UTILS_PATH/ColorSpaceConverter/sample/video",
-    "//foundation/multimedia/media_foundation/interface/kits/c/",
-    "//foundation/graphic/graphic_2d/interfaces/inner_api/",
-    "//foundation/graphic/graphic_2d_ext/ohcore/graphic_compat_layer/include/utils/",
   ]
 
   sources = [ "metadata_gen_video_ndk_unit_test.cpp" ]

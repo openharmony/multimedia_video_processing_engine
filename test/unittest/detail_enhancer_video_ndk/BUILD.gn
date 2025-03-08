@@ -33,7 +33,6 @@ ohos_unittest("detail_enhancer_video_ndk_unit_test") {
     "$FRAMEWORK_DIR/capi/detail_enhancer/include",
     "$INTERFACES_DIR/kits/c",
     "$FRAMEWORK_DIR/capi/video_processing/include",
-    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/../media_foundation/interface/kits/c",
     "$ALGORITHM_DIR/detail_enhancer_video/include",
     "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services/include",
   ]
