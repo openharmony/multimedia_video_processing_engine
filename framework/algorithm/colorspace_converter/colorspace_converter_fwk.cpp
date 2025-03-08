@@ -45,7 +45,7 @@ void ColorSpaceConverterFwk::OpenCLInit()
     } else {
         constexpr int DEVICE_NAME_LENGTH = 32; // 32 max name length
         char deviceName[DEVICE_NAME_LENGTH];
-        auto status = SetupOpencl(&OpenclFoundationHandle, "HUAWEI", deviceName);
+        auto status = SetupOpencl(&OpenclFoundationHandle, "HUA", deviceName);
         if (status != static_cast<int>(CL_SUCCESS)) {
             VPE_LOGE("%{public}s, Error: setupOpencl status=%{public}d\n", __FUNCTION__, status);
         }

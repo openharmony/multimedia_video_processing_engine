@@ -26,7 +26,7 @@
 
 using namespace OHOS::Media::VideoProcessingEngine;
 
-// NDK define
+// CAPI define
 // Video processing feature types:
 const int32_t VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION = 0x1;
 const int32_t VIDEO_PROCESSING_TYPE_METADATA_GENERATION = 0x2;

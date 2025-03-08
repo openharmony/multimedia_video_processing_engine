@@ -9,6 +9,11 @@
             "project":"vendor_hihope",
             "path":"vendor/hihope",
             "pr_url":"https://gitee.com/openharmony/vendor_hihope/pulls/1420"
+        },
+        {
+            "project":"graphic_graphic_2d",
+            "path":"foundation/graphic/graphic_2d",
+            "pr_url":"https://gitee.com/openharmony/graphic_graphic_2d/pulls/20246"
         }
     ]
 }

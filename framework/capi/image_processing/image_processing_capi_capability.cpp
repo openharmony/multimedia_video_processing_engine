@@ -33,7 +33,7 @@ ImageProcessing_ErrorCode ImageProcessingCapiCapability::OpenCLInit()
     } else {
         constexpr int DEVICE_NAME_LENGTH = 32; // 32 max name length
         char deviceName[DEVICE_NAME_LENGTH];
-        auto status = SetupOpencl(&OpenclFoundationHandle, "HUAWEI", deviceName);
+        auto status = SetupOpencl(&OpenclFoundationHandle, "HUA", deviceName);
         CHECK_AND_RETURN_RET_LOG(status == static_cast<int>(IMAGE_PROCESSING_SUCCESS),
                                  IMAGE_PROCESSING_ERROR_UNSUPPORTED_PROCESSING,
                                  "GetOpenCLContext SetupOpencl fail!");
