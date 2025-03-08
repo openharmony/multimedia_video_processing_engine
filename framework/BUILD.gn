@@ -193,7 +193,7 @@ ohos_shared_library("videoprocessingengine") {
     "$ALGORITHM_COMMON_DIR/image_openclsetup.cpp"
   ]
 
-  deps = ["//third_party/skia:skia_ohos",
+  deps = [
     "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services:videoprocessingservice_interface",
     ":aihdr_engine",
     ":ai_super_resolution",
@@ -201,6 +201,10 @@ ohos_shared_library("videoprocessingengine") {
     "//third_party/opencl-headers:libcl",
     "//third_party/bounds_checking_function:libsec_static",
   ]
+
+  if (has_skia) {
+    deps += ["//third_party/skia:skia_ohos"]
+  }
 
   external_deps = [
     "c_utils:utils",
