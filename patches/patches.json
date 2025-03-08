@@ -14,6 +14,11 @@
             "project":"graphic_graphic_2d",
             "path":"foundation/graphic/graphic_2d",
             "pr_url":"https://gitee.com/openharmony/graphic_graphic_2d/pulls/20246"
+        },
+        {
+            "project":"multimedia_av_codec",
+            "path":"foundation/multimedia/av_codec",
+            "pr_url":"https://gitee.com/openharmony/multimedia_av_codec/pulls/4780"
         }
     ]
 }
