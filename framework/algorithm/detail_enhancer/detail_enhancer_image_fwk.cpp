@@ -22,6 +22,7 @@
 #include "native_buffer.h"
 #include "surface_buffer.h"
 #include "video_processing_client.h"
+#include "securec.h"
 #include "vpe_log.h"
 #include "vpe_trace.h"
 

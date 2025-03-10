@@ -37,14 +37,14 @@
         "ipc",
         "safwk",
         "samgr",
-        "eventhandler"
+        "eventhandler",
+        "bounds_checking_function",
+        "opencl-headers"
       ],
       "third_party": [
         "skia",
         "egl",
-        "opengles",
-        "bounds_checking_function",
-        "opencl-headers"
+        "opengles"
       ]
     },
     "build": {
@@ -85,22 +85,24 @@
         },
         {
           "type": "so",
-          "name": "//foundation/multimedia/video_processing_engine/framework:image_processing_capi_impl",
-          "header":{
-            "header_files":[
-              "image_processing_capi_impl.h"
+          "name": "//foundation/multimedia/video_processing_engine/framework:image_processing",
+          "header": {
+            "header_files": [
+              "image_processing.h",
+              "image_processing_types.h"
             ],
-            "header_base": "//foundation/multimedia/video_processing_engine/framework/capi/image_processing/include"
+            "header_base": "//foundation/multimedia/video_processing_engine/interfaces/kits/c"
           }
         },
         {
           "type": "so",
-          "name": "//foundation/multimedia/video_processing_engine/framework:video_processing_capi_impl",
-          "header":{
-            "header_files":[
-              "video_processing_capi_impl.h"
+          "name": "//foundation/multimedia/video_processing_engine/framework:video_processing",
+          "header": {
+            "header_files": [
+              "video_processing.h",
+              "video_processing_types.h"
             ],
-            "header_base": "//foundation/multimedia/video_processing_engine/framework/capi/video_processing/include"
+            "header_base": "//foundation/multimedia/video_processing_engine/interfaces/kits/c"
           }
         },
         {

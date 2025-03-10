@@ -88,3 +88,9 @@ VIDEO_PROCESSING_ENGINE_CFLAGS = [
   "-Wsign-compare",
   "-Wunused-parameter"
 ]
+
+if (defined(global_parts_info) && defined(global_parts_info.third_party_skia)) {
+  has_skia = true
+} else {
+  has_skia = false
+}

@@ -12,9 +12,8 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("//foundation/ability/idl_tool/idl_config.gni")
+import("//build/config/components/idl_tool/idl.gni")
 import("//foundation/multimedia/video_processing_engine/config.gni")
-import("$CAPI_DIR/config.gni")
 
 config("export_config") {
   include_dirs = [
@@ -80,64 +79,62 @@ config("video_process_config") {
     "$INTERFACES_INNER_API_DIR/module",
     "$INTERFACES_DIR/plugin",
     "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services/include",
-
-    # temporary dir
-    "$SKIA_DIR",
     "${target_gen_dir}/../services/",
-    "$SKIA_DIR/include/core",
-    "$SKIA_DIR/include/encode",
-    "$SKIA_DIR",
-    "$SKIA_DIR/src/ports/skia_ohos",
-    "$SKIA_DIR/src/ports",
-    "$SKIA_DIR/src/images",
-    "$SKIA_DIR/include/private",
-    "$SKIA_DIR/include/effects",
-    "$SKIA_DIR/third_party/externals/angle2/src/common",
-    "$SKIA_DIR/third_party/externals/angle2/src/",
-    "$SKIA_DIR/third_party/externals/angle2/src/common/third_party/base/",
   ]
 }
 
-ohos_prebuilt_shared_library("extream_vision_engine") {
-    if (is_asan && use_hwasan) {
-      source = "//binary/artifacts/display/AIPQ20/asan/libextream_vision_engine.so"
-    } else {
-      source = "//binary/artifacts/display/AIPQ20/libextream_vision_engine.so"
-    }
-    module_install_dir = "lib64/"
-    output = "libextream_vision_engine.so"
-    install_images = [ "system" ]
-    subsystem_name = "multimedia"
-    part_name = "video_processing_engine"
-    install_enable = true
-}
+if (defined(global_parts_info) &&
+  defined(global_parts_info.multimedia_video_processing_engine_ext)) {
+  ohos_prebuilt_shared_library("extream_vision_engine") {
+      if (is_asan && use_hwasan) {
+        source = "//binary/artifacts/display/AIPQ20/asan/libextream_vision_engine.so"
+      } else {
+        source = "//binary/artifacts/display/AIPQ20/libextream_vision_engine.so"
+      }
+      module_install_dir = "lib64/"
+      output = "libextream_vision_engine.so"
+      install_images = [ "system" ]
+      subsystem_name = "multimedia"
+      part_name = "video_processing_engine"
+      install_enable = true
+  }
 
-ohos_prebuilt_shared_library("ai_super_resolution") {
-    if (is_asan && use_hwasan) {
-      source = "//binary/artifacts/display/AIPQ20/asan/libdisplay_aipq_imagesr.so"
-    } else {
-      source = "//binary/artifacts/display/AIPQ20/libdisplay_aipq_imagesr.so"
-    }
-    module_install_dir = "lib64/"
-    output = "libdisplay_aipq_imagesr.so"
-    install_images = [ "system" ]
-    subsystem_name = "multimedia"
-    part_name = "video_processing_engine"
-    install_enable = true
-}
+  ohos_prebuilt_shared_library("ai_super_resolution") {
+      if (is_asan && use_hwasan) {
+        source = "//binary/artifacts/display/AIPQ20/asan/libdisplay_aipq_imagesr.so"
+      } else {
+        source = "//binary/artifacts/display/AIPQ20/libdisplay_aipq_imagesr.so"
+      }
+      module_install_dir = "lib64/"
+      output = "libdisplay_aipq_imagesr.so"
+      install_images = [ "system" ]
+      subsystem_name = "multimedia"
+      part_name = "video_processing_engine"
+      install_enable = true
+  }
 
-ohos_prebuilt_shared_library("aihdr_engine") {
-    if (is_asan && use_hwasan) {
-      source = "//binary/artifacts/display/AIPQ20/asan/libaihdr_engine.so"
-    } else {
-      source = "//binary/artifacts/display/AIPQ20/libaihdr_engine.so"
-    }
-    module_install_dir = "lib64/"
-    output = "libaihdr_engine.so"
-    install_images = [ "system" ]
-    subsystem_name = "multimedia"
-    part_name = "video_processing_engine"
-    install_enable = true
+  ohos_prebuilt_shared_library("aihdr_engine") {
+      if (is_asan && use_hwasan) {
+        source = "//binary/artifacts/display/AIPQ20/asan/libaihdr_engine.so"
+      } else {
+        source = "//binary/artifacts/display/AIPQ20/libaihdr_engine.so"
+      }
+      module_install_dir = "lib64/"
+      output = "libaihdr_engine.so"
+      install_images = [ "system" ]
+      subsystem_name = "multimedia"
+      part_name = "video_processing_engine"
+      install_enable = true
+  }
+} else {
+  group("extream_vision_engine") {
+  }
+
+  group("ai_super_resolution") {
+  }
+
+  group("aihdr_engine") {
+  }
 }
 
 ohos_shared_library("videoprocessingengine") {
@@ -196,9 +193,12 @@ ohos_shared_library("videoprocessingengine") {
     "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services:videoprocessingservice_interface",
     ":aihdr_engine",
     ":ai_super_resolution",
-    ":extream_vision_engine",
-    "//third_party/opencl-headers:libcl",
+    ":extream_vision_engine"
   ]
+
+  if (has_skia) {
+    deps += ["//third_party/skia:skia_ohos"]
+  }
 
   external_deps = [
     "c_utils:utils",
@@ -213,7 +213,7 @@ ohos_shared_library("videoprocessingengine") {
     "hdf_core:libhdf_host",
     "hdf_core:libhdf_ipc_adapter",
     "hdf_core:libhdf_utils",
-    "hdf_core:hdf_posix_osal",
+    #"hdf_core:hdf_posix_osal",
     "graphic_2d:2d_graphics",
     "ipc:ipc_single",
     "safwk:system_ability_fwk",
@@ -221,20 +221,46 @@ ohos_shared_library("videoprocessingengine") {
     "media_foundation:media_foundation",
     "graphic_2d:EGL",
     "graphic_2d:GLESv3",
+    "bounds_checking_function:libsec_static",
+    "opencl-headers:libcl"
   ]
 
   subsystem_name = "multimedia"
   part_name = "video_processing_engine"
 }
 
-config("video_processing_engine_capi_config") {
-  include_dirs = [
-    "$VIDEO_PROCESSING_ENGINE_CAPI_DIR/interface/kits/c",
-    "$VIDEO_PROCESSING_ENGINE_CAPI_DIR/interface/inner_api",
+config("vpe_capi_config") {
+  cflags = [
+    "-fno-exceptions",
+    "-Wall",
+    "-fno-common",
+    "-fstack-protector-all",
+    "-Wshadow",
+    "-FPIC",
+    "-FS",
+    "-O2",
+    "-D_FORTIFY_SOURCE=2",
+    "-Wformat=2",
+    "-Wdate-time",
+  ]
+
+  cflags_cc = [
+    "-std=c++17",
+    "-fno-rtti",
   ]
 }
 
-ohos_shared_library("image_processing_capi_impl") {
+config("vpe_capi_public_config") {
+  include_dirs = [
+    "$INTERFACES_CAPI_DIR",
+    "$INTERFACES_INNER_API_DIR",
+  ]
+}
+
+ohos_shared_library("image_processing") {
+  stack_protector_ret = true
+  install_enable = true
+
   sanitize = {
     boundary_sanitize = true
     cfi = true
@@ -244,18 +270,14 @@ ohos_shared_library("image_processing_capi_impl") {
     debug = false
   }
 
-  stack_protector_ret = true
+  configs = [ ":vpe_capi_config" ]
+  public_configs = [ ":vpe_capi_public_config" ]
 
-  cflags = VIDEO_PROCESSING_ENGINE_CFLAGS
-  cflags += [
+  cflags = [
     "-ffunction-sections",
     "-fdata-sections",
     "-DIMAGE_COLORSPACE_FLAG",
   ]
-
-  ldflags = [ "-Wl,--gc-sections" ]
-
-  configs = [ ":video_processing_engine_capi_config" ]
 
   include_dirs = [
     #Interface
@@ -277,16 +299,19 @@ ohos_shared_library("image_processing_capi_impl") {
 
   sources = [
     "$CAPI_IMAGE_DIR/image_environment_native.cpp",
-    "$CAPI_IMAGE_DIR/image_processing_capi_impl.cpp",
+    "$CAPI_IMAGE_DIR/image_processing.cpp",
     "$CAPI_IMAGE_DIR/image_processing_factory.cpp",
     "$CAPI_IMAGE_DIR/image_processing_impl.cpp",
     "$CAPI_IMAGE_DIR/image_processing_native_base.cpp",
     "$CAPI_IMAGE_DIR/image_processing_utils.cpp",
+    "$CAPI_IMAGE_DIR/image_processing_capi_capability.cpp",
     "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/framework/algorithm/common/vpe_utils_common.cpp",
     "$CAPI_IMAGE_DETAIL_ENHANCER_DIR/detail_enhancer_image_native.cpp",
     "$CAPI_COLORSPACE_CONVERTER_DIR/colorspace_converter_image_native.cpp",
     "$CAPI_METADATA_GENERATOR_DIR/metadata_generator_image_native.cpp",
   ]
+
+  defines = []
 
   deps = [
     ":videoprocessingengine",
@@ -295,25 +320,36 @@ ohos_shared_library("image_processing_capi_impl") {
 
   external_deps = [
     "c_utils:utils",
-    "graphic_surface:surface",
-    "hilog:libhilog",
-    "graphic_2d:2d_graphics",
-    "media_foundation:media_foundation",
-    "image_framework:pixelmap",
-    "image_framework:image_native",
     "drivers_interface_display:display_commontype_idl_headers",
+    "graphic_surface:surface",
+    "graphic_2d:2d_graphics",
+    "hilog:libhilog",
+    "hitrace:hitrace_meter",
+    "image_framework:image_native",
+    "image_framework:pixelmap",
     "ipc:ipc_single",
+    "media_foundation:media_foundation",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
 
+  if (has_skia) {
+    defines += [ "SKIA_ENABLE" ]
+    external_deps += [ "skia:skia_canvaskit" ]
+    include_dirs += [ "$ALGORITHM_EXTENSION_MANAGER_DIR/include" ]
+    sources += [ "$ALGORITHM_EXTENSION_MANAGER_DIR/skia_impl.cpp" ]
+  }
+
+  innerapi_tags = [ "ndk" ]
   output_extension = "so"
   subsystem_name = "multimedia"
-  innerapi_tags = [ "ndk" ]
   part_name = "video_processing_engine"
 }
 
-ohos_shared_library("video_processing_capi_impl") {
+ohos_shared_library("video_processing") {
+  stack_protector_ret = true
+  install_enable = true
+
   sanitize = {
     boundary_sanitize = true
     cfi = true
@@ -323,17 +359,8 @@ ohos_shared_library("video_processing_capi_impl") {
     debug = false
   }
 
-  stack_protector_ret = true
-
-  cflags = VIDEO_PROCESSING_ENGINE_CFLAGS
-  cflags += [
-    "-ffunction-sections",
-    "-fdata-sections",
-  ]
-
-  ldflags = [ "-Wl,--gc-sections" ]
-
-  configs = [ ":video_processing_engine_capi_config" ]
+  configs = [ ":vpe_capi_config" ]
+  public_configs = [ ":vpe_capi_public_config" ]
 
   include_dirs = [
     #Interface
@@ -343,13 +370,13 @@ ohos_shared_library("video_processing_capi_impl") {
     "$DFX_DIR/include",
     "$ALGORITHM_COMMON_DIR/include",
     #CAPI implementation
-    "$CAPI_VIDEO_DIR/include/",
-    "$CAPI_VIDEO_DIR/aihdr_enhancer/include/",
-    "$CAPI_VIDEO_DETAIL_ENHANCER_DIR/include/",
+    "$CAPI_VIDEO_DIR/include",
+    "$CAPI_VIDEO_DIR/aihdr_enhancer/include",
+    "$CAPI_VIDEO_DETAIL_ENHANCER_DIR/include",
     "$CAPI_VIDEO_COLORSPACE_CONVERTER_DIR/include/",
     "$CAPI_VIDEO_METADATA_GENERATOR_DIR/include/",
     "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services/include",
-    "${target_gen_dir}/../services/",
+    "${target_gen_dir}/../services/", 
   ]
 
   sources = [
@@ -357,7 +384,7 @@ ohos_shared_library("video_processing_capi_impl") {
     "$CAPI_VIDEO_DIR/video_environment_native.cpp",
     "$CAPI_VIDEO_DIR/video_processing_callback_impl.cpp",
     "$CAPI_VIDEO_DIR/video_processing_callback_native.cpp",
-    "$CAPI_VIDEO_DIR/video_processing_capi_impl.cpp",
+    "$CAPI_VIDEO_DIR/video_processing.cpp",
     "$CAPI_VIDEO_DIR/video_processing_capi_capability.cpp",
     "$CAPI_VIDEO_DIR/video_processing_factory.cpp",
     "$CAPI_VIDEO_DIR/video_processing_impl.cpp",
@@ -371,6 +398,8 @@ ohos_shared_library("video_processing_capi_impl") {
     "$CAPI_VIDEO_DIR/aihdr_enhancer/aihdr_enhancer_video_native.cpp"
   ]
 
+  defines = []
+
   deps = [
     ":videoprocessingengine",
     "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services:videoprocessingservice_interface",
@@ -381,18 +410,21 @@ ohos_shared_library("video_processing_capi_impl") {
     "graphic_surface:surface",
     "hilog:libhilog",
     "hitrace:hitrace_meter",
+    "ipc:ipc_single",
     "media_foundation:media_foundation",
     "drivers_interface_display:display_commontype_idl_headers",
-    "graphic_2d:libgraphic_utils",
-    "graphic_2d:librender_service_client",
-    "ipc:ipc_single",
-    "safwk:system_ability_fwk",
-    "samgr:samgr_proxy",
   ]
 
+  if (has_skia) {
+    defines += [ "SKIA_ENABLE" ]
+    external_deps += [ "skia:skia_canvaskit" ]
+    include_dirs += [ "$$ALGORITHM_EXTENSION_MANAGER_DIR/include" ]
+    sources += [ "$ALGORITHM_EXTENSION_MANAGER_DIR/skia_impl.cpp" ]
+  }
+
+  innerapi_tags = [ "ndk" ]
   output_extension = "so"
   subsystem_name = "multimedia"
-  innerapi_tags = [ "ndk" ]
   part_name = "video_processing_engine"
 }
 
@@ -414,6 +446,7 @@ ohos_shared_library("detailEnhancer") {
   ]
   sources = [
     "//foundation/multimedia/video_processing_engine/framework/capi/image_processing/detail_enhance_napi.cpp",
+    "//foundation/multimedia/image_framework/frameworks/innerkitsimpl/common/src/memory_manager.cpp",
   ]
 
   deps = [
@@ -428,7 +461,6 @@ ohos_shared_library("detailEnhancer") {
     "hitrace:hitrace_meter",
     "ipc:ipc_napi",
     "media_foundation:native_media_core",
-    "media_foundation:media_foundation",
     "napi:ace_napi",
     "image_framework:image_utils",
     "image_framework:image_native",
@@ -459,6 +491,7 @@ ohos_shared_library("videoprocessingenginenapi") {
     "$INTERFACES_INNER_API_DIR",
     "$CAPI_DIR/image_processing/include/",
     "$ALGORITHM_COMMON_DIR/include/",
+    "$INTERFACES_CAPI_DIR",
   ]
   sources = [
     "$CAPI_DIR/image_processing/detail_enhance_napi_formal.cpp",
@@ -483,7 +516,6 @@ ohos_shared_library("videoprocessingenginenapi") {
     "ipc:ipc_napi",
     "media_foundation:native_media_core",
     "media_foundation:media_foundation",
-    "media_foundation:image_processing",
     "napi:ace_napi",
   ]
 

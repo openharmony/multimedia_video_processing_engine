@@ -13,7 +13,7 @@
 
 import("//build/config/ohos/config.gni")
 import("//build/ohos.gni")
-import("//foundation/ability/idl_tool/idl_config.gni")
+import("//build/config/components/idl_tool/idl.gni")
 import("//foundation/multimedia/video_processing_engine/config.gni")
 
 group("video_processing_service_group") {
@@ -73,10 +73,7 @@ ohos_shared_library("videoprocessingservice") {
   include_dirs = [
     "include",
     "${target_gen_dir}",
-    "//foundation/multimedia/video_processing_engine/framework/dfx/include",
-    "//foundation/systemabilitymgr/safwk/services/safwk/include",
-    "//foundation/systemabilitymgr/samgr/interfaces/innerkits/samgr_proxy/include",
-    "//foundation/communication/ipc/interfaces/innerkits/ipc_core/include",
+    "//foundation/multimedia/video_processing_engine/framework/dfx/include"
   ]
 
   deps = [

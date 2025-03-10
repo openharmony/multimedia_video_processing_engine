@@ -16,6 +16,7 @@
 #include "image_opencl_wrapper.h"
 #include <cstdio>
 #include <cstring>
+#include "securec.h"
 #include "vpe_log.h"
 
 // OpenCL Init

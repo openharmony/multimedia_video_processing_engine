@@ -561,6 +561,8 @@ HWTEST_F(ColorSpaceConverterVideoNdkImplUnitTest, codeCoverageComponent_20, Test
     SetMeatadata(buffer, (uint32_t)inMetaType_);
     window->surface->FlushBuffer(buffer, fence_, flushCfg_);
     OH_VideoProcessing_SetSurface(instance, window2);
+    int sleepTime = 2;
+    sleep(sleepTime);
     OH_VideoProcessing_Destroy(instance);
     OH_VideoProcessing_Destroy(instance2);
     OH_VideoProcessing_DeinitializeEnvironment();

@@ -359,3 +359,19 @@ bool VideoProcessingCapiCapability::IsMetadataGenerationSupported(
         sourceVideoInfo->pixelFormat, sourceVideoInfo->colorSpace, sourceVideoInfo->metadataType);
     return false;
 }
+
+std::shared_ptr<OpenGLContext> VideoProcessingCapiCapability::openglContext_ = nullptr;
+
+VideoProcessing_ErrorCode VideoProcessingCapiCapability::OpenGLInit()
+{
+    auto status = SetupOpengl(openglContext_);
+    CHECK_AND_RETURN_RET_LOG(status == static_cast<int>(VIDEO_PROCESSING_SUCCESS),
+                             VIDEO_PROCESSING_ERROR_OPERATION_NOT_PERMITTED,
+                             "OpenGLInit SetupOpengl fail!");
+    return VIDEO_PROCESSING_SUCCESS;
+}
+
+std::shared_ptr<OpenGLContext> VideoProcessingCapiCapability::GetOpenGLContext()
+{
+    return openglContext_;
+}

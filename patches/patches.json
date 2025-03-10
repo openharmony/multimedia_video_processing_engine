@@ -1,0 +1,19 @@
+{
+    "patches": [
+        {
+            "project":"multimedia_media_foundation",
+            "path":"foundation/multimedia/media_foundation",
+            "pr_url":"https://gitee.com/openharmony/multimedia_media_foundation/pulls/1897"
+        },
+        {
+            "project":"vendor_hihope",
+            "path":"vendor/hihope",
+            "pr_url":"https://gitee.com/openharmony/vendor_hihope/pulls/1420"
+        },
+        {
+            "project":"graphic_graphic_2d",
+            "path":"foundation/graphic/graphic_2d",
+            "pr_url":"https://gitee.com/openharmony/graphic_graphic_2d/pulls/20246"
+        }
+    ]
+}

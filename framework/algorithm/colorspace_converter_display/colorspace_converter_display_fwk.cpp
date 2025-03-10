@@ -40,7 +40,7 @@ VPEAlgoErrCode ColorSpaceConverterDisplayFwk::Process(const std::shared_ptr<OHOS
 {
     auto ret = Init();
     CHECK_AND_RETURN_RET_LOG(ret == VPE_ALGO_ERR_OK, VPE_ALGO_ERR_INIT_FAILED, "Init failed");
-    VPE_LOGD("size of impl %{public}lu", impl_.size());
+    VPE_LOGD("size of impl %{public}zu", impl_.size());
     CHECK_AND_RETURN_RET_LOG(!impl_.empty(), VPE_ALGO_ERR_NOT_IMPLEMENTED, "Extension is not found");
 
     DeserializedDisplayParameter localParameter;

@@ -4,7 +4,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,36 +13,17 @@
  * limitations under the License.
  */
 
-#include "image_processing_capi_impl.h"
-
-#include "vpe_log.h"
-
-#include "image_environment_native.h"
-#include "image_processing_impl.h"
+#include "image_processing_capi_capability.h"
 
 using namespace OHOS::Media::VideoProcessingEngine;
 
-const int32_t IMAGE_PROCESSING_TYPE_COLOR_SPACE_CONVERSION = 0x1;
-const int32_t IMAGE_PROCESSING_TYPE_COMPOSITION = 0x2;
-const int32_t IMAGE_PROCESSING_TYPE_DECOMPOSITION = 0x4;
-const int32_t IMAGE_PROCESSING_TYPE_METADATA_GENERATION = 0x8;
-const int32_t IMAGE_PROCESSING_TYPE_DETAIL_ENHANCER = 0x10;
-const char* IMAGE_DETAIL_ENHANCER_PARAMETER_KEY_QUALITY_LEVEL = "QualityLevel";
-
-namespace {
-ImageProcessing_ErrorCode CallImageProcessing(OH_ImageProcessing* imageProcessor,
-    std::function<ImageProcessing_ErrorCode(std::shared_ptr<IImageProcessingNative>&)>&& operation)
+ImageProcessingCapiCapability& ImageProcessingCapiCapability::Get()
 {
-    CHECK_AND_RETURN_RET_LOG(imageProcessor != nullptr, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE,
-        "imageProcessor is null!");
-    auto imageProcessing = imageProcessor->GetImageProcessing();
-    CHECK_AND_RETURN_RET_LOG(imageProcessing != nullptr, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE,
-        "imageProcessor is invalid!");
-    return operation(imageProcessing);
-}
+    static ImageProcessingCapiCapability instance{};
+    return instance;
 }
 
-ImageProcessing_ErrorCode ImageProcessingCapiImpl::OpenCLInit()
+ImageProcessing_ErrorCode ImageProcessingCapiCapability::OpenCLInit()
 {
     void *OpenclFoundationHandle = nullptr;
     std::string path = "/sys_prod/lib64/VideoProcessingEngine/libaihdr_engine.so";
@@ -61,7 +42,7 @@ ImageProcessing_ErrorCode ImageProcessingCapiImpl::OpenCLInit()
     return IMAGE_PROCESSING_SUCCESS;
 }
 
-ImageProcessing_ErrorCode ImageProcessingCapiImpl::OpenGLInit()
+ImageProcessing_ErrorCode ImageProcessingCapiCapability::OpenGLInit()
 {
     auto status = SetupOpengl(openglContext_);
     CHECK_AND_RETURN_RET_LOG(status == static_cast<int>(IMAGE_PROCESSING_SUCCESS),
@@ -70,22 +51,17 @@ ImageProcessing_ErrorCode ImageProcessingCapiImpl::OpenGLInit()
     return IMAGE_PROCESSING_SUCCESS;
 }
 
-ImageProcessing_ErrorCode ImageProcessingCapiImpl::InitializeEnvironment()
+ClContext* ImageProcessingCapiCapability::GetClContext()
 {
-    CHECK_AND_RETURN_RET_LOG(OpenCLInit() == IMAGE_PROCESSING_SUCCESS, IMAGE_PROCESSING_ERROR_UNSUPPORTED_PROCESSING,
-                             "OpenCLInit failed!");
-    CHECK_AND_RETURN_RET_LOG(OpenGLInit() == IMAGE_PROCESSING_SUCCESS, IMAGE_PROCESSING_ERROR_UNSUPPORTED_PROCESSING,
-                             "OpenGLInit failed!");
-
-    return ImageEnvironmentNative::Get().Initialize();
+    return openclContext_;
 }
 
-ImageProcessing_ErrorCode ImageProcessingCapiImpl::DeinitializeEnvironment()
+std::shared_ptr<OpenGLContext> ImageProcessingCapiCapability::GetOpenGLContext()
 {
-    return ImageEnvironmentNative::Get().Deinitialize();
+    return openglContext_;
 }
 
-void ImageProcessingCapiImpl::LoadLibrary()
+void ImageProcessingCapiCapability::LoadLibrary()
 {
     std::lock_guard<std::mutex> lock(lock_);
     if (usedInstance_ == 0 && mLibHandle == nullptr) {
@@ -94,7 +70,8 @@ void ImageProcessingCapiImpl::LoadLibrary()
     }
     usedInstance_++;
 }
-void ImageProcessingCapiImpl::UnloadLibrary()
+
+void ImageProcessingCapiCapability::UnloadLibrary()
 {
     std::lock_guard<std::mutex> lock(lock_);
     usedInstance_--;
@@ -104,29 +81,7 @@ void ImageProcessingCapiImpl::UnloadLibrary()
     }
 }
 
-ImageProcessing_ErrorCode ImageProcessingCapiImpl::LoadAlgo()
-{
-    CHECK_AND_RETURN_RET_LOG(mLibHandle != nullptr, IMAGE_PROCESSING_ERROR_UNSUPPORTED_PROCESSING,
-        "Library is nullptr!");
-    std::pair<std::string, LibFunction&> funcs[] = {
-        { "ImageProcessing_IsColorSpaceConversionSupported", isColorSpaceConversionSupported_},
-        { "ImageProcessing_IsCompositionSupported", isCompositionSupported_ },
-        { "ImageProcessing_IsDecompositionSupported", isDecompositionSupported_ },
-    };
-    for (auto& func : funcs) {
-        func.second = reinterpret_cast<LibFunction>(dlsym(mLibHandle, func.first.c_str()));
-        CHECK_AND_RETURN_RET_LOG(func.second != nullptr, IMAGE_PROCESSING_ERROR_UNSUPPORTED_PROCESSING,
-            "Failed to locate %s in - %s", func.first.c_str(), dlerror());
-    }
-    isMetadataGenSupported_ = reinterpret_cast<LibMetaFunction>(dlsym(mLibHandle,
-        "ImageProcessing_IsMetadataGenerationSupported"));
-    CHECK_AND_RETURN_RET_LOG(isMetadataGenSupported_ != nullptr, IMAGE_PROCESSING_ERROR_UNSUPPORTED_PROCESSING,
-        "Failed to locate %s in - %s", "ImageProcessing_IsMetadataGenerationSupported",
-        dlerror());
-    return IMAGE_PROCESSING_SUCCESS;
-}
-
-bool ImageProcessingCapiImpl::CheckColorSpaceConversionSupport(
+bool ImageProcessingCapiCapability::CheckColorSpaceConversionSupport(
     const ImageProcessing_ColorSpaceInfo* sourceImageInfo,
     const ImageProcessing_ColorSpaceInfo* destinationImageInfo)
 {
@@ -161,7 +116,7 @@ bool ImageProcessingCapiImpl::CheckColorSpaceConversionSupport(
     return isColorSpaceConversionSupported_(inputInfo, outputInfo);
 }
 
-bool ImageProcessingCapiImpl::CheckCompositionSupport(
+bool ImageProcessingCapiCapability::CheckCompositionSupport(
     const ImageProcessing_ColorSpaceInfo* sourceImageInfo,
     const ImageProcessing_ColorSpaceInfo* sourceGainmapInfo,
     const ImageProcessing_ColorSpaceInfo* destinationImageInfo)
@@ -198,7 +153,7 @@ bool ImageProcessingCapiImpl::CheckCompositionSupport(
     return isCompositionSupported_(inputInfo, outputInfo);
 }
 
-bool ImageProcessingCapiImpl::CheckDecompositionSupport(
+bool ImageProcessingCapiCapability::CheckDecompositionSupport(
     const ImageProcessing_ColorSpaceInfo* sourceImageInfo,
     const ImageProcessing_ColorSpaceInfo* destinationImageInfo,
     const ImageProcessing_ColorSpaceInfo* destinationGainmapInfo)
@@ -235,7 +190,8 @@ bool ImageProcessingCapiImpl::CheckDecompositionSupport(
     return isDecompositionSupported_(inputInfo, outputInfo);
 }
 
-bool ImageProcessingCapiImpl::CheckMetadataGenerationSupport(const ImageProcessing_ColorSpaceInfo* sourceImageInfo)
+bool ImageProcessingCapiCapability::CheckMetadataGenerationSupport(
+    const ImageProcessing_ColorSpaceInfo* sourceImageInfo)
 {
     CHECK_AND_RETURN_RET_LOG(sourceImageInfo != nullptr, false, "sourceImageInfo is nullptr!");
     auto status = LoadAlgo();
@@ -257,126 +213,25 @@ bool ImageProcessingCapiImpl::CheckMetadataGenerationSupport(const ImageProcessi
     return isMetadataGenSupported_(inputInfo);
 }
 
-bool ImageProcessingCapiImpl::IsColorSpaceConversionSupported(
-    const ImageProcessing_ColorSpaceInfo* sourceImageInfo,
-    const ImageProcessing_ColorSpaceInfo* destinationImageInfo)
+ImageProcessing_ErrorCode ImageProcessingCapiCapability::LoadAlgo()
 {
-    LoadLibrary();
-    auto flag = CheckColorSpaceConversionSupport(sourceImageInfo, destinationImageInfo);
-    UnloadLibrary();
-    return flag;
+    CHECK_AND_RETURN_RET_LOG(mLibHandle != nullptr, IMAGE_PROCESSING_ERROR_UNSUPPORTED_PROCESSING,
+        "Library is nullptr!");
+    std::pair<std::string, LibFunction&> funcs[] = {
+        { "ImageProcessing_IsColorSpaceConversionSupported", isColorSpaceConversionSupported_},
+        { "ImageProcessing_IsCompositionSupported", isCompositionSupported_ },
+        { "ImageProcessing_IsDecompositionSupported", isDecompositionSupported_ },
+    };
+    for (auto& func : funcs) {
+        func.second = reinterpret_cast<LibFunction>(dlsym(mLibHandle, func.first.c_str()));
+        CHECK_AND_RETURN_RET_LOG(func.second != nullptr, IMAGE_PROCESSING_ERROR_UNSUPPORTED_PROCESSING,
+            "Failed to locate %s in - %s", func.first.c_str(), dlerror());
+    }
+    isMetadataGenSupported_ = reinterpret_cast<LibMetaFunction>(dlsym(mLibHandle,
+        "ImageProcessing_IsMetadataGenerationSupported"));
+    CHECK_AND_RETURN_RET_LOG(isMetadataGenSupported_ != nullptr, IMAGE_PROCESSING_ERROR_UNSUPPORTED_PROCESSING,
+        "Failed to locate %s in - %s", "ImageProcessing_IsMetadataGenerationSupported",
+        dlerror());
+    return IMAGE_PROCESSING_SUCCESS;
 }
 
-bool ImageProcessingCapiImpl::IsCompositionSupported(
-    const ImageProcessing_ColorSpaceInfo* sourceImageInfo,
-    const ImageProcessing_ColorSpaceInfo* sourceGainmapInfo,
-    const ImageProcessing_ColorSpaceInfo* destinationImageInfo)
-{
-    LoadLibrary();
-    auto flag = CheckCompositionSupport(sourceImageInfo, sourceGainmapInfo, destinationImageInfo);
-    UnloadLibrary();
-    return flag;
-}
-
-bool ImageProcessingCapiImpl::IsDecompositionSupported(
-    const ImageProcessing_ColorSpaceInfo* sourceImageInfo,
-    const ImageProcessing_ColorSpaceInfo* destinationImageInfo,
-    const ImageProcessing_ColorSpaceInfo* destinationGainmapInfo)
-{
-    LoadLibrary();
-    auto flag = CheckDecompositionSupport(sourceImageInfo, destinationImageInfo, destinationGainmapInfo);
-    UnloadLibrary();
-    return flag;
-}
-
-bool ImageProcessingCapiImpl::IsMetadataGenerationSupported(const ImageProcessing_ColorSpaceInfo* sourceImageInfo)
-{
-    LoadLibrary();
-    auto flag = CheckMetadataGenerationSupport(sourceImageInfo);
-
-    return flag;
-}
-
-ImageProcessing_ErrorCode ImageProcessingCapiImpl::Create(OH_ImageProcessing** imageProcessor, int type)
-{
-    return OH_ImageProcessing::Create(imageProcessor, type, openglContext_, openclContext_);
-}
-
-ImageProcessing_ErrorCode ImageProcessingCapiImpl::Destroy(OH_ImageProcessing* imageProcessor)
-{
-    return OH_ImageProcessing::Destroy(imageProcessor);
-}
-
-ImageProcessing_ErrorCode ImageProcessingCapiImpl::SetParameter(OH_ImageProcessing* imageProcessor,
-    const OH_AVFormat* parameter)
-{
-    return CallImageProcessing(imageProcessor, [&parameter](std::shared_ptr<IImageProcessingNative>& obj) {
-        return obj->SetParameter(parameter);
-    });
-}
-
-ImageProcessing_ErrorCode ImageProcessingCapiImpl::GetParameter(OH_ImageProcessing* imageProcessor,
-    OH_AVFormat* parameter)
-{
-    return CallImageProcessing(imageProcessor, [&parameter](std::shared_ptr<IImageProcessingNative>& obj) {
-        return obj->GetParameter(parameter);
-    });
-}
-
-ImageProcessing_ErrorCode ImageProcessingCapiImpl::ConvertColorSpace(OH_ImageProcessing* imageProcessor,
-    OH_PixelmapNative* sourceImage, OH_PixelmapNative* destinationImage)
-{
-    return CallImageProcessing(imageProcessor, [&sourceImage, &destinationImage](
-        std::shared_ptr<IImageProcessingNative>& obj) {
-        return obj->ConvertColorSpace(sourceImage, destinationImage);
-    });
-}
-
-ImageProcessing_ErrorCode ImageProcessingCapiImpl::Compose(OH_ImageProcessing* imageProcessor,
-    OH_PixelmapNative* sourceImage, OH_PixelmapNative* sourceGainmap, OH_PixelmapNative* destinationImage)
-{
-    return CallImageProcessing(imageProcessor, [&sourceImage, &sourceGainmap, &destinationImage](
-        std::shared_ptr<IImageProcessingNative>& obj) {
-        return obj->Compose(sourceImage, sourceGainmap, destinationImage);
-    });
-}
-
-ImageProcessing_ErrorCode ImageProcessingCapiImpl::Decompose(OH_ImageProcessing* imageProcessor,
-    OH_PixelmapNative* sourceImage, OH_PixelmapNative* destinationImage,
-    OH_PixelmapNative* destinationGainmap)
-{
-    return CallImageProcessing(imageProcessor, [&sourceImage, &destinationImage, &destinationGainmap](
-        std::shared_ptr<IImageProcessingNative>& obj) {
-        return obj->Decompose(sourceImage, destinationImage, destinationGainmap);
-    });
-}
-
-ImageProcessing_ErrorCode ImageProcessingCapiImpl::GenerateMetadata(OH_ImageProcessing* imageProcessor,
-    OH_PixelmapNative* sourceImage)
-{
-    return CallImageProcessing(imageProcessor, [&sourceImage](
-        std::shared_ptr<IImageProcessingNative>& obj) {
-        return obj->GenerateMetadata(sourceImage);
-    });
-}
-
-ImageProcessing_ErrorCode ImageProcessingCapiImpl::EnhanceDetail(OH_ImageProcessing* imageProcessor,
-    OH_PixelmapNative* sourceImage, OH_PixelmapNative* destinationImage)
-{
-    return CallImageProcessing(imageProcessor, [&sourceImage, &destinationImage](
-        std::shared_ptr<IImageProcessingNative>& obj) {
-        return obj->Process(sourceImage, destinationImage);
-    });
-}
-
-IImageProcessingNdk* CreateImageProcessingNdk()
-{
-    return new(std::nothrow) ImageProcessingCapiImpl();
-}
-
-void DestroyImageProcessingNdk(IImageProcessingNdk* obj)
-{
-    CHECK_AND_RETURN_LOG(obj != nullptr, "VPE image processing is null!");
-    ImageProcessingCapiImpl* impl = static_cast<ImageProcessingCapiImpl*>(obj);
-    delete impl;
-}

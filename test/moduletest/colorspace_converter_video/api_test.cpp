@@ -393,6 +393,7 @@ HWTEST_F(CSCVInnerApiTest, CSCV_API_0061, TestSize.Level2)
     ASSERT_EQ(err, GSERROR_OK);
     ret = cscv_->NotifyEos();
     ASSERT_EQ(ret, VPE_ALGO_ERR_OK);
+    cout << "begin to call cscv2->Release()" << endl;
     cscv2->Release();
 }
 

@@ -13,26 +13,23 @@
  * limitations under the License.
  */
 
-#ifndef IMAGE_PROCESSING_CAPI_IMPL_H
-#define IMAGE_PROCESSING_CAPI_IMPL_H
+#ifndef IMAGE_PROCESSING_CAPI_CAPABILITY_H
+#define IMAGE_PROCESSING_CAPI_CAPABILITY_H
 
-#include "image_processing_capi_interface.h"
-#include "frame_info.h"
-#include <dlfcn.h>
 #include <atomic>
+#include <dlfcn.h>
 #include <functional>
 #include <mutex>
+#include <unordered_map>
 
+#include "algorithm_common.h"
+#include "frame_info.h"
 #include "image_processing_native_template.h"
 #include "image_processing_types.h"
 #include "pixelmap_native_impl.h"
-
 #include "detail_enhancer_image.h"
 #include "colorspace_converter.h"
 #include "colorspace_converter_image_native.h"
-
-#include <unordered_map>
-
 #include "detail_enhancer_common.h"
 #include "detail_enhancer_image_fwk.h"
 #include "image_processing_utils.h"
@@ -41,6 +38,10 @@
 #include "surface_type.h"
 #include "vpe_log.h"
 
+namespace OHOS {
+namespace Media {
+namespace VideoProcessingEngine {
+
 const std::map<OHOS::Media::PixelFormat, OHOS::GraphicPixelFormat> IMAGE_FORMAT_MAP = {
     { OHOS::Media::PixelFormat::RGBA_8888, OHOS::GraphicPixelFormat::GRAPHIC_PIXEL_FMT_RGBA_8888 },
     { OHOS::Media::PixelFormat::BGRA_8888, OHOS::GraphicPixelFormat::GRAPHIC_PIXEL_FMT_BGRA_8888 },
@@ -48,12 +49,14 @@ const std::map<OHOS::Media::PixelFormat, OHOS::GraphicPixelFormat> IMAGE_FORMAT_
     { OHOS::Media::PixelFormat::YCBCR_P010, OHOS::GraphicPixelFormat::GRAPHIC_PIXEL_FMT_YCBCR_P010 },
     { OHOS::Media::PixelFormat::YCRCB_P010, OHOS::GraphicPixelFormat::GRAPHIC_PIXEL_FMT_YCRCB_P010 },
 };
+
 typedef enum {
     NONE = 0,
     BASE = 1,
     GAINMAP = 2,
     ALTERNATE = 3,
 } ImagePixelmapHdrMetadataType;
+
 const std::map<ImagePixelmapHdrMetadataType,
     OHOS::HDI::Display::Graphic::Common::V1_0::CM_HDR_Metadata_Type> HDR_METADATA_TYPE_MAP = {
     { NONE, OHOS::HDI::Display::Graphic::Common::V1_0::CM_METADATA_NONE },
@@ -61,6 +64,7 @@ const std::map<ImagePixelmapHdrMetadataType,
     { GAINMAP, OHOS::HDI::Display::Graphic::Common::V1_0::CM_IMAGE_HDR_VIVID_DUAL },
     { ALTERNATE, OHOS::HDI::Display::Graphic::Common::V1_0::CM_IMAGE_HDR_VIVID_SINGLE },
 };
+
 typedef enum {
     UNKNOWN = 0,
     ADOBE_RGB_1998 = 1,
@@ -77,6 +81,7 @@ typedef enum {
     BT2020_HLG_LIMIT = 19,
     BT2020_PQ_LIMIT = 20,
 } ImagePixelmapColorspace;
+
 const std::map<ImagePixelmapColorspace, OHOS::HDI::Display::Graphic::Common::V1_0::CM_ColorSpaceType> COLORSPACE_MAP = {
     { SRGB, OHOS::HDI::Display::Graphic::Common::V1_0::CM_SRGB_FULL },
     { SRGB_LIMIT, OHOS::HDI::Display::Graphic::Common::V1_0::CM_SRGB_LIMIT },
@@ -89,47 +94,22 @@ const std::map<ImagePixelmapColorspace, OHOS::HDI::Display::Graphic::Common::V1_
     { P3_HLG, OHOS::HDI::Display::Graphic::Common::V1_0::CM_P3_HLG_LIMIT },
     { ADOBE_RGB_1998, OHOS::HDI::Display::Graphic::Common::V1_0::CM_ADOBERGB_FULL },
 };
-class ImageProcessingCapiImpl : public IImageProcessingNdk {
-public:
-    ImageProcessingCapiImpl() = default;
-    virtual ~ImageProcessingCapiImpl() = default;
-    ImageProcessingCapiImpl(const ImageProcessingCapiImpl&) = delete;
-    ImageProcessingCapiImpl& operator=(const ImageProcessingCapiImpl&) = delete;
-    ImageProcessingCapiImpl(ImageProcessingCapiImpl&&) = delete;
-    ImageProcessingCapiImpl& operator=(ImageProcessingCapiImpl&&) = delete;
 
-    ImageProcessing_ErrorCode InitializeEnvironment() final;
-    ImageProcessing_ErrorCode DeinitializeEnvironment() final;
-    bool IsColorSpaceConversionSupported(
-        const ImageProcessing_ColorSpaceInfo* sourceImageInfo,
-        const ImageProcessing_ColorSpaceInfo* destinationImageInfo) final;
-    bool IsCompositionSupported(
-        const ImageProcessing_ColorSpaceInfo* sourceImageInfo,
-        const ImageProcessing_ColorSpaceInfo* sourceGainmapInfo,
-        const ImageProcessing_ColorSpaceInfo* destinationImageInfo) final;
-    bool IsDecompositionSupported(
-        const ImageProcessing_ColorSpaceInfo* sourceImageInfo,
-        const ImageProcessing_ColorSpaceInfo* destinationImageInfo,
-        const ImageProcessing_ColorSpaceInfo* destinationGainmapInfo) final;
-    bool IsMetadataGenerationSupported(const ImageProcessing_ColorSpaceInfo* sourceImageInfo) final;
-    ImageProcessing_ErrorCode Create(OH_ImageProcessing** imageProcessor, int32_t type) final;
-    ImageProcessing_ErrorCode Destroy(OH_ImageProcessing* imageProcessor) final;
-    ImageProcessing_ErrorCode SetParameter(OH_ImageProcessing* imageProcessor,
-        const OH_AVFormat* parameter) final;
-    ImageProcessing_ErrorCode GetParameter(OH_ImageProcessing* imageProcessor, OH_AVFormat* parameter) final;
-    ImageProcessing_ErrorCode ConvertColorSpace(OH_ImageProcessing* imageProcessor,
-        OH_PixelmapNative* sourceImage, OH_PixelmapNative* destinationImage) final;
-    ImageProcessing_ErrorCode Compose(OH_ImageProcessing* imageProcessor,
-        OH_PixelmapNative* sourceImage, OH_PixelmapNative* sourceGainmap, OH_PixelmapNative* destinationImage) final;
-    ImageProcessing_ErrorCode Decompose(OH_ImageProcessing* imageProcessor,
-        OH_PixelmapNative* sourceImage, OH_PixelmapNative* destinationImage,
-        OH_PixelmapNative* destinationGainmap) final;
-    ImageProcessing_ErrorCode GenerateMetadata(OH_ImageProcessing* imageProcessor,
-        OH_PixelmapNative* sourceImage) final;
-    ImageProcessing_ErrorCode EnhanceDetail(OH_ImageProcessing* imageProcessor, OH_PixelmapNative* sourceImage,
-        OH_PixelmapNative* destinationImage) final;
-private:
-    ImageProcessing_ErrorCode LoadAlgo();
+class ImageProcessingCapiCapability {
+public:
+    static ImageProcessingCapiCapability& Get();
+
+    ImageProcessingCapiCapability() = default;
+    virtual ~ImageProcessingCapiCapability() = default;
+    ImageProcessingCapiCapability(const ImageProcessingCapiCapability&) = delete;
+    ImageProcessingCapiCapability& operator=(const ImageProcessingCapiCapability&) = delete;
+    ImageProcessingCapiCapability(ImageProcessingCapiCapability&&) = delete;
+    ImageProcessingCapiCapability& operator=(ImageProcessingCapiCapability&&) = delete;
+
+    ImageProcessing_ErrorCode OpenCLInit();
+    ImageProcessing_ErrorCode OpenGLInit();
+    std::shared_ptr<OpenGLContext> GetOpenGLContext();
+    ClContext* GetClContext();
     void LoadLibrary();
     void UnloadLibrary();
     bool CheckColorSpaceConversionSupport(
@@ -142,23 +122,27 @@ private:
         const ImageProcessing_ColorSpaceInfo* destinationImageInfo,
         const ImageProcessing_ColorSpaceInfo* destinationGainmapInfo);
     bool CheckMetadataGenerationSupport(const ImageProcessing_ColorSpaceInfo* sourceImageInfo);
-    void* mLibHandle{};
+    
+private:
     using LibFunction = bool (*)(const OHOS::Media::VideoProcessingEngine::ColorSpaceInfo inputInfo,
         const OHOS::Media::VideoProcessingEngine::ColorSpaceInfo outputInfo);
     using LibMetaFunction = bool (*)(const OHOS::Media::VideoProcessingEngine::ColorSpaceInfo inputInfo);
+
+    ImageProcessing_ErrorCode LoadAlgo();
+
+    std::shared_ptr<OpenGLContext> openglContext_{nullptr};
+    ClContext *openclContext_{nullptr};
+    std::mutex lock_;
+    int32_t usedInstance_ {0};
+    void* mLibHandle{};
+    LibFunction isDecompositionSupported_{nullptr};
     LibFunction isColorSpaceConversionSupported_{nullptr};
     LibFunction isCompositionSupported_{nullptr};
-    LibFunction isDecompositionSupported_{nullptr};
     LibMetaFunction isMetadataGenSupported_{nullptr};
-    std::mutex lock_;
-    int32_t usedInstance_ { 0 };
-    ClContext *openclContext_ {nullptr};
-    ImageProcessing_ErrorCode OpenCLInit();
-    std::shared_ptr<OpenGLContext> openglContext_ {nullptr};
-    ImageProcessing_ErrorCode OpenGLInit();
 };
 
-extern "C" IImageProcessingNdk* CreateImageProcessingNdk();
-extern "C" void DestroyImageProcessingNdk(IImageProcessingNdk* obj);
+} // namespace VideoProcessingEngine
+} // namespace Media
+} // namespace OHOS
 
-#endif // IMAGE_PROCESSING_CAPI_IMPL_H
+#endif
