@@ -12,15 +12,16 @@
 # limitations under the License.
 
 import("//build/test.gni")
-import("//foundation/multimedia/media_foundation/config.gni")
+import("//build/ohos.gni")
+import("//foundation/multimedia/video_processing_engine/config.gni")
+
+module_output_path = MODULE_TEST_OUTPUT_PATH
 
 video_moduletest_native_include_dirs = [
-  "$vpe_interface_capi_dir",
-  "$vpe_capi_root_dir/test/moduletest/common",
-  "$vpe_capi_root_dir/../../../graphic/graphic_2d/interfaces/inner_api",
-  "$vpe_capi_root_dir/../../../window/window_manager/interfaces/innerkits",
-  "$vpe_capi_root_dir/../../av_codec/interfaces/kits/c",
-  "$vpe_capi_root_dir/../interface/kits/c",
+  "$CAPI_DIR",
+  "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/test/moduletest/common",
+  "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/../../graphic/graphic_2d/interfaces/inner_api",
+  "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/../../window/window_manager/interfaces/innerkits"
 ]
 
 video_moduletest_cflags = [
@@ -47,7 +48,7 @@ video_moduletest_cflags = [
 
 ##################################################################################################################
 ohos_unittest("vpe_video_native_module_test") {
-  module_out_path = "media_foundation/moduletest"
+  module_out_path = module_output_path
   include_dirs = video_moduletest_native_include_dirs
   include_dirs += [ "./" ]
   cflags = video_moduletest_cflags
@@ -56,15 +57,12 @@ ohos_unittest("vpe_video_native_module_test") {
     "api_test.cpp",
     "capability_test.cpp",
     "func_test.cpp",
-    "reli_test.cpp",
     "video_sample.cpp",
+    "../common/yuv_viewer.cpp",
   ]
 
   deps = [
-    "$vpe_capi_root_dir/framework:video_processing",
-    "$vpe_capi_root_dir/../../av_codec/interfaces/inner_api/native:av_codec_client",
-    "$vpe_capi_root_dir/../../av_codec/interfaces/kits/c:capi_packages",
-    "$vpe_capi_root_dir/../../av_codec/services/services:av_codec_service",
+    "$FRAMEWORK_DIR:video_processing"
   ]
 
   external_deps = [
@@ -78,4 +76,7 @@ ohos_unittest("vpe_video_native_module_test") {
     "media_foundation:native_media_core",
     "window_manager:libwm",
   ]
+
+  resource_config_file =
+      "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/test/ndk/moduletest/resources/ohos_test.xml"
 }
