@@ -28,8 +28,8 @@
 constexpr uint32_t DEFAULT_WIDTH = 3840;
 constexpr uint32_t DEFAULT_HEIGHT = 2160;
 
-static void CreatePixelmap(OH_PixelmapNative **pixelmap, int32_t width, int32_t height, int format, 
-                            OH_NativeColorSpaceManager *colorSpaceNative)
+static void CreatePixelmap(OH_PixelmapNative **pixelmap, int32_t width, int32_t height, int format,
+                           OH_NativeColorSpaceManager *colorSpaceNative)
 {
     OH_Pixelmap_InintializationOptions *options = nullptr;
     (void)OH_Pixelmap_InintializationOptions_Create(&options);

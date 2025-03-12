@@ -67,7 +67,7 @@ int32_t TestUnsupportedOutput(int32_t inColorSpace, int32_t inPixFmt)
                 VideoProcessParam param = {inPixFmt, inColorSpace, j, i};
                 int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                         DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-                if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+                if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", F_OK)) {
                     EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
                     sample->StartProcess();
                     EXPECT_NE(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -125,14 +125,14 @@ HWTEST_F(VpeVideoReliTest, METADATASUPPORT_001, TestSize.Level2)
 
 void CheckCapability(VideoProcessing_ColorSpaceInfo inputFormat)
 {
-    if(formatImage.colorSpace == OH_COLORSPACE_SRGB_FULL ||
-       formatImage.colorSpace == OH_COLORSPACE_SRGB_LIMIT ||
-       formatImage.colorSpace == OH_COLORSPACE_LINEAR_SRGB ||
-       formatImage.colorSpace == OH_COLORSPACE_DISPLAY_SRGB ||
-       formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
-       formatImage.colorSpace == OH_COLORSPACE_DISPLAY_BT2020_SRGB) {
-            if(ValidatePixelFormat(formatImage)) {
-                if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (formatImage.colorSpace == OH_COLORSPACE_SRGB_FULL ||
+        formatImage.colorSpace == OH_COLORSPACE_SRGB_LIMIT ||
+        formatImage.colorSpace == OH_COLORSPACE_LINEAR_SRGB ||
+        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_SRGB ||
+        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
+        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_BT2020_SRGB) {
+            if (ValidatePixelFormat(formatImage)) {
+                if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", F_OK)) {
                     if (!access("/system/lib64/media/", 0)) {
                         ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
                     } else {
@@ -141,11 +141,11 @@ void CheckCapability(VideoProcessing_ColorSpaceInfo inputFormat)
                 }
             }
     }
-    if(formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
-       formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_HLG ||
-       formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_PQ) {
-        if(ValidatePixelFormat(formatImage)) {
-            if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
+        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_HLG ||
+        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_PQ) {
+        if (ValidatePixelFormat(formatImage)) {
+            if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", F_OK)) {
                 if (!access("/system/lib64/media/", 0)) {
                     ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
                 } else {
@@ -154,10 +154,10 @@ void CheckCapability(VideoProcessing_ColorSpaceInfo inputFormat)
             }
         }
     }
-    if(formatImage.colorSpace == OH_COLORSPACE_ADOBERGB_FULL ||
-       formatImage.colorSpace == OH_COLORSPACE_ADOBERGB_LIMIT) {
-        if(ValidatePixelFormat(formatImage)) {
-            if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (formatImage.colorSpace == OH_COLORSPACE_ADOBERGB_FULL ||
+        formatImage.colorSpace == OH_COLORSPACE_ADOBERGB_LIMIT) {
+        if (ValidatePixelFormat(formatImage)) {
+            if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", F_OK)) {
                 if (!access("/system/lib64/media/", 0)) {
                     ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
                 } else {
@@ -201,8 +201,8 @@ HWTEST_F(VpeVideoReliTest, METADATASUPPORT_003, TestSize.Level2)
             formatImage.colorSpace == OH_COLORSPACE_DISPLAY_SRGB ||
             formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
             formatImage.colorSpace == OH_COLORSPACE_DISPLAY_BT2020_SRGB) {
-            if(ValidatePixelFormat(formatImage)){
-                if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+            if (ValidatePixelFormat(formatImage)){
+                if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", F_OK)) {
                     if (!access("/system/lib64/media/", 0)) {
                         cout<<"return true"<< endl;
                         ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
@@ -215,8 +215,8 @@ HWTEST_F(VpeVideoReliTest, METADATASUPPORT_003, TestSize.Level2)
         } else if (formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
                    formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_HLG ||
                    formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_PQ) {
-            if(ValidatePixelFormat(formatImage)){
-                if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+            if (ValidatePixelFormat(formatImage)){
+                if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", F_OK)) {
                     if (!access("/system/lib64/media/", 0)) {
                         cout<<"return true"<< endl;
                         ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
@@ -229,7 +229,7 @@ HWTEST_F(VpeVideoReliTest, METADATASUPPORT_003, TestSize.Level2)
         } else if (formatImage.colorSpace == OH_COLORSPACE_ADOBERGB_FULL ||
                    formatImage.colorSpace == OH_COLORSPACE_ADOBERGB_LIMIT) {
             if (ValidatePixelFormat(formatImage)){
-                if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+                if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", F_OK)) {
                     if (!access("/system/lib64/media/", 0)) {
                         ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
                     } else {

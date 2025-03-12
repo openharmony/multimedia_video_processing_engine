@@ -120,7 +120,6 @@ static void OnEncOutputBufferAvailable(OH_AVCodec *codec, uint32_t index, OH_AVB
     OH_VideoEncoder_FreeOutputBuffer(codec, index);
 }
 
-
 static void OnVPEError(OH_VideoProcessing* videoProcessor, VideoProcessing_ErrorCode error, void* userData)
 {
     g_onErrorCount++;
@@ -218,7 +217,6 @@ void VideoProcessingDemo::SetTrackFormat(int32_t index)
     }
     OH_AVFormat_Destroy(trackFormat);
 }
-
 
 VideoProcessingDemo::~VideoProcessingDemo()
 {
@@ -354,8 +352,6 @@ void VideoProcessingDemo::Stop()
     }
     OH_AVMuxer_Stop(muxer);
 }
-
-
 
 int main(int32_t argc, char *argv[])
 {

@@ -12,6 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#ifndef VIDEO_SAMPLE_H
+#define VIDEO_SAMPLE_H
+
 #include <fstream>
 #include <vector>
 #include <string>
@@ -55,7 +59,7 @@ void OnNewOutputBuffer(OH_VideoProcessing* videoProcessor, uint32_t index, void*
 }
 }
 
-class VPEConsumerListener : public IBufferConsumerListener{
+class VPEConsumerListener : public IBufferConsumerListener {
 public:
     explicit VPEConsumerListener(sptr<Surface> cs) : cs(cs){};
     ~VPEConsumerListener() {};
@@ -173,3 +177,5 @@ int32_t VideoSample::StartProcess()
     CHECK_AND_RETURN_RET(ret == VIDEO_PROCESSING_SUCCESS, ret, "OH_VideoProcessing_Start failed.");
     return VIDEO_PROCESSING_SUCCESS;
 }
+
+#endif

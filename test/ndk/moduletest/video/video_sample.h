@@ -24,7 +24,7 @@
 #include "surface/window.h"
 #include "native_buffer.h"
 
-inline int CheckAndRet(bool cond, int ret, char* msg) {
+int CheckAndRet(bool cond, int ret, char* msg) {
     if (!cond) {                                          
         std::cout<< msg <<"    ErrCode:"<< ret << std::endl;
         return ret;

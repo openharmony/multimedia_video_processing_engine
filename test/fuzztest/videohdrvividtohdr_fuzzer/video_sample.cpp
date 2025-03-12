@@ -12,6 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#ifndef VIDEO_SAMPLE_H
+#define VIDEO_SAMPLE_H
+
 #include <fstream>
 #include <vector>
 #include <string>
@@ -200,3 +204,5 @@ int32_t VideoSample::StartProcess()
     CHECK_AND_RETURN_RET(ret == VIDEO_PROCESSING_SUCCESS, ret, "OH_VideoProcessing_Start failed.");
     return VIDEO_PROCESSING_SUCCESS;
 }
+
+#endif
