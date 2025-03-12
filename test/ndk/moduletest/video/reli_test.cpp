@@ -88,6 +88,17 @@ bool ValidatePixelFormat(ImageProcessing_ColorSpaceInfo formatImage)
     return ret;
 }
 
+bool IsSRGBColorSpace(ImageProcessing_ColorSpaceInfo formatImage)
+{
+    bool isSRGBColorSpace = (formatImage.colorSpace == OH_COLORSPACE_SRGB_FULL ||
+                             formatImage.colorSpace == OH_COLORSPACE_SRGB_LIMIT ||
+                             formatImage.colorSpace == OH_COLORSPACE_LINEAR_SRGB ||
+                             formatImage.colorSpace == OH_COLORSPACE_DISPLAY_SRGB ||
+                             formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
+                             formatImage.colorSpace == OH_COLORSPACE_DISPLAY_BT2020_SRGB);
+    return isSRGBColorSpace;
+}
+
 /**
  * @tc.number    : VPE_VIDEO_RELI_TEST_0010
  * @tc.name      : test all unsupported convert options
@@ -125,21 +136,16 @@ HWTEST_F(VpeVideoReliTest, METADATASUPPORT_001, TestSize.Level2)
 
 void CheckCapability(VideoProcessing_ColorSpaceInfo inputFormat)
 {
-    if (formatImage.colorSpace == OH_COLORSPACE_SRGB_FULL ||
-        formatImage.colorSpace == OH_COLORSPACE_SRGB_LIMIT ||
-        formatImage.colorSpace == OH_COLORSPACE_LINEAR_SRGB ||
-        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_SRGB ||
-        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
-        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_BT2020_SRGB) {
-            if (ValidatePixelFormat(formatImage)) {
-                if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", F_OK)) {
-                    if (!access("/system/lib64/media/", 0)) {
-                        ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
-                    } else {
-                        ASSERT_EQ(false, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
-                    }
+    if (IsSRGBColorSpace(formatImage)) {
+        if (ValidatePixelFormat(formatImage)) {
+            if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", F_OK)) {
+                if (!access("/system/lib64/media/", 0)) {
+                    ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
+                } else {
+                    ASSERT_EQ(false, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
                 }
             }
+        }
     }
     if (formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
         formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_HLG ||
@@ -195,12 +201,7 @@ HWTEST_F(VpeVideoReliTest, METADATASUPPORT_003, TestSize.Level2)
                 cout<<"--metadataType--" << i << "--colorSpace--" << j << "--pixelFormat--" << k << endl;
             }
         }
-        if (formatImage.colorSpace == OH_COLORSPACE_SRGB_FULL ||
-            formatImage.colorSpace == OH_COLORSPACE_SRGB_LIMIT ||
-            formatImage.colorSpace == OH_COLORSPACE_LINEAR_SRGB ||
-            formatImage.colorSpace == OH_COLORSPACE_DISPLAY_SRGB ||
-            formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
-            formatImage.colorSpace == OH_COLORSPACE_DISPLAY_BT2020_SRGB) {
+        if (IsSRGBColorSpace(formatImage)) {
             if (ValidatePixelFormat(formatImage)){
                 if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", F_OK)) {
                     if (!access("/system/lib64/media/", 0)) {
