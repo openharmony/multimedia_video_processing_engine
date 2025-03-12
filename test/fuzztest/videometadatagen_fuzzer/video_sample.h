@@ -26,7 +26,7 @@ constexpr int64_t NANOS_IN_MICRO = 1000L;
 constexpr int64_t SLEEP_MICROSECONDS = 33333L;
 constexpr int THREE = 3;
 
-namespace {
+namespace OHOS {
 int64_t GetSystemTimeUs()
 {
     struct timespec now;
