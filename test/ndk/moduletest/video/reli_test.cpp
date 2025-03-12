@@ -121,8 +121,8 @@ void CheckCapability(VideoProcessing_ColorSpaceInfo inputFormat)
         formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
         formatImage.colorSpace == OH_COLORSPACE_DISPLAY_BT2020_SRGB) {
             if(formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP ||
-            formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP ||
-            formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_RGBA_8888){
+                formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP ||
+                formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_RGBA_8888) {
                 if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
                     if (!access("/system/lib64/media/", 0)) {
                         ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
@@ -133,11 +133,11 @@ void CheckCapability(VideoProcessing_ColorSpaceInfo inputFormat)
             }
     }
     if(formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
-    formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_HLG ||
-    formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_PQ) {
+        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_HLG ||
+        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_PQ) {
         if(formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP ||
-        formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP ||
-        formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_RGBA_8888) {
+            formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP ||
+            formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_RGBA_8888) {
             if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
                 if (!access("/system/lib64/media/", 0)) {
                     ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
@@ -148,10 +148,10 @@ void CheckCapability(VideoProcessing_ColorSpaceInfo inputFormat)
         }
     }
     if(formatImage.colorSpace == OH_COLORSPACE_ADOBERGB_FULL ||
-    formatImage.colorSpace == OH_COLORSPACE_ADOBERGB_LIMIT) {
+        formatImage.colorSpace == OH_COLORSPACE_ADOBERGB_LIMIT) {
         if(formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP ||
-        formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP ||
-        formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_RGBA_8888) {
+            formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP ||
+            formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_RGBA_8888) {
             if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
                 if (!access("/system/lib64/media/", 0)) {
                     ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));

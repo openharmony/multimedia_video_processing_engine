@@ -17,6 +17,11 @@
 #include "video_sample.h"
 #include <cstddef>
 #include <cstdint>
+#include <unistd.h>
+#include <climits>
+#include <cstdio>
+#include <cstdlib>
+#include <fcntl.h>
 
 namespace OHOS {
 VideoSample *sample = nullptr;

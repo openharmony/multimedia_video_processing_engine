@@ -19,6 +19,11 @@
 #include "native_color_space_manager.h"
 #include <cstddef>
 #include <cstdint>
+#include <unistd.h>
+#include <climits>
+#include <cstdio>
+#include <cstdlib>
+#include <fcntl.h>
 
 using namespace OHOS;
 using namespace OHOS::Media;

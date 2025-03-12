@@ -13,6 +13,10 @@
  * limitations under the License.
  */
 
+
+#include <climits>
+#include <cstdio>
+#include <cstdlib>
 #include <cstddef>
 #include <cstdint>
 #include <fcntl.h>

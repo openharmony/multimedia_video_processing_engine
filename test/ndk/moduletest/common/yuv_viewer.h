@@ -19,7 +19,7 @@
 #include "surface/native_image.h"
 #include "surface/native_buffer.h"
 namespace OHOS {
-class YuvViewer{
+class YuvViewer {
 public:
     ~YuvViewer();
     OHNativeWindow *CreateWindow(uint32_t width, uint32_t height,

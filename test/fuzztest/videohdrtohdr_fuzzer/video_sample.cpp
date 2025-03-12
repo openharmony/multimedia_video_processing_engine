@@ -25,6 +25,7 @@ using namespace std;
 
 constexpr int64_t NANOS_IN_SECOND = 1000000000L;
 constexpr int64_t NANOS_IN_MICRO = 1000L;
+constexpr int64_t SLEEP_MICROSECONDS = 33333L;
 
 static int64_t GetSystemTimeUs()
 {
@@ -165,7 +166,7 @@ int32_t VideoSample::InputFunc(const uint8_t *data, size_t size)
     CHECK_AND_RETURN_RET(err == 0, err, "OH_NativeWindow_NativeWindowFlushBuffer failed.");
     err = OH_NativeWindow_SetColorSpace(inWindow, param_.inColorSpace);
     CHECK_AND_RETURN_RET(err == 0, err, "OH_NativeWindow_SetColorSpace failed.");
-    usleep(33333);
+    usleep(SLEEP_MICROSECONDS);
     return err;
 }
 

@@ -150,8 +150,10 @@ void VideoSample::SetInputWindowParam()
         metaDataFile->seekg(0, ios::end);
         metadataSize = metaDataFile->tellg();
         metaDataFile->seekg(0, ios::beg);
-        metaData = new uint8_t[metadataSize];
-        metaDataFile->read(reinterpret_cast<char*>(metaData), metadataSize);
+        if (metadataSize > 0) {
+            metaData = new uint8_t[metadataSize];
+            metaDataFile->read(reinterpret_cast<char*>(metaData), metadataSize);
+        }
     }
     rect = new Region::Rect();
     rect->x = 0;
