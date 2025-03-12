@@ -140,8 +140,10 @@ void VideoSample::SetInputWindowParam()
     metaDataFile->seekg(0, ios::end);
     metadataSize = metaDataFile->tellg();
     metaDataFile->seekg(0, ios::beg);
-    metaData = new uint8_t[metadataSize];
-    metaDataFile->read(reinterpret_cast<char*>(metaData), metadataSize);
+    if (metadataSize > 0) {
+        metaData = new uint8_t[metadataSize];
+        metaDataFile->read(reinterpret_cast<char*>(metaData), metadataSize);
+    }
     uint8_t val = OH_VIDEO_HDR_VIVID;
     err = OH_NativeWindow_SetMetadataValue(inWindow, OH_HDR_METADATA_TYPE, sizeof(uint8_t), &val);
     if (err != 0) {

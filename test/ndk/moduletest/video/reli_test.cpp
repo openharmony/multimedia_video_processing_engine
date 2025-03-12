@@ -77,6 +77,17 @@ int32_t TestUnsupportedOutput(int32_t inColorSpace, int32_t inPixFmt)
     }
 }
 
+bool ValidatePixelFormat(ImageProcessing_ColorSpaceInfo formatImage)
+{
+    if (formatImage == nullptr) {
+        return false;
+    }
+    bool ret = (formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP ||
+                formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP ||
+                formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_RGBA_8888);
+    return ret;
+}
+
 /**
  * @tc.number    : VPE_VIDEO_RELI_TEST_0010
  * @tc.name      : test all unsupported convert options
@@ -115,14 +126,12 @@ HWTEST_F(VpeVideoReliTest, METADATASUPPORT_001, TestSize.Level2)
 void CheckCapability(VideoProcessing_ColorSpaceInfo inputFormat)
 {
     if(formatImage.colorSpace == OH_COLORSPACE_SRGB_FULL ||
-        formatImage.colorSpace == OH_COLORSPACE_SRGB_LIMIT ||
-        formatImage.colorSpace == OH_COLORSPACE_LINEAR_SRGB ||
-        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_SRGB ||
-        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
-        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_BT2020_SRGB) {
-            if(formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP ||
-                formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP ||
-                formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_RGBA_8888) {
+       formatImage.colorSpace == OH_COLORSPACE_SRGB_LIMIT ||
+       formatImage.colorSpace == OH_COLORSPACE_LINEAR_SRGB ||
+       formatImage.colorSpace == OH_COLORSPACE_DISPLAY_SRGB ||
+       formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
+       formatImage.colorSpace == OH_COLORSPACE_DISPLAY_BT2020_SRGB) {
+            if(ValidatePixelFormat(formatImage)) {
                 if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
                     if (!access("/system/lib64/media/", 0)) {
                         ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
@@ -133,11 +142,9 @@ void CheckCapability(VideoProcessing_ColorSpaceInfo inputFormat)
             }
     }
     if(formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
-        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_HLG ||
-        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_PQ) {
-        if(formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP ||
-            formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP ||
-            formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_RGBA_8888) {
+       formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_HLG ||
+       formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_PQ) {
+        if(ValidatePixelFormat(formatImage)) {
             if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
                 if (!access("/system/lib64/media/", 0)) {
                     ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
@@ -148,10 +155,8 @@ void CheckCapability(VideoProcessing_ColorSpaceInfo inputFormat)
         }
     }
     if(formatImage.colorSpace == OH_COLORSPACE_ADOBERGB_FULL ||
-        formatImage.colorSpace == OH_COLORSPACE_ADOBERGB_LIMIT) {
-        if(formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP ||
-            formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP ||
-            formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_RGBA_8888) {
+       formatImage.colorSpace == OH_COLORSPACE_ADOBERGB_LIMIT) {
+        if(ValidatePixelFormat(formatImage)) {
             if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
                 if (!access("/system/lib64/media/", 0)) {
                     ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
@@ -178,17 +183,6 @@ HWTEST_F(VpeVideoReliTest, METADATASUPPORT_002, TestSize.Level2)
     }
 }
 
-bool ValidatePixelFormat(ImageProcessing_ColorSpaceInfo formatImage)
-{
-    if (formatImage == nullptr) {
-        return false;
-    }
-    bool ret = (formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP ||
-                formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP ||
-                formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_RGBA_8888);
-    return ret;
-}
-
 HWTEST_F(VpeVideoReliTest, METADATASUPPORT_003, TestSize.Level2)
 {
     ImageProcessing_ColorSpaceInfo formatImage;
@@ -202,11 +196,11 @@ HWTEST_F(VpeVideoReliTest, METADATASUPPORT_003, TestSize.Level2)
             }
         }
         if (formatImage.colorSpace == OH_COLORSPACE_SRGB_FULL ||
-        formatImage.colorSpace == OH_COLORSPACE_SRGB_LIMIT ||
-        formatImage.colorSpace == OH_COLORSPACE_LINEAR_SRGB ||
-        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_SRGB ||
-        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
-        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_BT2020_SRGB) {
+            formatImage.colorSpace == OH_COLORSPACE_SRGB_LIMIT ||
+            formatImage.colorSpace == OH_COLORSPACE_LINEAR_SRGB ||
+            formatImage.colorSpace == OH_COLORSPACE_DISPLAY_SRGB ||
+            formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
+            formatImage.colorSpace == OH_COLORSPACE_DISPLAY_BT2020_SRGB) {
             if(ValidatePixelFormat(formatImage)){
                 if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
                     if (!access("/system/lib64/media/", 0)) {
@@ -219,8 +213,8 @@ HWTEST_F(VpeVideoReliTest, METADATASUPPORT_003, TestSize.Level2)
                 }
             }
         } else if (formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
-        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_HLG ||
-        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_PQ) {
+                   formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_HLG ||
+                   formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_PQ) {
             if(ValidatePixelFormat(formatImage)){
                 if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
                     if (!access("/system/lib64/media/", 0)) {
@@ -233,7 +227,7 @@ HWTEST_F(VpeVideoReliTest, METADATASUPPORT_003, TestSize.Level2)
                 }
             }
         } else if (formatImage.colorSpace == OH_COLORSPACE_ADOBERGB_FULL ||
-        formatImage.colorSpace == OH_COLORSPACE_ADOBERGB_LIMIT) {
+                   formatImage.colorSpace == OH_COLORSPACE_ADOBERGB_LIMIT) {
             if (ValidatePixelFormat(formatImage)){
                 if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
                     if (!access("/system/lib64/media/", 0)) {

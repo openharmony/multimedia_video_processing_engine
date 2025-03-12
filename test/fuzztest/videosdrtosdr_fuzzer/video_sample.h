@@ -27,6 +27,7 @@ using namespace OHOS;
 using namespace std;
 constexpr int64_t NANOS_IN_SECOND = 1000000000L;
 constexpr int64_t NANOS_IN_MICRO = 1000L;
+constexpr int64_t SLEEP_MICROSECONDS = 33333L;
 constexpr int THREE = 3;
 
 namespace OHOS {
@@ -166,7 +167,7 @@ int32_t VideoSample::InputFunc(const uint8_t *data, size_t size)
     CHECK_AND_RETURN_RET(err == 0, err, "OH_NativeBuffer_Unmap failed.");
     err = OH_NativeWindow_NativeWindowFlushBuffer(inWindow, ohNativeWindowBuffer, -1, region);
     CHECK_AND_RETURN_RET(err == 0, err, "OH_NativeWindow_NativeWindowFlushBuffer failed.");
-    usleep(33333);
+    usleep(SLEEP_MICROSECONDS);
     return err;
 }
 
