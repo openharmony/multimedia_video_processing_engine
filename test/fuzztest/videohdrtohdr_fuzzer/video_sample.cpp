@@ -26,8 +26,10 @@ using namespace std;
 constexpr int64_t NANOS_IN_SECOND = 1000000000L;
 constexpr int64_t NANOS_IN_MICRO = 1000L;
 constexpr int64_t SLEEP_MICROSECONDS = 33333L;
+constexpr int THREE = 3;
 
-static int64_t GetSystemTimeUs()
+namespace OHOS {
+int64_t GetSystemTimeUs()
 {
     struct timespec now;
     (void)clock_gettime(CLOCK_BOOTTIME, &now);
@@ -35,14 +37,14 @@ static int64_t GetSystemTimeUs()
     return nanoTime / NANOS_IN_MICRO;
 }
 
-static void OnError(OH_VideoProcessing* videoProcessor, VideoProcessing_ErrorCode error, void* userData)
+void OnError(OH_VideoProcessing* videoProcessor, VideoProcessing_ErrorCode error, void* userData)
 {
     (void)videoProcessor;
     (void)error;
     (void)userData;
 }
 
-static void OnState(OH_VideoProcessing* videoProcessor, VideoProcessing_State state, void* userData)
+void OnState(OH_VideoProcessing* videoProcessor, VideoProcessing_State state, void* userData)
 {
     g_state = state;
     if (state == VIDEO_PROCESSING_STATE_STOPPED) {
@@ -51,9 +53,10 @@ static void OnState(OH_VideoProcessing* videoProcessor, VideoProcessing_State st
     std::cout << "OnState callback called, new state is "<< state << std::endl;
 }
 
-static void OnNewOutputBuffer(OH_VideoProcessing* videoProcessor, uint32_t index, void* userData)
+void OnNewOutputBuffer(OH_VideoProcessing* videoProcessor, uint32_t index, void* userData)
 {
     OH_VideoProcessing_RenderOutputBuffer(videoProcessor, index);
+}
 }
 
 class VPEConsumerListener : public IBufferConsumerListener {
@@ -158,7 +161,7 @@ int32_t VideoSample::InputFunc(const uint8_t *data, size_t size)
     err = OH_NativeBuffer_Map(nativeBuffer, &virAddr);
     CHECK_AND_RETURN_RET(err == 0, err, "OH_NativeBuffer_Map failed.");
     uint8_t *addr = reinterpret_cast<uint8_t *>(virAddr);
-    memcpy_s(addr, config.stride * config.height * 3, data, size);
+    memcpy_s(addr, config.stride * config.height * THREE, data, size);
     NativeWindowHandleOpt(inWindow, SET_UI_TIMESTAMP, GetSystemTimeUs());
     err = OH_NativeBuffer_Unmap(nativeBuffer);
     CHECK_AND_RETURN_RET(err == 0, err, "OH_NativeBuffer_Unmap failed.");
