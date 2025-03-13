@@ -394,7 +394,8 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0090, TestSize.Level2)
     ImageProcessing_ColorSpaceInfo destinationGainmapInfo = {GAINMAP,
                                         DISPLAY_P3,
                                         PIXEL_FORMAT_RGBA_8888};
-    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo, &destinationGainmapInfo));
+    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo,
+                                                            &destinationGainmapInfo));
 }
 
 /**
