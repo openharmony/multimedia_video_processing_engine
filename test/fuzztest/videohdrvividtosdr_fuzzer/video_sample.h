@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef VIDEO_SAMPLE_H
 #define VIDEO_SAMPLE_H
 

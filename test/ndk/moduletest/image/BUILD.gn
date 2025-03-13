@@ -1,0 +1,84 @@
+# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/test.gni")
+import("//build/ohos.gni")
+import("//foundation/multimedia/video_processing_engine/config.gni")
+
+module_output_path = MODULE_TEST_OUTPUT_PATH
+
+image_moduletest_native_include_dirs = [
+  "$CAPI_DIR",
+  "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/test/moduletest/common",
+  "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/../../graphic/graphic_2d/interfaces/inner_api",
+  "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/../../window/window_manager/interfaces/innerkits",
+  "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/../../interface/sdk_c/multimedia/image_framework/include",
+  "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/../image_framework/interfaces/kits/native/include",
+]
+
+image_moduletest_cflags = [
+  "-std=c++17",
+  "-fno-rtti",
+  "-fno-exceptions",
+  "-Wall",
+  "-fno-common",
+  "-fstack-protector-strong",
+  "-Wshadow",
+  "-FPIC",
+  "-FS",
+  "-O2",
+  "-D_FORTIFY_SOURCE=2",
+  "-fvisibility=hidden",
+  "-Wformat=2",
+  "-Wdate-time",
+  "-Werror",
+  "-Wextra",
+  "-Wimplicit-fallthrough",
+  "-Wsign-compare",
+  "-Wunused-parameter",
+]
+
+##################################################################################################################
+ohos_unittest("vpe_image_native_module_test") {
+  module_out_path = module_output_path
+  include_dirs = image_moduletest_native_include_dirs
+  include_dirs += [ "./" ]
+  cflags = image_moduletest_cflags
+
+  sources = [
+    "api_test.cpp",
+    "capability_test.cpp"
+  ]
+
+  deps = [
+    "$FRAMEWORK_DIR:image_processing",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/../../arkui/napi:ace_napi",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/../image_framework/frameworks/kits/js/common/pixelmap_ndk:pixelmap_ndk",
+  ]
+
+  external_deps = [
+    "c_utils:utils",
+    "graphic_2d:libgraphic_utils",
+    "graphic_2d:librender_service_client",
+    "graphic_surface:surface",
+    "hilog:libhilog",
+    "ipc:ipc_core",
+    "media_foundation:media_foundation",
+    "media_foundation:native_media_core",
+    "window_manager:libwm",
+    "image_framework:pixelmap",
+  ]
+
+  resource_config_file =
+      "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/test/ndk/moduletest/resources/ohos_test.xml"
+}
