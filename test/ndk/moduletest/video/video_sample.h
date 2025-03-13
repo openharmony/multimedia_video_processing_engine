@@ -25,7 +25,7 @@
 
 int CheckAndRet(bool cond, int ret, char* msg)
 {
-    if (!cond) {                                
+    if (!cond) {
         std::cout << msg << "    ErrCode:" << ret << std::endl;
         return ret;
     }

@@ -242,7 +242,8 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0010, TestSize.Level0)
     ImageProcessing_ColorSpaceInfo destinationGainmapInfo = {GAINMAP,
                                         DISPLAY_P3,
                                         PIXEL_FORMAT_RGBA_8888};
-    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo, &destinationGainmapInfo));
+    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo,
+                                                            &destinationGainmapInfo));
 }
 
 /**
@@ -261,7 +262,8 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0020, TestSize.Level1)
     ImageProcessing_ColorSpaceInfo destinationGainmapInfo = {GAINMAP,
                                         DISPLAY_SRGB,
                                         PIXEL_FORMAT_RGBA_8888};
-    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo, &destinationGainmapInfo));
+    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo,
+                                                            &destinationGainmapInfo));
 }
 
 /**
@@ -280,7 +282,8 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0030, TestSize.Level2)
     ImageProcessing_ColorSpaceInfo destinationGainmapInfo = {GAINMAP,
                                         DISPLAY_P3,
                                         PIXEL_FORMAT_RGBA_8888};
-    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo, &destinationGainmapInfo));
+    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo,
+                                                            &destinationGainmapInfo));
 }
 
 /**
@@ -299,7 +302,8 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0040, TestSize.Level2)
     ImageProcessing_ColorSpaceInfo destinationGainmapInfo = {GAINMAP,
                                         DISPLAY_SRGB,
                                         PIXEL_FORMAT_RGBA_8888};
-    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo, &destinationGainmapInfo));
+    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo,
+                                                            &destinationGainmapInfo));
 }
 
 /**
@@ -318,7 +322,8 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0050, TestSize.Level2)
     ImageProcessing_ColorSpaceInfo destinationGainmapInfo = {GAINMAP,
                                         DISPLAY_P3,
                                         PIXEL_FORMAT_RGBA_8888};
-    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo, &destinationGainmapInfo));
+    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo,
+                                                            &destinationGainmapInfo));
 }
 
 /**
@@ -337,7 +342,8 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0060, TestSize.Level2)
     ImageProcessing_ColorSpaceInfo destinationGainmapInfo = {GAINMAP,
                                         DISPLAY_SRGB,
                                         PIXEL_FORMAT_RGBA_8888};
-    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo, &destinationGainmapInfo));
+    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo,
+                                                            &destinationGainmapInfo));
 }
 
 /**
@@ -356,7 +362,8 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0070, TestSize.Level0)
     ImageProcessing_ColorSpaceInfo destinationGainmapInfo = {GAINMAP,
                                         DISPLAY_P3,
                                         PIXEL_FORMAT_RGBA_8888};
-    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo, &destinationGainmapInfo));
+    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo,
+                                                            &destinationGainmapInfo));
 }
 
 /**
@@ -375,7 +382,8 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0080, TestSize.Level1)
     ImageProcessing_ColorSpaceInfo destinationGainmapInfo = {GAINMAP,
                                         DISPLAY_SRGB,
                                         PIXEL_FORMAT_RGBA_8888};
-    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo, &destinationGainmapInfo));
+    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo,
+                                                            &destinationGainmapInfo));
 }
 
 /**
@@ -454,8 +462,8 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0120, TestSize.Level2)
     ImageProcessing_ColorSpaceInfo destinationGainmapInfo = {GAINMAP,
                                         DISPLAY_SRGB,
                                         PIXEL_FORMAT_RGBA_8888};
-    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo,
-                                                            &destinationImageInfo, &destinationGainmapInfo));
+    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo,
+                                                            &destinationGainmapInfo));
 }
 
 /**
@@ -589,9 +597,11 @@ HWTEST_F(VpeVideoCapTest, Composition_SUPPORT_001, TestSize.Level2)
     outputFormat.colorSpace = BT2020_PQ;
     outputFormat.pixelFormat = PIXEL_FORMAT_YCBCR_P010;
     if (!access("/system/lib64/media/", 0)) {
-        ASSERT_EQ(true, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat, &outputFormat));
+        ASSERT_EQ(true, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat,
+                                                                  &outputFormat));
     } else {
-        ASSERT_EQ(false, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat, &outputFormat));
+        ASSERT_EQ(false, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat,
+                                                                   &outputFormat));
     }
 }
 
@@ -618,9 +628,11 @@ HWTEST_F(VpeVideoCapTest, Composition_SUPPORT_002, TestSize.Level2)
     outputFormat.colorSpace = BT2020_PQ;
     outputFormat.pixelFormat = PIXEL_FORMAT_YCBCR_P010;
     if (!access("/system/lib64/media/", 0)) {
-        ASSERT_EQ(true, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat, &outputFormat));
+        ASSERT_EQ(true, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat,
+                                                                  &outputFormat));
     } else {
-        ASSERT_EQ(false, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat, &outputFormat));
+        ASSERT_EQ(false, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat,
+                                                                   &outputFormat));
     }
 }
 
@@ -647,9 +659,11 @@ HWTEST_F(VpeVideoCapTest, Composition_SUPPORT_005, TestSize.Level2)
     outputFormat.colorSpace = BT2020_PQ;
     outputFormat.pixelFormat = PIXEL_FORMAT_RGBA_1010102;
     if (!access("/system/lib64/media/", 0)) {
-        ASSERT_EQ(true, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat, &outputFormat));
+        ASSERT_EQ(true, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat,
+                                                                  &outputFormat));
     } else {
-        ASSERT_EQ(false, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat, &outputFormat));
+        ASSERT_EQ(false, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat,
+                                                                   &outputFormat));
     }
 }
 
@@ -676,9 +690,11 @@ HWTEST_F(VpeVideoCapTest, Composition_SUPPORT_006, TestSize.Level2)
     outputFormat.colorSpace = BT2020_PQ;
     outputFormat.pixelFormat = PIXEL_FORMAT_RGBA_1010102;
     if (!access("/system/lib64/media/", 0)) {
-        ASSERT_EQ(true, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat, &outputFormat));
+        ASSERT_EQ(true, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat,
+                                                                  &outputFormat));
     } else {
-        ASSERT_EQ(false, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat, &outputFormat));
+        ASSERT_EQ(false, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat,
+                                                                   &outputFormat));
     }
 }
 
@@ -705,9 +721,11 @@ HWTEST_F(VpeVideoCapTest, Composition_SUPPORT_007, TestSize.Level2)
     outputFormat.colorSpace = BT2020_HLG;
     outputFormat.pixelFormat = PIXEL_FORMAT_YCBCR_P010;
     if (!access("/system/lib64/media/", 0)) {
-        ASSERT_EQ(true, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat, &outputFormat));
+        ASSERT_EQ(true, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat,
+                                                                  &outputFormat));
     } else {
-        ASSERT_EQ(false, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat, &outputFormat));
+        ASSERT_EQ(false, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat,
+                                                                   &outputFormat));
     }
 }
 
@@ -734,9 +752,11 @@ HWTEST_F(VpeVideoCapTest, Composition_SUPPORT_008, TestSize.Level2)
     outputFormat.colorSpace = BT2020_HLG;
     outputFormat.pixelFormat = PIXEL_FORMAT_YCBCR_P010;
     if (!access("/system/lib64/media/", 0)) {
-        ASSERT_EQ(true, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat, &outputFormat));
+        ASSERT_EQ(true, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat,
+                                                                  &outputFormat));
     } else {
-        ASSERT_EQ(false, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat, &outputFormat));
+        ASSERT_EQ(false, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat,
+                                                                   &outputFormat));
     }
 }
 
@@ -763,7 +783,8 @@ HWTEST_F(VpeVideoCapTest, Composition_SUPPORT_011, TestSize.Level2)
     outputFormat.colorSpace = BT2020_HLG;
     outputFormat.pixelFormat = PIXEL_FORMAT_RGBA_1010102;
 
-    ASSERT_EQ(true, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat, &outputFormat));
+    ASSERT_EQ(true, OH_ImageProcessing_IsCompositionSupported(&inputFormat, &inputGainmapFormat,
+                                                              &outputFormat));
 }
 
 /**
