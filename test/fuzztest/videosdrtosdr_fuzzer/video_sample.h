@@ -58,7 +58,7 @@ void OnNewOutputBuffer(OH_VideoProcessing* videoProcessor, uint32_t index, void*
 }
 } // namespace
 
-class VPEConsumerListener : public IBufferConsumerListener{
+class VPEConsumerListener : public IBufferConsumerListener {
 public:
     explicit VPEConsumerListener(sptr<Surface> cs) : cs(cs){};
     ~VPEConsumerListener() {};

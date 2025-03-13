@@ -28,7 +28,6 @@ public:
 private:
     sptr<Rosen::Window> rosenWindow_;
     OHNativeWindow *window_ = nullptr;
-    
 };
 }
 #endif // VPE_TEST_YUV_VIEWER_H

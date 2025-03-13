@@ -45,8 +45,6 @@ void VpeVideoCapTest::SetUp() {}
 void VpeVideoCapTest::TearDown() {}
 }
 
-
-
 namespace {
 /**
  * @tc.number    : COLORSPACE_SUPPORT_001
