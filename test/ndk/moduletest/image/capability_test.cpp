@@ -467,7 +467,7 @@ HWTEST_F(VpeVideoCapTest, METADATAGENERATE_SUPPORT_001, TestSize.Level2)
     inputFormat.colorSpace = BT2020_HLG;
     inputFormat.pixelFormat = PIXEL_FORMAT_RGBA_1010102;
     if (!access("/system/lib64/media/", 0)) {
-        // ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(&inputFormat));
+        ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(&inputFormat));
     } else {
         ASSERT_EQ(false, OH_ImageProcessing_IsMetadataGenerationSupported(&inputFormat));
     }

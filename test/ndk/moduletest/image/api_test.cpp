@@ -36,7 +36,7 @@ OH_Pixelmap_InitializationOptions *g_createOpts_RGBA = nullptr;
 OH_Pixelmap_InitializationOptions *g_createOpts_BGRA = nullptr;
 OH_PixelmapNative *pixelMap_RGBA = nullptr;
 OH_PixelmapNative *pixelMap_BGRA = nullptr;
-void InitCreatePixelmapParam_RGBA()
+void InitCreatePixelmapParamRGBA()
 {
     if (g_createOpts_RGBA == nullptr) {
         OH_PixelmapInitializationOptions_Create(&g_createOpts_RGBA);
@@ -45,7 +45,7 @@ void InitCreatePixelmapParam_RGBA()
         OH_PixelmapInitializationOptions_SetPixelFormat(g_createOpts_RGBA, NATIVEBUFFER_PIXEL_FMT_RGBA_8888);
     }
 }
-void InitCreatePixelmapParam_BGRA()
+void InitCreatePixelmapParamBGRA()
 {
     if (g_createOpts_BGRA == nullptr) {
         OH_PixelmapInitializationOptions_Create(&g_createOpts_BGRA);
@@ -72,8 +72,8 @@ public:
 void VpeImageApiTest::SetUpTestCase()
 {
     g_pixData = new uint8_t[PIX_SIZE];
-    InitCreatePixelmapParam_RGBA();
-    InitCreatePixelmapParam_BGRA();
+    InitCreatePixelmapParamRGBA();
+    InitCreatePixelmapParamBGRA();
     OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &pixelMap_RGBA);
     OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_BGRA, &pixelMap_BGRA);
 }
@@ -81,6 +81,7 @@ void VpeImageApiTest::TearDownTestCase()
 {
     if (g_pixData) {
         delete[] g_pixData;
+        g_pixData = nullptr;
     }
     if (g_createOpts_RGBA) {
         OH_PixelmapInitializationOptions_Release(g_createOpts_RGBA);
