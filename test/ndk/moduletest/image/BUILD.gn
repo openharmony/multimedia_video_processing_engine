@@ -52,7 +52,7 @@ image_moduletest_cflags = [
 ohos_unittest("vpe_image_native_module_test") {
   module_out_path = module_output_path
   include_dirs = image_moduletest_native_include_dirs
-  include_dirs += [ "./" ]
+  include_dirs += ["../common/"]
   cflags = image_moduletest_cflags
 
   sources = [

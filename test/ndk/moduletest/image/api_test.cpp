@@ -94,7 +94,6 @@ void VpeImageApiTest::TearDownTestCase()
 }
 void VpeImageApiTest::SetUp()
 {
-
 }
 void VpeImageApiTest::TearDown()
 {
@@ -511,7 +510,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0240, TestSize.Level0)
 HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0250, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
-    ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(nullptr, 
+    ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(nullptr,
         IMAGE_PROCESSING_TYPE_METADATA_GENERATION);
     if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);

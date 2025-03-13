@@ -19,7 +19,6 @@
 #include <thread>
 #include <fstream>
 #include <memory>
-#include "yuv_viewer.h"
 #include "video_processing.h"
 #include "surface/window.h"
 #include "native_buffer.h"
@@ -65,7 +64,6 @@ private:
     int32_t ReadOneFrameP010(uint8_t *addr, OH_NativeBuffer_Config config);
     int32_t ReadOneFrameRGBA10(uint8_t *addr, OH_NativeBuffer_Config config);
     OH_VideoProcessing* videoProcessor = nullptr;
-    std::unique_ptr<YuvViewer> viewer;
     OHNativeWindow *inWindow = nullptr;
     OHNativeWindow *outWindow = nullptr;
     std::unique_ptr<std::ifstream> inFile;

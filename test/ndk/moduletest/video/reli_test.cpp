@@ -16,7 +16,6 @@
 #include <chrono>
 #include "gtest/gtest.h"
 #include "video_processing.h"
-#include "yuv_viewer.h"
 #include "enum_list.h"
 #include "video_sample.h"
 using namespace std;
@@ -24,9 +23,10 @@ using namespace OHOS;
 using namespace testing::ext;
 
 namespace {
-constexpr uint32_t DEFAULT_WIDTH = 3840;
-constexpr uint32_t DEFAULT_HEIGHT = 2160;
-
+static uint32_t g_allTestCount = 0;
+static uint32_t g_supportedCount = 0;
+static uint32_t g_unsupportedCount = 0;
+std::unique_ptr<std::ofstream> outputListFile = nullptr;
 
 class VpeVideoReliTest : public testing::Test {
 public:
@@ -50,204 +50,288 @@ void VpeVideoReliTest::TearDownTestCase()
 }
 void VpeVideoReliTest::SetUp()
 {
+    g_allTestCount = 0;
+    g_supportedCount = 0;
+    g_unsupportedCount = 0;
 }
 void VpeVideoReliTest::TearDown()
 {
 }
-}
 
 namespace {
-int32_t TestUnsupportedOutput(int32_t inColorSpace, int32_t inPixFmt)
+static bool CheckHDRColorSpaceAndPixFmt(VideoProcessing_ColorSpaceInfo info)
 {
-    for (int i : g_nativeBufferColorSpace) {
-        for (int j : g_nativeBufferFormat) {
-            for (int k : g_nativeBufferMetadataType) {
-                std::unique_ptr<VideoSample> sample = std::make_unique<VideoSample>();
-                sample->inputFrameNumber = 1;
-                VideoProcessParam param = {inPixFmt, inColorSpace, j, i};
-                int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
-                                        DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-                if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", F_OK)) {
-                    EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
-                    sample->StartProcess();
-                    EXPECT_NE(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
-                }
+    if ((info.metadataType == OH_VIDEO_HDR_HLG) && (info.colorSpace != OH_COLORSPACE_BT2020_HLG_LIMIT)) {
+        return false;
+    }
+    if ((info.metadataType == OH_VIDEO_HDR_HDR10) && (info.colorSpace != OH_COLORSPACE_BT2020_PQ_LIMIT)) {
+        return false;
+    }
+    switch (info.colorSpace) {
+        case OH_COLORSPACE_BT2020_HLG_LIMIT:
+        case OH_COLORSAPCE_BT2020_PQ_LIMIT:
+            break;
+        default:
+            return false;
+    }
+    switch (info.pixelFormat) {
+        case NATIVEBUFFER_PIXEL_FMT_YCBCR_P010:
+        case NATIVEBUFFER_PIXEL_FMT_YCRCB_P010:
+        case NATIVEBUFFER_PIXEL_FMT_RGBA_1010102:
+            return true;
+        default:
+            return false;
+    }
+}
+
+static bool CheckSupportedMetadataGen(VideoProcessing_ColorSpaceInfo info)
+{
+    switch (info.metadataType) {
+        case OH_VIDEO_HDR_HLG:
+        case OH_VIDEO_HDR_HDR10:
+        case OH_VIDEO_HDR_VIVID:
+            break;
+        default:
+            return false;
+    }
+    return CheckHDRColorSpaceAndPixFmt(info);
+}
+
+static std::string BoolToString(bool val)
+{
+    if (val) {
+        return "true";
+    }
+    return "false";
+}
+
+void CheckMetadataGen(VideoProcessing_ColorSpaceInfo info)
+{
+    bool expectVal = CheckSupportedMetadataGen(info);
+    bool realVal = OH_VideoProcessing_IsMetadataGenerationSupported(&info);
+    if (expectVal != realVal) {
+        string msg = "-----------------------------------------------\n";
+        msg += "metadata gen type:" + metadataString[info.metadataType] + "\n";
+        msg += "colorspace:" + colorString[info.colorSpace] + "\n";
+        msg += "format:" formatString[info.pixelFormat] + "\n";
+        msg += "expect" + BoolToString(expectVal) + " actual:" BoolToString(realVal) + "\n";
+        msg += "-----------------------------------------------\n";
+        outputListFile->write(msg.c_str(), msg.size());
+        g_unsupportedCount++;
+    } else {
+        g_supportedCount++;
+    }
+    g_allTestCount++;
+}
+
+static bool CheckVideoHDRVivid2SDR(VideoProcessing_ColorSpaceInfo outInfo)
+{
+    switch (outInfo.metadataType) {
+        case OH_VIDEO_HDR_HLG:
+        case OH_VIDEO_HDR_HDR10:
+        case OH_VIDEO_HDR_VIVID:
+            return false;
+        default:
+            break;
+    }
+    switch (outInfo.colorSpace) {
+        case OH_COLORSPACE_BT709_LIMIT:
+            break;
+        default:
+            return false;
+    }
+    switch (outInfo.pixelFormat) {
+        case NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP:
+        case NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP:
+        case NATIVEBUFFER_PIXEL_FMT_RGBA_8888:
+            return true;
+        default:
+            return false;
+    }
+}
+
+static bool CheckVideoVivid2Vivid(VideoProcessing_ColorSpaceInfo  outInfo)
+{
+    if (outInfo.metadataType != OH_VIDEO_HDR_VIVID) {
+        return false;
+    }
+    return CheckHDRColorSpaceAndPixFmt(outInfo);
+}
+
+static bool CheckVideoVivid2HDR(VideoProcessing_ColorSpaceInfo outInfo)
+{
+    if (outInfo.metadataType != OH_VIDEO_HDR_HLG) {
+        return false;
+    }
+    return CheckHDRColorSpaceAndPixFmt(outInfo);
+}
+
+static bool CheckVideoHDR2HDR(VideoProcessing_ColorSpaceInfo outInfo)
+{
+    if (outInfo.metadataType != OH_VIDEO_HDR_HLG) {
+        return false;
+    }
+    return CheckHDRColorSpaceAndPixFmt(outInfo);
+}
+
+static bool IsHDRConvert(VideoProcessing_ColorSpaceInfo inInfo, VideoProcessing_ColorSpaceInfo outInfo)
+{
+    if (!CheckHDRColorSpaceAndPixFmt(inInfo)) {
+        return false;
+    }
+    if (inInfo.metadataType == OH_VIDEO_HDR_VIVID) {
+        if (inInfo.colorSpace == outInfo.colorSpace) {
+            return false;
+        }
+        bool isHDR2SDR = CheckVideoHDRVivid2SDR(outInfo);
+        bool isHDR2HDR = CheckVideoVivid2Vivid(outInfo);
+        bool isHDRVivid2HDR = false;
+        if (inInfo.colorSpace == OH_COLORSPACE_BT2020_PQ_LIMIT) {
+            isHDRVivid2HDR = CheckVideoVivid2HDR(outInfo);
+        }
+        return (isHDR2SDR || isHDR2HDR || isHDRVivid2HDR);
+    } else if (inInfo.metadataType == OH_VIDEO_HDR_HLG) {
+        return false;
+    } else {
+        if (inInfo.colorSpace == outInfo.ColorSpace) {
+            return false;
+        }
+        return CheckVideoHDR2HDR(outInfo);
+    }
+}
+
+static bool IsSDRConvert(VideoProcessing_ColorSpaceInfo inInfo, VideoProcessing_ColorSpaceInfo outInfo)
+{
+    if (inInfo.colorSpace != OH_COLORSPACE_BT601_EBU_LIMIT && inInfo.colorSpace != OH_COLORSPACE_BT601_SMPTE_C_LIMIT) {
+        return false;
+    }
+    switch (inInfo.pixelFormat) {
+        case NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP:
+        case NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP:
+        case NATIVEBUFFER_PIXEL_FMT_RGBA_8888:
+            break;
+        default:
+            return false;
+    }
+    switch (outInfo.metadataType) {
+        case OH_VIDEO_HDR_HLG:
+        case OH_VIDEO_HDR_HDR10:
+        case OH_VIDEO_HDR_VIVID:
+            return false;
+        default:
+            break;
+    }
+    if (outInfo.colorSpace != OH_COLORSPACE_BT709_LIMIT) {
+        return false;
+    }
+    switch (outInfo.pixelFormat) {
+        case NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP:
+        case NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP:
+        case NATIVEBUFFER_PIXEL_FMT_RGBA_8888:
+            return true;
+        default:
+            return false;
+    }
+}
+
+static void CheckColorSpaceConvert(VideoProcessing_ColorSpaceInfo inInfo, VideoProcessing_ColorSpaceInfo outInfo)
+{
+    bool expectVal = false;
+    switch (inInfo.metadataType) {
+        case OH_VIDEO_HDR_HLG:
+        case OH_VIDEO_HDR_HDR10:
+        case OH_VIDEO_HDR_VIVID:
+            expectVal = IsHDRConvert(inInfo, outInfo);
+            break;
+        default:
+            expectVal = IsSDRConvert(inInfo, outInfo);
+            break;
+    }
+    bool realVal = OH_VideoProcessing_IsColorSpaceConversionSupported(&inInfo, &outInfo);
+    if (expectVal != realVal) {
+        string msg = "-----------------------------------------------\n";
+        msg += "convet in type:" + metadataString[inInfo.metadataType] + "\n";
+        msg += "colorspace:" + colorString[inInfo.colorSpace] + "\n";
+        msg += "format:" formatString[inInfo.pixelFormat] + "\n";
+        msg += "convet out type:" + metadataString[outInfo.metadataType] + "\n";
+        msg += "colorspace:" + colorString[outInfo.colorSpace] + "\n";
+        msg += "format:" formatString[outInfo.pixelFormat] + "\n";
+        msg += "expect" + BoolToString(expectVal) + " actual:" BoolToString(realVal) + "\n";
+        msg += "-----------------------------------------------\n";
+        outputListFile->write(msg.c_str(), msg.size());
+        g_unsupportedCount++;
+    } else {
+        g_supportedCount++;
+    }
+    g_allTestCount++;
+}
+
+static void GenOutputOptions(VideoProcessing_ColorSpaceInfo inInfo)
+{
+    for (int i :NativeBuffer_MetadataType) {
+        for (int j : NativeBuffer_ColorSpace) {
+            for (int k : NativeBuffer_Format) {
+                VideoProcessing_ColorSpaceInfo outInfo;
+                outInfo.metadataType = i;
+                outInfo.colorSpace = j;
+                outInfo.pixelFormat = k;
+                CheckColorSpaceConvert(inInfo, outInfo);
             }
         }
     }
-}
-
-bool ValidatePixelFormat(ImageProcessing_ColorSpaceInfo formatImage)
-{
-    if (formatImage == nullptr) {
-        return false;
-    }
-    bool ret = (formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP ||
-                formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP ||
-                formatImage.pixelFormat == NATIVEBUFFER_PIXEL_FMT_RGBA_8888);
-    return ret;
-}
-
-bool IsSRGBColorSpace(ImageProcessing_ColorSpaceInfo formatImage)
-{
-    bool isSRGBColorSpace = (formatImage.colorSpace == OH_COLORSPACE_SRGB_FULL ||
-                             formatImage.colorSpace == OH_COLORSPACE_SRGB_LIMIT ||
-                             formatImage.colorSpace == OH_COLORSPACE_LINEAR_SRGB ||
-                             formatImage.colorSpace == OH_COLORSPACE_DISPLAY_SRGB ||
-                             formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
-                             formatImage.colorSpace == OH_COLORSPACE_DISPLAY_BT2020_SRGB);
-    return isSRGBColorSpace;
 }
 
 /**
  * @tc.number    : VPE_VIDEO_RELI_TEST_0010
- * @tc.name      : test all unsupported convert options
+ * @tc.name      : test all metadataGenerate options
  * @tc.desc      : function test
  */
-HWTEST(VpeVideoReliTest, VPE_VIDEO_RELI_TEST_0010, TestSize.Level0)
+HWTEST_F(VpeVideoReliTest, VPE_VIDEO_RELI_TEST_0010, TestSize.Level2)
 {
-    for (int i : g_nativeBufferColorSpace) {
-        for (int j : g_nativeBufferFormat) {
-            TestUnsupportedOutput(i, j);
+    outputListFile = std::make_unique<std::ofstream>("/data/test/media/metadataSupportList.txt");
+    for (int i : NativeBuffer_MetadataType) {
+        for (int j : NativeBuffer_ColorSpace) {
+            for (int k : NativeBuffer_Format) {
+                VideoProcessing_ColorSpaceInfo info;
+                info.metadataType = i;
+                info.colorSpace = j;
+                info.pixelFormat = k;
+                CheckMetadataGen(info);
+            }
         }
     }
+    cout << "all test " << g_allTestCount <<endl;
+    cout << "matched test " << g_supportedCount <<endl;
+    cout<< " mismatched test" << g_unsupportedCount <<endl;
+    outputListFile->close();
+    outputListFile = nullptr;
+    ASSERT_EQ(g_unsupportedCount, 0);
 }
 
 /**
- * @tc.number    : METADATASUPPORT_001
- * @tc.name      : test all unsupported metadata generation
+ * @tc.number    : VPE_VIDEO_RELI_TEST_0020
+ * @tc.name      : test all colorspace convert options
  * @tc.desc      : function test
  */
-HWTEST_F(VpeVideoReliTest, METADATASUPPORT_001, TestSize.Level2)
+HWTEST_F(VpeVideoReliTest, VPE_VIDEO_RELI_TEST_0020, TestSize.Level2)
 {
-    VideoProcessing_ColorSpaceInfo inputFormat;
-    for (int i : g_nativeBufferMetadataType) {
-        for (int j: g_nativeBufferColorSpace) {
-            for (int k : g_nativeBufferFormat) {
-                inputFormat.metadataType = i;
-                inputFormat.colorSpace = j;
-                inputFormat.pixelFormat = k;
-                bool ret = OH_VideoProcessing_IsMetadataGenerationSupported(inputFormat);
+    outputListFile = std::make_unique<std::ofstream>("/data/test/media/convertSupportList.txt");
+    for (int i : NativeBuffer_MetadataType) {
+        for (int j : NativeBuffer_ColorSpace) {
+            for (int k : NativeBuffer_Format) {
+                VideoProcessing_ColorSpaceInfo info;
+                info.metadataType = i;
+                info.colorSpace = j;
+                info.pixelFormat = k;
+                GenOutputOptions(info);
             }
         }
     }
-}
-
-
-void CheckCapability(VideoProcessing_ColorSpaceInfo inputFormat)
-{
-    if (IsSRGBColorSpace()) {
-        if (ValidatePixelFormat(formatImage)) {
-            if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", F_OK)) {
-                if (!access("/system/lib64/media/", 0)) {
-                    ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
-                } else {
-                    ASSERT_EQ(false, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
-                }
-            }
-        }
-    }
-    if (formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
-        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_HLG ||
-        formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_PQ) {
-        if (ValidatePixelFormat(formatImage)) {
-            if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", F_OK)) {
-                if (!access("/system/lib64/media/", 0)) {
-                    ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
-                } else {
-                    ASSERT_EQ(false, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
-                }
-            }
-        }
-    }
-    if (formatImage.colorSpace == OH_COLORSPACE_ADOBERGB_FULL ||
-        formatImage.colorSpace == OH_COLORSPACE_ADOBERGB_LIMIT) {
-        if (ValidatePixelFormat(formatImage)) {
-            if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", F_OK)) {
-                if (!access("/system/lib64/media/", 0)) {
-                    ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
-                } else {
-                    ASSERT_EQ(false, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
-                }
-            }
-        }
-    }
-}
-
-HWTEST_F(VpeVideoReliTest, METADATASUPPORT_002, TestSize.Level2)
-{
-    ImageProcessing_ColorSpaceInfo formatImage;
-    for (int i : g_nativeBufferMetadataType) {
-        for (int j: g_nativeBufferColorSpace) {
-            for (int k : g_nativeBufferFormat) {
-                formatImage.metadataType = i;
-                formatImage.colorSpace = j;
-                formatImage.pixelFormat = k;
-                CheckCapability(formatImage);
-            }
-        }
-    }
-}
-
-HWTEST_F(VpeVideoReliTest, METADATASUPPORT_003, TestSize.Level2)
-{
-    ImageProcessing_ColorSpaceInfo formatImage;
-    for (int i : g_nativeBufferMetadataType) {
-        for (int j: g_nativeBufferColorSpace) {
-            for (int k : g_nativeBufferFormat) {
-                formatImage.metadataType = i;
-                formatImage.colorSpace = j;
-                formatImage.pixelFormat = k;
-                cout<<"--metadataType--" << i << "--colorSpace--" << j << "--pixelFormat--" << k << endl;
-            }
-        }
-        if (formatImage.colorSpace == OH_COLORSPACE_SRGB_FULL ||
-            formatImage.colorSpace == OH_COLORSPACE_SRGB_LIMIT ||
-            formatImage.colorSpace == OH_COLORSPACE_LINEAR_SRGB ||
-            formatImage.colorSpace == OH_COLORSPACE_DISPLAY_SRGB ||
-            formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
-            formatImage.colorSpace == OH_COLORSPACE_DISPLAY_BT2020_SRGB) {
-            if (ValidatePixelFormat(formatImage)){
-                if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", F_OK)) {
-                    if (!access("/system/lib64/media/", 0)) {
-                        cout<<"return true"<< endl;
-                        ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
-                    } else {
-                        cout<<"return false"<< endl;
-                        ASSERT_EQ(false, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
-                    }
-                }
-            }
-        } else if (formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_SRGB ||
-                   formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_HLG ||
-                   formatImage.colorSpace == OH_COLORSPACE_DISPLAY_P3_PQ) {
-            if (ValidatePixelFormat(formatImage)){
-                if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", F_OK)) {
-                    if (!access("/system/lib64/media/", 0)) {
-                        cout<<"return true"<< endl;
-                        ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
-                    } else {
-                        cout<<"return false"<< endl;
-                        ASSERT_EQ(false, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
-                    }
-                }
-            }
-        } else if (formatImage.colorSpace == OH_COLORSPACE_ADOBERGB_FULL ||
-                   formatImage.colorSpace == OH_COLORSPACE_ADOBERGB_LIMIT) {
-            if (ValidatePixelFormat(formatImage)){
-                if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", F_OK)) {
-                    if (!access("/system/lib64/media/", 0)) {
-                        ASSERT_EQ(true, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
-                    } else {
-                        cout<<"return false"<< endl;
-                        ASSERT_EQ(false, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
-                    }
-                }
-            }
-        } else {
-            cout<<"return false"<< endl;
-            ASSERT_EQ(false, OH_ImageProcessing_IsMetadataGenerationSupported(formatImage));
-        }
-    }
+    cout << "all test " << g_allTestCount <<endl;
+    cout << "matched test " << g_supportedCount <<endl;
+    cout<< " mismatched test" << g_unsupportedCount <<endl;
+    outputListFile->close();
+    outputListFile = nullptr;
+    ASSERT_EQ(g_unsupportedCount, 0);
 }
 }

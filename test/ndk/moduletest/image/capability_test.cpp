@@ -405,15 +405,16 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0090, TestSize.Level2)
 HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0100, TestSize.Level2)
 {
     ImageProcessing_ColorSpaceInfo sourceImageInfo = {ALTERNATE,
-                                        BT2020_PQ,
-                                        PIXEL_FORMAT_YCBCR_P010};
+                                                      BT2020_PQ,
+                                                      PIXEL_FORMAT_YCBCR_P010};
     ImageProcessing_ColorSpaceInfo destinationImageInfo = {BASE,
-                                            DISPLAY_SRGB,
-                                            PIXEL_FORMAT_RGBA_8888};
+                                                           DISPLAY_SRGB,
+                                                           PIXEL_FORMAT_RGBA_8888};
     ImageProcessing_ColorSpaceInfo destinationGainmapInfo = {GAINMAP,
-                                        DISPLAY_SRGB,
-                                        PIXEL_FORMAT_RGBA_8888};
-    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo, &destinationGainmapInfo));
+                                                             DISPLAY_SRGB,
+                                                             PIXEL_FORMAT_RGBA_8888};
+    ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo,
+        &destinationImageInfo, &destinationGainmapInfo));
 }
 
 /**

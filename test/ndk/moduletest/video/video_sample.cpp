@@ -106,7 +106,6 @@ int32_t VideoSample::InitVideoSample(const int32_t type, int32_t width, int32_t 
     width_ = width;
     height_ = height;
     param_ = param;
-    viewer = std::make_unique<YuvViewer>();
     int32_t ret = OH_VideoProcessing_Create(&videoProcessor, type);
     CheckAndRet(ret == VIDEO_PROCESSING_SUCCESS, ret, "OH_VideoProcessing_Create failed.");
 

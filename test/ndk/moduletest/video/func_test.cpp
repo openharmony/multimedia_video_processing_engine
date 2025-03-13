@@ -16,8 +16,6 @@
 #include <chrono>
 #include "gtest/gtest.h"
 #include "video_processing.h"
-#include "yuv_viewer.h"
-
 #include "video_sample.h"
 using namespace std;
 using namespace OHOS;
