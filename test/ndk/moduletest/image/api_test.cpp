@@ -30,7 +30,7 @@ namespace {
 constexpr uint32_t DEFAULT_WIDTH = 3840;
 constexpr uint32_t DEFAULT_HEIGHT = 2160;
 constexpr uint32_t PIX_SIZE = DEFAULT_WIDTH * DEFAULT_HEIGHT * 4;
-constexpr char* LIB_VIDEO_VPE_SO = "/system/lib64/ndk/libvideo_processing_capi_impl.so";
+constexpr char* LIB_VIDEO_VPE_SO = "/system/lib64/";
 uint8_t *g_pixData = nullptr;
 
 OH_Pixelmap_InitializationOptions *g_createOpts_RGBA = nullptr;

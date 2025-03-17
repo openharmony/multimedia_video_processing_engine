@@ -21,7 +21,7 @@ using namespace std;
 using namespace testing::ext;
 
 namespace {
-constexpr char* LIB_VIDEO_VPE_SO = "/system/lib64/ndk/libvideo_processing_capi_impl.so";
+constexpr char* LIB_VIDEO_VPE_SO = "/system/lib64/";
 
 class VpeVideoCapTest : public testing::Test {
 public:
