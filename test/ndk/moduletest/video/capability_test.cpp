@@ -21,6 +21,8 @@ using namespace std;
 using namespace testing::ext;
 
 namespace {
+constexpr char* LIB_VIDEO_VPE_SO = "/system/lib64/ndk/libvideo_processing_capi_impl.so";
+
 class VpeVideoCapTest : public testing::Test {
 public:
     // SetUpTestCase: Called before all test cases
@@ -61,7 +63,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_001, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_HLG;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_HLG_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(true, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -84,7 +86,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_002, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_HLG;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_HLG_FULL;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -107,7 +109,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_003, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_VIVID;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_HLG_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -130,7 +132,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_004, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_HLG;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_HLG_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_RGB_565;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -153,7 +155,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_005, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_HLG;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_HLG_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -176,7 +178,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_006, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_HLG;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_HLG_FULL;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -199,7 +201,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_007, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_HLG;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_HLG_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -222,7 +224,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_008, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_HLG;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_HLG_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -245,7 +247,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_009, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_HLG;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_HLG_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(true, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -268,7 +270,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0010, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_HLG;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_HLG_FULL;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -291,7 +293,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0011, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_HDR10;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_HLG_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -314,7 +316,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0012, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_HLG;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_HLG_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -337,7 +339,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0013, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_HLG;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_HLG_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -360,7 +362,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0014, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_VIVID;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_PQ_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(true, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -383,7 +385,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0015, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_VIVID;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_PQ_FULL;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -406,7 +408,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0016, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_VIVID;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_HLG_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -429,7 +431,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0017, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_VIVID;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_PQ_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -452,7 +454,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0018, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_HDR10;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_PQ_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -475,7 +477,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0019, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_VIVID;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_HLG_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -498,7 +500,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0020, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_VIVID;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_PQ_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -521,7 +523,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0021, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_HDR10;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_PQ_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -544,7 +546,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0022, TestSize.Level2)
 
     outputFormat.colorSpace = OH_COLORSPACE_BT709_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(true, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -567,7 +569,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0023, TestSize.Level2)
 
     outputFormat.colorSpace = OH_COLORSPACE_BT709_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_P;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -590,7 +592,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0024, TestSize.Level2)
 
     outputFormat.colorSpace = OH_COLORSPACE_BT601_EBU_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -613,7 +615,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0025, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_HDR10;
     outputFormat.colorSpace = OH_COLORSPACE_BT709_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -636,7 +638,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0026, TestSize.Level2)
 
     outputFormat.colorSpace = OH_COLORSPACE_BT709_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(true, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -659,7 +661,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0027, TestSize.Level2)
 
     outputFormat.colorSpace = OH_COLORSPACE_BT709_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_P;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -682,7 +684,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0028, TestSize.Level2)
 
     outputFormat.colorSpace = OH_COLORSPACE_BT601_EBU_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -705,7 +707,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0029, TestSize.Level2)
     outputFormat.metadataType = OH_VIDEO_HDR_HDR10;
     outputFormat.colorSpace = OH_COLORSPACE_BT709_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -728,7 +730,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0030, TestSize.Level2)
 
     outputFormat.colorSpace = OH_COLORSPACE_BT709_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(true, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -751,7 +753,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0031, TestSize.Level2)
 
     outputFormat.colorSpace = OH_COLORSPACE_BT601_SMPTE_C_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -774,7 +776,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0032, TestSize.Level2)
 
     outputFormat.colorSpace = OH_COLORSPACE_BT709_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(true, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -797,7 +799,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0033, TestSize.Level2)
 
     outputFormat.colorSpace = OH_COLORSPACE_BT601_EBU_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -820,7 +822,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0034, TestSize.Level2)
 
     outputFormat.colorSpace = OH_COLORSPACE_BT709_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -841,7 +843,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0035, TestSize.Level2)
     inputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
     outputFormat.colorSpace = OH_COLORSPACE_BT601_EBU_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -862,7 +864,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0036, TestSize.Level2)
     inputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
     outputFormat.colorSpace = OH_COLORSPACE_BT709_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {
@@ -883,7 +885,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_SUPPORT_0037, TestSize.Level2)
     inputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
     outputFormat.colorSpace = OH_COLORSPACE_BT2020_HLG_LIMIT;
     outputFormat.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP;
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         if (!access("/system/lib64/", 0)) {
             ASSERT_EQ(false, OH_VideoProcessing_IsColorSpaceConversionSupported(&inputFormat, &outputFormat));
         } else {

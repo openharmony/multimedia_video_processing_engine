@@ -23,6 +23,7 @@ using namespace testing::ext;
 namespace {
 constexpr uint32_t DEFAULT_WIDTH = 3840;
 constexpr uint32_t DEFAULT_HEIGHT = 2160;
+constexpr char* LIB_VIDEO_VPE_SO = "/system/lib64/ndk/libvideo_processing_capi_impl.so";
 
 
 class VpeVideoFuncTest : public testing::Test {
@@ -70,7 +71,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0010, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
             DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -93,7 +94,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0020, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_8888, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -116,7 +117,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0030, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -139,7 +140,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0040, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_8888, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -162,7 +163,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0050, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -185,7 +186,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0060, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_8888, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -208,7 +209,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0070, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -231,7 +232,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0080, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_8888, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -254,7 +255,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0090, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -277,7 +278,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0100, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_8888, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -300,7 +301,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0110, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -323,7 +324,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0120, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_8888, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -345,7 +346,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0130, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -367,7 +368,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0140, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -389,7 +390,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0150, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_8888, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -411,7 +412,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0160, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -433,7 +434,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0170, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -455,7 +456,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0180, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_8888, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -477,7 +478,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0190, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -499,7 +500,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0200, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -521,7 +522,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0210, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_8888, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -543,7 +544,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0220, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -565,7 +566,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0230, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -587,7 +588,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0240, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_8888, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -609,7 +610,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0250, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -631,7 +632,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0260, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -653,7 +654,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0270, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_8888, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -675,7 +676,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0280, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -697,7 +698,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0290, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -719,7 +720,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0300, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_8888, OH_COLORSPACE_BT709_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -741,7 +742,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0310, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_P010, OH_COLORSPACE_BT2020_HLG_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -763,7 +764,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0320, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_1010102, OH_COLORSPACE_BT2020_HLG_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -785,7 +786,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0330, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCRCB_P010, OH_COLORSPACE_BT2020_HLG_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -807,7 +808,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0340, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_1010102, OH_COLORSPACE_BT2020_HLG_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -829,7 +830,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0350, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_P010, OH_COLORSPACE_BT2020_HLG_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -851,7 +852,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0360, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_1010102, OH_COLORSPACE_BT2020_HLG_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -873,7 +874,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0370, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_P010, OH_COLORSPACE_BT2020_PQ_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -895,7 +896,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0380, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_1010102, OH_COLORSPACE_BT2020_PQ_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -917,7 +918,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0390, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_P010, OH_COLORSPACE_BT2020_PQ_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -939,7 +940,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0400, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_1010102, OH_COLORSPACE_BT2020_PQ_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -961,7 +962,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0410, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_P010, OH_COLORSPACE_BT2020_PQ_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -983,7 +984,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0420, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_1010102, OH_COLORSPACE_BT2020_PQ_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -1007,7 +1008,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0430, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_P010, OH_COLORSPACE_BT2020_HLG_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -1031,7 +1032,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0440, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_1010102, OH_COLORSPACE_BT2020_HLG_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -1055,7 +1056,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0450, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_P010, OH_COLORSPACE_BT2020_HLG_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -1079,7 +1080,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0460, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_1010102, OH_COLORSPACE_BT2020_HLG_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -1103,7 +1104,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0470, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_P010, OH_COLORSPACE_BT2020_HLG_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -1127,7 +1128,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0480, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_1010102, OH_COLORSPACE_BT2020_HLG_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -1151,7 +1152,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0490, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_P010, OH_COLORSPACE_BT2020_PQ_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -1175,7 +1176,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0500, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_1010102, OH_COLORSPACE_BT2020_PQ_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -1199,7 +1200,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0510, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_P010, OH_COLORSPACE_BT2020_PQ_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -1223,7 +1224,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0520, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_1010102, OH_COLORSPACE_BT2020_PQ_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -1247,7 +1248,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0530, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_YCBCR_P010, OH_COLORSPACE_BT2020_PQ_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);
@@ -1271,7 +1272,7 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0540, TestSize.Level0)
                                 NATIVEBUFFER_PIXEL_FMT_RGBA_1010102, OH_COLORSPACE_BT2020_PQ_LIMIT};
         int32_t ret = sample->InitVideoSample(VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION,
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT, param);
-        if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+        if (!access(LIB_VIDEO_VPE_SO, 0)) {
             ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
             sample->StartProcess();
             ASSERT_EQ(sample->WaitAndStopSample(), VIDEO_PROCESSING_SUCCESS);

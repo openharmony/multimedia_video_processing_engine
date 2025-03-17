@@ -30,6 +30,7 @@ namespace {
 constexpr uint32_t DEFAULT_WIDTH = 3840;
 constexpr uint32_t DEFAULT_HEIGHT = 2160;
 constexpr uint32_t PIX_SIZE = DEFAULT_WIDTH * DEFAULT_HEIGHT * 4;
+constexpr char* LIB_VIDEO_VPE_SO = "/system/lib64/ndk/libvideo_processing_capi_impl.so";
 uint8_t *g_pixData = nullptr;
 
 OH_Pixelmap_InitializationOptions *g_createOpts_RGBA = nullptr;
@@ -128,7 +129,7 @@ namespace {
 HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0010, TestSize.Level0)
 {
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_InitializeEnvironment();
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_SUCCESS);
@@ -144,7 +145,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0010, TestSize.Level0)
 HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0020, TestSize.Level0)
 {
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_DeinitializeEnvironment();
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_OPERATION_NOT_PERMITTED);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_OPERATION_NOT_PERMITTED);
@@ -159,7 +160,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0020, TestSize.Level0)
 HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0030, TestSize.Level0)
 {
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_InitializeEnvironment();
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
         OH_ImageProcessing_DeinitializeEnvironment();
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
@@ -177,7 +178,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0040, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsColorSpaceConversionSupported(nullptr, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -191,7 +192,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0050, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsColorSpaceConversionSupported(&SRC_INFO, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -205,7 +206,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0060, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsColorSpaceConversionSupported(nullptr, &DST_INFO);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -219,7 +220,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0070, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsColorSpaceConversionSupported(&SRC_INFO, &DST_INFO);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_TRUE(ret);
     } else {
         ASSERT_FALSE(ret);
@@ -235,7 +236,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0080, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsCompositionSupported(nullptr, nullptr, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -249,7 +250,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0090, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsCompositionSupported(&SRC_INFO, nullptr, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -263,7 +264,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0100, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsCompositionSupported(nullptr, nullptr, &DST_INFO);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -277,7 +278,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0110, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsCompositionSupported(nullptr, &SRC_GAIN_INFO, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -291,7 +292,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0120, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsCompositionSupported(&SRC_INFO, nullptr, &DST_INFO);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -305,7 +306,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0130, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsCompositionSupported(nullptr, &SRC_GAIN_INFO, &DST_INFO);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -319,7 +320,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0131, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsCompositionSupported(&SRC_INFO, &SRC_GAIN_INFO, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -333,7 +334,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0140, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsCompositionSupported(&SRC_INFO, &SRC_GAIN_INFO, &DST_INFO);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_TRUE(ret);
     } else {
         ASSERT_FALSE(ret);
@@ -349,7 +350,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0150, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsDecompositionSupported(nullptr, nullptr, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -363,7 +364,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0160, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsDecompositionSupported(&SRC_INFO, nullptr, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -377,7 +378,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0170, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsDecompositionSupported(nullptr, &DST_INFO, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -391,7 +392,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0180, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsDecompositionSupported(nullptr, nullptr, &DST_GAIN_INFO);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -405,7 +406,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0190, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsDecompositionSupported(&SRC_INFO, nullptr, &DST_GAIN_INFO);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -419,7 +420,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0200, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsDecompositionSupported(nullptr, &DST_INFO, &DST_GAIN_INFO);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -433,7 +434,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0201, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsDecompositionSupported(&SRC_INFO, &DST_INFO, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -447,7 +448,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0210, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsDecompositionSupported(&SRC_INFO, &DST_INFO, &DST_GAIN_INFO);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_TRUE(ret);
     } else {
         ASSERT_FALSE(ret);
@@ -463,7 +464,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0220, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsMetadataGenerationSupported(nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -479,7 +480,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0230, TestSize.Level0)
     const ImageProcessing_ColorSpaceInfo HDR_INFO = {0, OH_COLORSPACE_BT2020_PQ_LIMIT,
         NATIVEBUFFER_PIXEL_FMT_RGBA_1010102};
     bool ret = OH_ImageProcessing_IsMetadataGenerationSupported(&HDR_INFO);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_TRUE(ret);
     } else {
         ASSERT_FALSE(ret);
@@ -495,7 +496,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0240, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(nullptr, INT_MAX);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
@@ -512,7 +513,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0250, TestSize.Level0)
     OH_ImageProcessing_InitializeEnvironment();
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(nullptr,
         IMAGE_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
@@ -529,7 +530,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0260, TestSize.Level0)
     OH_ImageProcessing_InitializeEnvironment();
     OH_ImageProcessing* imageProcessor = nullptr;
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor, INT_MAX);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_PARAMETER);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_PARAMETER);
@@ -548,7 +549,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0270, TestSize.Level0)
     OH_ImageProcessing* imageProcessor = nullptr;
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor,
         IMAGE_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_SUCCESS);
@@ -565,7 +566,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0280, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Destroy(nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
@@ -583,7 +584,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0290, TestSize.Level0)
     OH_ImageProcessing* imageProcessor = nullptr;
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor,
         IMAGE_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
         ret = OH_ImageProcessing_Destroy(imageProcessor);
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
@@ -600,7 +601,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0450, TestSize.Level0)
     OH_ImageProcessing_InitializeEnvironment();
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_ConvertColorSpace(nullptr,
         nullptr, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
@@ -618,7 +619,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0460, TestSize.Level0)
     OH_ImageProcessing* imageProcessor = nullptr;
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor,
         IMAGE_PROCESSING_TYPE_COLOR_SPACE_CONVERSION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
         ret = OH_ImageProcessing_ConvertColorSpace(imageProcessor, nullptr, nullptr);
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_PARAMETER);
@@ -635,7 +636,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0470, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_ConvertColorSpace(nullptr, pixelMap_RGBA, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
@@ -652,7 +653,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0480, TestSize.Level0)
     OH_ImageProcessing_InitializeEnvironment();
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_ConvertColorSpace(
         nullptr, nullptr, pixelMap_RGBA);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
@@ -670,7 +671,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0490, TestSize.Level0)
     OH_ImageProcessing* imageProcessor = nullptr;
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor,
         IMAGE_PROCESSING_TYPE_COLOR_SPACE_CONVERSION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
         ret = OH_ImageProcessing_ConvertColorSpace(imageProcessor, nullptr, pixelMap_RGBA);
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_PARAMETER);
@@ -692,7 +693,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0500, TestSize.Level0)
     OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &dst_pixelMap_RGBA);
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_ConvertColorSpace(
         nullptr, src_pixelMap_RGBA, dst_pixelMap_RGBA);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
@@ -713,7 +714,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0510, TestSize.Level0)
     OH_ImageProcessing* imageProcessor = nullptr;
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor,
         IMAGE_PROCESSING_TYPE_COLOR_SPACE_CONVERSION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
         ret = OH_ImageProcessing_ConvertColorSpace(imageProcessor, pixelMap_RGBA, pixelMap_BGRA);
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_UNSUPPORTED_PROCESSING);
@@ -740,7 +741,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0520, TestSize.Level0)
     OH_PixelmapNative *dst_pixelMap_RGBA = nullptr;
     OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &dst_pixelMap_RGBA);
     ret = OH_ImageProcessing_ConvertColorSpace(imageProcessor, src_pixelMap_RGBA, dst_pixelMap_RGBA);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_SUCCESS);
@@ -759,7 +760,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0530, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Compose(nullptr, nullptr, nullptr, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
@@ -777,7 +778,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0540, TestSize.Level0)
     OH_ImageProcessing* imageProcessor = nullptr;
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor,
         IMAGE_PROCESSING_TYPE_COMPOSITION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
         ret = OH_ImageProcessing_Compose(imageProcessor, nullptr, nullptr, nullptr);
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_PARAMETER);
@@ -796,7 +797,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0550, TestSize.Level0)
     OH_PixelmapNative *src_pixelMap_RGBA = nullptr;
     OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &src_pixelMap_RGBA);
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Compose(nullptr, src_pixelMap_RGBA, nullptr, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
@@ -815,7 +816,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0560, TestSize.Level0)
     OH_PixelmapNative *src_gain_pixelMap_RGBA = nullptr;
     OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &src_gain_pixelMap_RGBA);
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Compose(nullptr, nullptr, src_gain_pixelMap_RGBA, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
@@ -834,7 +835,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0570, TestSize.Level0)
     OH_PixelmapNative *dst_pixelMap_RGBA = nullptr;
     OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &dst_pixelMap_RGBA);
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Compose(nullptr, nullptr, nullptr, dst_pixelMap_RGBA);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
@@ -857,7 +858,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0580, TestSize.Level0)
     OH_PixelmapNative *src_pixelMap_RGBA = nullptr;
     OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &src_pixelMap_RGBA);
     ret = OH_ImageProcessing_Compose(imageProcessor, src_pixelMap_RGBA, nullptr, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_PARAMETER);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_PARAMETER);
@@ -881,7 +882,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0590, TestSize.Level0)
     OH_PixelmapNative *src_gain_pixelMap_RGBA = nullptr;
     OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &src_gain_pixelMap_RGBA);
     ret = OH_ImageProcessing_Compose(imageProcessor, nullptr, src_gain_pixelMap_RGBA, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_PARAMETER);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_PARAMETER);
@@ -905,7 +906,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0600, TestSize.Level0)
     OH_PixelmapNative *dst_pixelMap_RGBA = nullptr;
     OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &dst_pixelMap_RGBA);
     ret = OH_ImageProcessing_Compose(imageProcessor, nullptr, nullptr, dst_pixelMap_RGBA);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_PARAMETER);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_PARAMETER);
@@ -931,7 +932,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0610, TestSize.Level0)
     OH_PixelmapNative *src_gain_pixelMap_RGBA = nullptr;
     OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &src_gain_pixelMap_RGBA);
     ret = OH_ImageProcessing_Compose(imageProcessor, src_pixelMap_RGBA, src_gain_pixelMap_RGBA, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_PARAMETER);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_PARAMETER);
@@ -958,7 +959,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0620, TestSize.Level0)
     OH_PixelmapNative *dst_pixelMap_RGBA = nullptr;
     OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &dst_pixelMap_RGBA);
     ret = OH_ImageProcessing_Compose(imageProcessor, nullptr, src_gain_pixelMap_RGBA, dst_pixelMap_RGBA);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_PARAMETER);
     }
     OH_ImageProcessing_Destroy(imageProcessor);
@@ -978,7 +979,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0630, TestSize.Level0)
     OH_ImageProcessing* imageProcessor = nullptr;
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor,
         IMAGE_PROCESSING_TYPE_COMPOSITION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
         OH_PixelmapNative *src_pixelMap_RGBA = nullptr;
         OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &src_pixelMap_RGBA);
@@ -1006,7 +1007,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0640, TestSize.Level0)
     OH_ImageProcessing* imageProcessor = nullptr;
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor,
         IMAGE_PROCESSING_TYPE_COMPOSITION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
         OH_PixelmapNative *src_pixelMap_RGBA = nullptr;
         OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &src_pixelMap_RGBA);
@@ -1032,7 +1033,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0650, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Decompose(nullptr, nullptr, nullptr, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
@@ -1050,7 +1051,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0660, TestSize.Level0)
     OH_ImageProcessing* imageProcessor = nullptr;
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor,
         IMAGE_PROCESSING_TYPE_DECOMPOSITION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
         ret = OH_ImageProcessing_Decompose(imageProcessor, nullptr, nullptr, nullptr);
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_PARAMETER);
@@ -1069,7 +1070,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0670, TestSize.Level0)
     OH_PixelmapNative *src_pixelMap_RGBA = nullptr;
     OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &src_pixelMap_RGBA);
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Decompose(nullptr, src_pixelMap_RGBA, nullptr, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
@@ -1088,7 +1089,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0680, TestSize.Level0)
     OH_PixelmapNative *dst_pixelMap_RGBA = nullptr;
     OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &dst_pixelMap_RGBA);
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Decompose(nullptr, nullptr, dst_pixelMap_RGBA, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
@@ -1107,7 +1108,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0690, TestSize.Level0)
     OH_PixelmapNative *dst_gain_pixelMap_RGBA = nullptr;
     OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &dst_gain_pixelMap_RGBA);
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Decompose(nullptr, nullptr, nullptr, dst_gain_pixelMap_RGBA);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
@@ -1126,7 +1127,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0700, TestSize.Level0)
     OH_ImageProcessing* imageProcessor = nullptr;
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor,
         IMAGE_PROCESSING_TYPE_DECOMPOSITION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
         OH_PixelmapNative *src_pixelMap_RGBA = nullptr;
         OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &src_pixelMap_RGBA);
@@ -1148,7 +1149,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0710, TestSize.Level0)
     OH_ImageProcessing* imageProcessor = nullptr;
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor,
         IMAGE_PROCESSING_TYPE_DECOMPOSITION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
         OH_PixelmapNative *dst_pixelMap_RGBA = nullptr;
         OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &dst_pixelMap_RGBA);
@@ -1170,7 +1171,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0720, TestSize.Level0)
     OH_ImageProcessing* imageProcessor = nullptr;
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor,
         IMAGE_PROCESSING_TYPE_DECOMPOSITION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
         OH_PixelmapNative *dst_gain_pixelMap_RGBA = nullptr;
         OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &dst_gain_pixelMap_RGBA);
@@ -1192,7 +1193,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0730, TestSize.Level0)
     OH_ImageProcessing* imageProcessor = nullptr;
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor,
         IMAGE_PROCESSING_TYPE_DECOMPOSITION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
         OH_PixelmapNative *src_pixelMap_RGBA = nullptr;
         OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &src_pixelMap_RGBA);
@@ -1217,7 +1218,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0740, TestSize.Level0)
     OH_ImageProcessing* imageProcessor = nullptr;
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor,
         IMAGE_PROCESSING_TYPE_DECOMPOSITION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
         OH_PixelmapNative *dst_pixelMap_RGBA = nullptr;
         OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &dst_pixelMap_RGBA);
@@ -1244,7 +1245,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0750, TestSize.Level0)
     OH_ImageProcessing* imageProcessor = nullptr;
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor,
         IMAGE_PROCESSING_TYPE_DECOMPOSITION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
         OH_PixelmapNative *src_pixelMap_RGBA = nullptr;
         OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &src_pixelMap_RGBA);
@@ -1273,7 +1274,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0760, TestSize.Level0)
     OH_ImageProcessing* imageProcessor = nullptr;
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor,
         IMAGE_PROCESSING_TYPE_DECOMPOSITION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
         OH_PixelmapNative *src_pixelMap_RGBA = nullptr;
         OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &src_pixelMap_RGBA);
@@ -1300,7 +1301,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0770, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_GenerateMetadata(nullptr, nullptr);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
     } else {
         EXPECT_NE(ret, IMAGE_PROCESSING_ERROR_INVALID_INSTANCE);
@@ -1318,7 +1319,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0780, TestSize.Level0)
     OH_ImageProcessing* imageProcessor = nullptr;
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor,
         IMAGE_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
         ret = OH_ImageProcessing_GenerateMetadata(imageProcessor, nullptr);
         EXPECT_EQ(ret, IMAGE_PROCESSING_ERROR_INVALID_PARAMETER);
@@ -1338,7 +1339,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0790, TestSize.Level0)
     OH_ImageProcessing* imageProcessor = nullptr;
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor,
         IMAGE_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
         OH_PixelmapNative *src_pixelMap_BGRA = nullptr;
         OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_BGRA, &src_pixelMap_BGRA);
@@ -1360,7 +1361,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0800, TestSize.Level0)
     OH_ImageProcessing* imageProcessor = nullptr;
     ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor,
         IMAGE_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
         OH_PixelmapNative *src_pixelMap_RGBA = nullptr;
         OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &src_pixelMap_RGBA);
@@ -1381,7 +1382,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0890, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsColorSpaceConversionSupported(&UNSUPPORTED_INFO, &DST_INFO);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -1396,7 +1397,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0900, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsCompositionSupported(&UNSUPPORTED_INFO, &SRC_GAIN_INFO, &DST_INFO);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -1411,7 +1412,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0910, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsDecompositionSupported(&UNSUPPORTED_INFO, &DST_INFO, &DST_GAIN_INFO);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -1426,7 +1427,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0920, TestSize.Level0)
 {
     OH_ImageProcessing_InitializeEnvironment();
     bool ret = OH_ImageProcessing_IsMetadataGenerationSupported(&UNSUPPORTED_INFO);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         ASSERT_FALSE(ret);
     }
 }
@@ -1445,7 +1446,7 @@ HWTEST_F(VpeImageApiTest, VPE_IMAGE_API_TEST_0930, TestSize.Level0)
     OH_PixelmapNative *dst_gain_pixelMap_RGBA = nullptr;
     OH_ImageProcessing* imageProcessor = nullptr;
     int32_t ret = OH_ImageProcessing_Create(&imageProcessor, IMAGE_PROCESSING_TYPE_COLOR_SPACE_CONVERSION);
-    if (!access("/system/lib64/ndk/libvideo_processing_capi_impl.so", 0)) {
+    if (!access(LIB_VIDEO_VPE_SO, 0)) {
         EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
         OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &src_pixelMap_RGBA);
         OH_PixelmapNative_CreatePixelmap(g_pixData, PIX_SIZE, g_createOpts_RGBA, &dst_pixelMap_RGBA);
