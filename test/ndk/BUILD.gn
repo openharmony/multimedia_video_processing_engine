@@ -12,6 +12,7 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
+import("//foundation/multimedia/media_foundation/video_processing_engine/config.gni")
 
 group("vpe_module_test") {
   testonly = true
