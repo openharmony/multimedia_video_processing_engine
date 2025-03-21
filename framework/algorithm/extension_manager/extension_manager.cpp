@@ -21,6 +21,7 @@
 #include <unordered_map>
 #include "static_extension_list.h"
 #include "vpe_log.h"
+#include "extension_base.h"
 namespace {
     using LibFunctionGetRegisters = std::unordered_map<std::string,
         OHOS::Media::VideoProcessingEngine::Extension::RegisterExtensionFunc>* (*)();
@@ -215,9 +216,9 @@ std::shared_ptr<DetailEnhancerBase> ExtensionManager::CreateDetailEnhancer(uint3
 ExtensionList ExtensionManager::LoadExtensions() const
 {
     ExtensionList extensionList {};
+    LoadDynamicExtensions(extensionList);
     VPEAlgoErrCode ret = LoadStaticExtensions(extensionList);
     CHECK_AND_RETURN_RET_LOG(ret == VPE_ALGO_ERR_OK, {}, "Load extension failed");
-    LoadDynamicExtensions(extensionList);
     return extensionList;
 }
 
@@ -525,7 +526,13 @@ std::shared_ptr<ColorSpaceConverterExtension> ExtensionManager::FindColorSpaceCo
             (CSDesc).range, outputInfo.pixelFormat, outputInfo.colorSpace.metadataType);
         return nullptr;
     }
-    size_t idx = std::get<2>(*(iter->second.cbegin()));
+    size_t idx = std::get<2>(*(iter->second.cbegin())); // 2
+    for (const auto &cap : iter->second) {
+        if (std::get<0>(cap) == Rank::RANK_HIGH) {
+            idx = std::get<2>(cap); // 2
+            break;
+        }
+    }
     return std::static_pointer_cast<ColorSpaceConverterExtension>(extensionList[idx]);
 }
 
@@ -556,7 +563,13 @@ std::shared_ptr<MetadataGeneratorExtension> ExtensionManager::FindMetadataGenera
     const auto iter = metadataGeneratorCapabilityMap.find(key);
     CHECK_AND_RETURN_RET_LOG(iter != metadataGeneratorCapabilityMap.cend() && !iter->second.empty(), nullptr,
         "CSC metadata generator extension is not found");
-    size_t idx = std::get<2>(*(iter->second.cbegin()));
+    size_t idx = std::get<2>(*(iter->second.cbegin())); // 2
+    for (const auto &cap : iter->second) {
+        if (std::get<0>(cap) == Rank::RANK_HIGH) {
+            idx = std::get<2>(cap); // 2
+            break;
+        }
+    }
     return std::static_pointer_cast<MetadataGeneratorExtension>(extensionList[idx]);
 }
 
@@ -595,7 +608,13 @@ std::shared_ptr<AihdrEnhancerExtension> ExtensionManager::FindAihdrEnhancerExten
     const auto iter = aihdrEnhancerCapabilityMap.find(key);
     CHECK_AND_RETURN_RET_LOG(iter != aihdrEnhancerCapabilityMap.cend() && !iter->second.empty(), nullptr,
         "Aihdr enhancer extension is not found");
-    size_t idx = std::get<2>(*(iter->second.cbegin()));
+    size_t idx = std::get<2>(*(iter->second.cbegin())); // 2
+    for (const auto &cap : iter->second) {
+        if (std::get<0>(cap) == Rank::RANK_HIGH) {
+            idx = std::get<2>(cap); // 2
+            break;
+        }
+    }
     return std::static_pointer_cast<AihdrEnhancerExtension>(extensionList[idx]);
 }
 
@@ -604,7 +623,7 @@ VPEAlgoErrCode ExtensionManager::ExtractColorSpaceConverterCap(const ColorSpaceC
 {
     auto inputColorSpaceDesc = cap.inputColorSpaceDesc;
     auto outputColorSpaceDesc = cap.outputColorSpaceDesc;
-    uint32_t rank = cap.rank;
+    Rank rank = cap.rank;
     int32_t version = cap.version;
     for (const auto &[inputPixelFormat, outputPixelFormats] : cap.pixelFormatMap) {
         for (const auto &outputPixelFormat : outputPixelFormats) {
@@ -631,7 +650,7 @@ VPEAlgoErrCode ExtensionManager::ExtractMetadataGeneratorCap(const MetadataGener
     MetadataGeneratorAlgoType algoType, MetadataGeneratorCapabilityMap& metadataGeneratorCapabilityMap) const
 {
     auto colorSpaceDesc = cap.colorspaceDesc;
-    uint32_t rank = cap.rank;
+    Rank rank = cap.rank;
     int32_t version = cap.version;
     for (const auto &pixelFormat : cap.pixelFormats) {
         auto key = std::make_tuple(colorSpaceDesc, pixelFormat, algoType);
@@ -664,7 +683,14 @@ VPEAlgoErrCode ExtensionManager::BuildDetailEnhancerCaps(const std::shared_ptr<E
     auto realExtension = std::static_pointer_cast<DetailEnhancerExtension>(ext);
     auto capabilities = realExtension->capabilitiesBuilder();
     for (const auto &level : capabilities.levels) {
-        detailEnhancerCapabilityMap.emplace(level, idx);
+        auto itr = detailEnhancerCapabilityMap.find(level);
+        if (itr == detailEnhancerCapabilityMap.end()) {
+            detailEnhancerCapabilityMap.emplace(level, idx);
+        } else {
+            if (capabilities.rank == Rank::RANK_HIGH) {
+                itr->second = idx;
+            }
+        }
     }
     return VPE_ALGO_ERR_OK;
 }
@@ -673,7 +699,7 @@ VPEAlgoErrCode ExtensionManager::ExtractAihdrEnhancerCap(const AihdrEnhancerCapa
     AihdrEnhancerCapabilityMap& aihdrEnhancerCapabilityMap) const
 {
     auto colorSpaceDesc = cap.colorspaceDesc;
-    uint32_t rank = cap.rank;
+    Rank rank = cap.rank;
     int32_t version = cap.version;
     for (const auto &pixelFormat : cap.pixelFormats) {
         auto key = std::make_tuple(colorSpaceDesc, pixelFormat);

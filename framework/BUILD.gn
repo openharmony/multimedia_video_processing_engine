@@ -30,6 +30,7 @@ config("export_config") {
     "$ALGORITHM_DIR/common/include",
     "$METADATA_GENERATOR_VIDEO_DIR/include",
     "$ALGORITHM_EXTENSION_MANAGER_DIR/include",
+    "$ALGORITHM_EXTENSION_SKIA_DIR/include",
   ]
 }
 config("video_process_config") {
@@ -186,7 +187,8 @@ ohos_shared_library("videoprocessingengine") {
     "${target_gen_dir}/../services/video_processing_service_manager_proxy.cpp",
     "${target_gen_dir}/../services/video_processing_service_manager_stub.cpp",
     "$ALGORITHM_COMMON_DIR/image_opencl_wrapper.cpp",
-    "$ALGORITHM_COMMON_DIR/image_openclsetup.cpp"
+    "$ALGORITHM_COMMON_DIR/image_openclsetup.cpp",
+    "$ALGORITHM_EXTENSION_SKIA_DIR/skia_impl.cpp",
   ]
 
   deps = [
@@ -336,8 +338,8 @@ ohos_shared_library("image_processing") {
   if (has_skia) {
     defines += [ "SKIA_ENABLE" ]
     external_deps += [ "skia:skia_canvaskit" ]
-    include_dirs += [ "$ALGORITHM_EXTENSION_MANAGER_DIR/include" ]
-    sources += [ "$ALGORITHM_EXTENSION_MANAGER_DIR/skia_impl.cpp" ]
+    include_dirs += [ "$ALGORITHM_EXTENSION_SKIA_DIR/include" ]
+    sources += [ "$ALGORITHM_EXTENSION_SKIA_DIR/skia_impl.cpp" ]
   }
 
   innerapi_tags = [ "ndk" ]
@@ -418,8 +420,8 @@ ohos_shared_library("video_processing") {
   if (has_skia) {
     defines += [ "SKIA_ENABLE" ]
     external_deps += [ "skia:skia_canvaskit" ]
-    include_dirs += [ "$$ALGORITHM_EXTENSION_MANAGER_DIR/include" ]
-    sources += [ "$ALGORITHM_EXTENSION_MANAGER_DIR/skia_impl.cpp" ]
+    include_dirs += [ "$ALGORITHM_EXTENSION_SKIA_DIR/include" ]
+    sources += [ "$ALGORITHM_EXTENSION_SKIA_DIR/skia_impl.cpp" ]
   }
 
   innerapi_tags = [ "ndk" ]

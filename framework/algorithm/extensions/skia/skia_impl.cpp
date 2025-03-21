@@ -19,10 +19,14 @@
 #include <chrono>
 #include <dlfcn.h>
 
+#include "detail_enhancer_extension.h"
+#include "utils.h"
+
 #include "vpe_log.h"
 
-using namespace OHOS;
-using namespace OHOS::Media::VideoProcessingEngine;
+namespace OHOS {
+namespace Media {
+namespace VideoProcessingEngine {
 
 namespace {
 enum ImageFormatType {
@@ -80,19 +84,19 @@ SkColorType GetRGBImageFormat(const sptr<SurfaceBuffer>& surfaceBuffer)
     return imageFormat;
 }
 
-AlgoErrorCode PixmapScale(const SkPixmap& inputPixmap, SkPixmap& outputPixmap, SkSamplingOptions options)
+VPEAlgoErrCode PixmapScale(const SkPixmap& inputPixmap, SkPixmap& outputPixmap, SkSamplingOptions options)
 {
     if (!inputPixmap.scalePixels(outputPixmap, options)) {
-        return ALGO_ERROR_PROCESS_FAILED;
+        return VPE_ALGO_ERR_EXTENSION_PROCESS_FAILED;
     }
-    return ALGO_SUCCESS;
+    return VPE_ALGO_ERR_OK;
 }
 
-AlgoErrorCode RGBScale(const sptr<SurfaceBuffer>& input, sptr<SurfaceBuffer>& output)
+VPEAlgoErrCode RGBScale(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output)
 {
     if (input->GetWidth() <= 0 || input->GetHeight() <= 0 || output->GetWidth() <= 0 || output->GetHeight() <= 0) {
         VPE_LOGE("Invalid input or output size!");
-        return ALGO_ERROR_INVALID_VALUE;
+        return VPE_ALGO_ERR_INVALID_VAL;
     }
     SkImageInfo inputInfo = SkImageInfo::Make(input->GetWidth(), input->GetHeight(), GetRGBImageFormat(input),
         kPremul_SkAlphaType);
@@ -199,19 +203,19 @@ int CreateYUVPixmap(const sptr<SurfaceBuffer>& buffer, std::array<SkPixmap, SkYU
     return numPlanes;
 }
 
-AlgoErrorCode YUVPixmapScale(const std::array<SkPixmap, SkYUVAInfo::kMaxPlanes>& inputPixmap,
+VPEAlgoErrCode YUVPixmapScale(const std::array<SkPixmap, SkYUVAInfo::kMaxPlanes>& inputPixmap,
     std::array<SkPixmap, SkYUVAInfo::kMaxPlanes>& outputPixmap, SkSamplingOptions opt, int numPlanes)
 {
     for (int i = 0; i < numPlanes; i++) {
         if (!inputPixmap[i].scalePixels(outputPixmap[i], opt)) {
             VPE_LOGE("YUV scale failed!");
-            return ALGO_ERROR_PROCESS_FAILED;
+            return VPE_ALGO_ERR_EXTENSION_PROCESS_FAILED;
         }
     }
-    return ALGO_SUCCESS;
+    return VPE_ALGO_ERR_OK;
 }
 
-AlgoErrorCode YUVScale(const sptr<SurfaceBuffer>& input, sptr<SurfaceBuffer>& output)
+VPEAlgoErrCode YUVScale(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output)
 {
     std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> inputPixmap;
     std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> outputPixmap;
@@ -219,16 +223,48 @@ AlgoErrorCode YUVScale(const sptr<SurfaceBuffer>& input, sptr<SurfaceBuffer>& ou
     int numPlanesOutput = CreateYUVPixmap(output, outputPixmap);
     if (numPlanesInput != numPlanesOutput || numPlanesInput * numPlanesOutput == 0) {
         VPE_LOGE("Wrong YUV settings!");
-        return ALGO_ERROR_INVALID_VALUE;
+        return VPE_ALGO_ERR_INVALID_VAL;
     }
     SkSamplingOptions scaleOption(SkFilterMode::kNearest);
     return YUVPixmapScale(inputPixmap, outputPixmap, scaleOption, numPlanesInput);
 }
+
+constexpr Extension::Rank RANK = Extension::Rank::RANK_DEFAULT;
+constexpr uint32_t VERSION = 0;
+} // namespace
+
+std::unique_ptr<DetailEnhancerBase> Skia::Create()
+{
+    return std::make_unique<Skia>();
 }
 
-AlgoErrorCode Skia::Process(const sptr<SurfaceBuffer>& input, sptr<SurfaceBuffer>& output)
+DetailEnhancerCapability Skia::BuildCapabilities()
 {
-    AlgoErrorCode errCode;
+    std::vector<uint32_t> levels = { DETAIL_ENH_LEVEL_NONE, DETAIL_ENH_LEVEL_LOW, DETAIL_ENH_LEVEL_MEDIUM,
+        DETAIL_ENH_LEVEL_HIGH_EVE, DETAIL_ENH_LEVEL_HIGH_AISR, DETAIL_ENH_LEVEL_VIDEO};
+    DetailEnhancerCapability capability = { levels, RANK, VERSION };
+    return capability;
+}
+
+VPEAlgoErrCode Skia::Init()
+{
+    return VPE_ALGO_ERR_OK;
+}
+
+VPEAlgoErrCode Skia::Deinit()
+{
+    return VPE_ALGO_ERR_OK;
+}
+
+VPEAlgoErrCode Skia::SetParameter([[maybe_unused]] const DetailEnhancerParameters& parameter,
+    [[maybe_unused]] int type, [[maybe_unused]] bool flag)
+{
+    return VPE_ALGO_ERR_OK;
+}
+
+VPEAlgoErrCode Skia::Process(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output)
+{
+    VPEAlgoErrCode errCode;
     ImageFormatType imageType = GetImageType(input, output);
     if (imageType == IMAGE_FORMAT_TYPE_RGB) {
         errCode = RGBScale(input, output);
@@ -236,7 +272,29 @@ AlgoErrorCode Skia::Process(const sptr<SurfaceBuffer>& input, sptr<SurfaceBuffer
         errCode = YUVScale(input, output);
     } else {
         VPE_LOGE("Unknown image format!");
-        errCode = ALGO_ERROR_INVALID_VALUE;
+        errCode = VPE_ALGO_ERR_INVALID_VAL;
     }
     return errCode;
 }
+
+static std::vector<std::shared_ptr<Extension::ExtensionBase>> RegisterExtensions()
+{
+    std::vector<std::shared_ptr<Extension::ExtensionBase>> extensions;
+
+    auto extension = std::make_shared<Extension::DetailEnhancerExtension>();
+    CHECK_AND_RETURN_RET_LOG(extension != nullptr, extensions, "null pointer");
+    extension->info = { Extension::ExtensionType::DETAIL_ENHANCER, "SKIA", "0.0.1" };
+    extension->creator = Skia::Create;
+    extension->capabilitiesBuilder = Skia::BuildCapabilities;
+    extensions.push_back(std::static_pointer_cast<Extension::ExtensionBase>(extension));
+
+    return extensions;
+}
+
+void RegisterSkiaExtensions(uintptr_t extensionListAddr)
+{
+    Extension::DoRegisterExtensions(extensionListAddr, RegisterExtensions);
+}
+} // VideoProcessingEngine
+} // Media
+} // OHOS

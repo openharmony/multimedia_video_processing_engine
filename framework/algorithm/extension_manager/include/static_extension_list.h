@@ -14,9 +14,12 @@
 #ifndef VPE_FRAMEWORK_ALGORITHM_EXTENSION_MANAGER_STATIC_EXTENSION_LIST_H
 #define VPE_FRAMEWORK_ALGORITHM_EXTENSION_MANAGER_STATIC_EXTENSION_LIST_H
 
+#include "skia_impl.h"
+
 namespace OHOS::Media::VideoProcessingEngine::Extension {
 using RegisterExtensionFunc = void (*)(uintptr_t extensionListAddr);
 const std::unordered_map<std::string, RegisterExtensionFunc> staticExtensionsRegisterMap = {
+    { "Skia", RegisterSkiaExtensions },
 };
 } // namespace OHOS::Media::VideoProcessingEngine::Extension
 
