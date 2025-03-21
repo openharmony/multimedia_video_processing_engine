@@ -62,7 +62,7 @@ namespace {
 using ColorSpaceConverterCapabilityMap =
     std::map<
         std::tuple<ColorSpaceDescription, GraphicPixelFormat, ColorSpaceDescription, GraphicPixelFormat>,
-        std::vector<std::tuple<uint32_t, int32_t, size_t>>>;
+        std::vector<std::tuple<Rank, int32_t, size_t>>>;
 using ColorSpaceConverterDisplayCapabilityMap = ColorSpaceConverterCapabilityMap;
 /*
 {
@@ -76,12 +76,12 @@ using ColorSpaceConverterDisplayCapabilityMap = ColorSpaceConverterCapabilityMap
 using MetadataGeneratorCapabilityMap =
     std::map<
         std::tuple<ColorSpaceDescription, GraphicPixelFormat, MetadataGeneratorAlgoType>,
-        std::vector<std::tuple<uint32_t, int32_t, size_t>>>;
+        std::vector<std::tuple<Rank, int32_t, size_t>>>;
 using DetailEnhancerCapabilityMap = std::map<uint32_t, size_t>;
 using AihdrEnhancerCapabilityMap =
     std::map<
         std::tuple<ColorSpaceDescription, GraphicPixelFormat>,
-        std::vector<std::tuple<uint32_t, int32_t, size_t>>>;
+        std::vector<std::tuple<Rank, int32_t, size_t>>>;
 
 using ColorSpaceConverterDisplaySet = std::set<std::shared_ptr<ColorSpaceConverterDisplayBase>>;
 using ColorSpaceConverterDisplayExtensionSet = std::set<std::shared_ptr<ColorSpaceConverterDisplayExtension>>;

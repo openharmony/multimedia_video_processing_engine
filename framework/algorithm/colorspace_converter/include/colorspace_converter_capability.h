@@ -19,6 +19,7 @@
 #include <functional>
 #include <vector>
 #include "frame_info.h"
+#include "extension_base.h"
 
 namespace OHOS {
 namespace Media {
@@ -50,7 +51,7 @@ struct ColorSpaceConverterCapability {
     }
     */
     std::map<GraphicPixelFormat, std::vector<GraphicPixelFormat>> pixelFormatMap;
-    uint32_t rank;
+    Extension::Rank rank;
     int32_t version;
 };
 

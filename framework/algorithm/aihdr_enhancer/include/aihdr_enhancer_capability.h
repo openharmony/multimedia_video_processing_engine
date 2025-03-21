@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "frame_info.h"
+#include "extension_base.h"
 
 namespace OHOS {
 namespace Media {
@@ -27,7 +28,7 @@ namespace VideoProcessingEngine {
 struct AihdrEnhancerCapability {
     ColorSpaceDescription colorspaceDesc;
     std::vector<GraphicPixelFormat> pixelFormats;
-    uint32_t rank;
+    Extension::Rank rank;
     int32_t version;
 };
 

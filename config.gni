@@ -28,6 +28,7 @@ COLORSPACE_CONVERTER_VIDEO_DIR      = "$ALGORITHM_DIR/colorspace_converter_video
 METADATA_GENERATOR_DIR              = "$ALGORITHM_DIR/metadata_generator"
 METADATA_GENERATOR_VIDEO_DIR        = "$ALGORITHM_DIR/metadata_generator_video"
 ALGORITHM_EXTENSION_MANAGER_DIR     = "$ALGORITHM_DIR/extension_manager"
+ALGORITHM_EXTENSION_SKIA_DIR        = "$ALGORITHM_DIR/extensions/skia" 
 ALGORITHM_COMMON_DIR                = "$ALGORITHM_DIR/common"
 DETAIL_ENHANCER_DIR                 = "$ALGORITHM_DIR/detail_enhancer"
 DETAIL_ENHANCER_VIDEO_DIR           = "$ALGORITHM_DIR/detail_enhancer_video"

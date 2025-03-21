@@ -31,6 +31,11 @@ enum class ExtensionType {
     AIHDR_ENHANCER
 };
 
+enum class Rank : uint32_t {
+    RANK_DEFAULT = 0,
+    RANK_HIGH,
+};
+
 struct ExtensionInfo {
     ExtensionType type {ExtensionType::COLORSPACE_CONVERTER};
     std::string name;

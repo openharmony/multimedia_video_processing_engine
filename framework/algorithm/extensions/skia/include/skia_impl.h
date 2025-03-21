@@ -19,23 +19,31 @@
 #include "surface_buffer.h"
 #include "include/core/SkYUVAPixmaps.h"
 
-#include "algorithm_types.h"
+#include "algorithm_errors.h"
+#include "detail_enhancer_base.h"
+#include "detail_enhancer_capability.h"
 
 namespace OHOS {
 namespace Media {
 namespace VideoProcessingEngine {
-class Skia {
+class Skia : public DetailEnhancerBase {
 public:
-    static AlgoErrorCode Process(const sptr<SurfaceBuffer>& input, sptr<SurfaceBuffer>& output);
-
-private:
     Skia() = default;
     virtual ~Skia() = default;
     Skia(const Skia&) = delete;
     Skia& operator=(const Skia&) = delete;
     Skia(Skia&&) = delete;
     Skia& operator=(Skia&&) = delete;
+
+    static std::unique_ptr<DetailEnhancerBase> Create();
+    static DetailEnhancerCapability BuildCapabilities();
+    VPEAlgoErrCode Init() override;
+    VPEAlgoErrCode Deinit() override;
+    VPEAlgoErrCode SetParameter(const DetailEnhancerParameters& parameter, int type, bool flag) override;
+    VPEAlgoErrCode Process(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output) override;
 };
+
+void RegisterSkiaExtensions(uintptr_t extensionListAddr);
 } // VideoProcessingEngine
 } // Media
 } // OHOS
