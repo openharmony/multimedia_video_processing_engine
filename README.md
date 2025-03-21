@@ -180,7 +180,6 @@ VPE引擎作为OpenHarmony的组件，提供系统的视频图像能力，包含
     void OnNewOutputBuffer(OH_VideoProcessing* videoProcessor, uint32_t index, void* userData);
     ```
 6. （可选）配置细节增强档位，当前有高中低三档及NONE可选，若不配置则默认档位为LOW档。
-  一般在进程内第一次使用时调用，可提前完成部分耗时操作。
     ```cpp
     // 创建format实例
     OH_AVFormat* parameter = OH_AVFormat_Create();
@@ -190,7 +189,6 @@ VPE引擎作为OpenHarmony的组件，提供系统的视频图像能力，包含
     OH_VideoProcessing_SetParameter(videoProcessor, parameter);
     ```
 7. 获取Surface。
-  一般在进程内第一次使用时调用，可提前完成部分耗时操作。
     ```cpp
     //配置算法的输入
     ret = OH_VideoProcessing_GetSurface(videoProcessor, inputWindow);
@@ -198,19 +196,16 @@ VPE引擎作为OpenHarmony的组件，提供系统的视频图像能力，包含
     OH_VideoDecoder_SetSurface(decoder_,  inputWindow_);
     ```
 8. 设置Surface（配置送显）。
-  一般在进程内第一次使用时调用，可提前完成部分耗时操作。
     ```cpp
     // 配置算法的输出，配置的输出window的分辨率即为算法输出分辨率
     ret = OH_VideoProcessing_SetSurface(videoProcessor, outWindow);
     ```
 9. 创建解码器输入输出线程。
-  一般在进程内第一次使用时调用，可提前完成部分耗时操作。
     ```cpp
     std::unique_ptr<std::thread> videoDecInputThread_ = std::make_unique<std::thread>(&Player::VideoDecInputThread, this);
     std::unique_ptr<std::thread> videoDecOutputThread_ = std::make_unique<std::thread>(&Player::VideoDecOutputThread, this);
     ```
 10. 启动细节增强处理。
-  一般在进程内第一次使用时调用，可提前完成部分耗时操作。
     ```cpp
     // 启动解码
     int ret = OH_VideoDecoder_Start(decoder_);
@@ -218,18 +213,15 @@ VPE引擎作为OpenHarmony的组件，提供系统的视频图像能力，包含
     ret = OH_VideoProcessing_Start(videoProcessor);
     ```
 11. 调用OH_VideoProcessing_Stop()停止细节增强。
-  一般在进程内第一次使用时调用，可提前完成部分耗时操作。
     ```cpp
     VideoProcessing_ErrorCode ret = OH_VideoProcessing_Stop(videoProcessor);
     ```
 12. 释放处理实例。
-  一般在进程内第一次使用时调用，可提前完成部分耗时操作。
     ```cpp
     VideoProcessing_ErrorCode ret = OH_VideoProcessing_Destroy(videoProcessor)；
     VideoProcessing_ErrorCode ret = OH_VideoProcessingCallback_Destroy(callback);
     ```
 13. 释放处理资源。
-  一般在进程内第一次使用时调用，可提前完成部分耗时操作。
     ```cpp
     VideoProcessing_ErrorCode ret = OH_VideoProcessing_DeinitializeEnvironment();
     ```
@@ -268,7 +260,7 @@ VPE引擎作为OpenHarmony的组件，提供系统的视频图像能力，包含
     namespace Media {
     namespace VideoProcessingEngine {
     // 由基类MetadataGeneratorBase创建一个自定义元数据生成类，例如ImageMetadataGen
-    // 其他算法对应关系如上表所示
+    // 其余算法对应关系如上表所示
 
     class ImageMetadataGen : public MetadataGeneratorBase {
     public:

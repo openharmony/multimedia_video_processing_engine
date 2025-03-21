@@ -229,7 +229,7 @@ VPEAlgoErrCode YUVScale(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuff
     return YUVPixmapScale(inputPixmap, outputPixmap, scaleOption, numPlanesInput);
 }
 
-constexpr OHOS::Media::VideoProcessingEngine::Extension::Rank RANK = OHOS::Media::VideoProcessingEngine::Extension::Rank::RANK_DEFAULT;
+constexpr Extension::Rank RANK = Extension::Rank::RANK_DEFAULT;
 constexpr uint32_t VERSION = 0;
 } // namespace
 

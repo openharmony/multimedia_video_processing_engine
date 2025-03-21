@@ -526,10 +526,10 @@ std::shared_ptr<ColorSpaceConverterExtension> ExtensionManager::FindColorSpaceCo
             (CSDesc).range, outputInfo.pixelFormat, outputInfo.colorSpace.metadataType);
         return nullptr;
     }
-    size_t idx = std::get<2>(*(iter->second.cbegin()));
+    size_t idx = std::get<2>(*(iter->second.cbegin())); // 2
     for (const auto &cap : iter->second) {
         if (std::get<0>(cap) == Rank::RANK_HIGH) {
-            idx = std::get<2>(cap);
+            idx = std::get<2>(cap); // 2
             break;
         }
     }
@@ -563,10 +563,10 @@ std::shared_ptr<MetadataGeneratorExtension> ExtensionManager::FindMetadataGenera
     const auto iter = metadataGeneratorCapabilityMap.find(key);
     CHECK_AND_RETURN_RET_LOG(iter != metadataGeneratorCapabilityMap.cend() && !iter->second.empty(), nullptr,
         "CSC metadata generator extension is not found");
-    size_t idx = std::get<2>(*(iter->second.cbegin()));
+    size_t idx = std::get<2>(*(iter->second.cbegin())); // 2
     for (const auto &cap : iter->second) {
         if (std::get<0>(cap) == Rank::RANK_HIGH) {
-            idx = std::get<2>(cap);
+            idx = std::get<2>(cap); // 2
             break;
         }
     }
@@ -608,10 +608,10 @@ std::shared_ptr<AihdrEnhancerExtension> ExtensionManager::FindAihdrEnhancerExten
     const auto iter = aihdrEnhancerCapabilityMap.find(key);
     CHECK_AND_RETURN_RET_LOG(iter != aihdrEnhancerCapabilityMap.cend() && !iter->second.empty(), nullptr,
         "Aihdr enhancer extension is not found");
-    size_t idx = std::get<2>(*(iter->second.cbegin()));
+    size_t idx = std::get<2>(*(iter->second.cbegin())); // 2
     for (const auto &cap : iter->second) {
         if (std::get<0>(cap) == Rank::RANK_HIGH) {
-            idx = std::get<2>(cap);
+            idx = std::get<2>(cap); // 2
             break;
         }
     }
