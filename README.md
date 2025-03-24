@@ -406,7 +406,7 @@ namespace OHOS {
 namespace Media {
 namespace VideoProcessingEngine {
 // 由基类MetadataGeneratorBase创建一个自定义元数据生成类，例如ImageMetadataGen
-// 其他算法对应关系如上表所示
+// 其余算法对应关系如上表所示
 
 class ImageMetadataGen : public MetadataGeneratorBase {
 public:
