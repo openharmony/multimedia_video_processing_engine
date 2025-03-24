@@ -7,9 +7,13 @@ VPE引擎的主要结构如下图所示：
 
 ![VPE引擎架构图](./figures/videoProcessingEngine_architecture.png)
 
-
 #### 各模块功能说明
-<table data-type="luckysheet_copy_action_table"><colgroup width="334px"></colgroup><colgroup width="510px"></colgroup><colgroup width="510px"></colgroup><tr><td  style="height:34px;text-align: center;align-items: center;font-size: 18pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">层级</td><td  style="text-align: center;align-items: center;font-size: 18pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">模块</td><td  style="text-align: center;align-items: center;font-size: 18pt;font-family: DejaVu Sans;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">功能描述</td></tr><tr><td rowspan="6" colspan="1" style="height:32px;text-align: center;align-items: center;font-size: 24pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-top:1pt solid #000000;border-bottom:1pt solid #000000;">Interface</td><td  style="text-align: center;align-items: center;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;"><font style="font-size: 14px;">视频色彩空间</font><font style="font-size: 14px;"> API</font></td><td  style="align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供用于视频场景色彩空间转换相关接口</td></tr><tr><td  style="text-align: center;align-items: center;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;"><font style="font-size: 14px;">图片色彩空间</font><font style="font-size: 14px;"> API</font></td><td  style="align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供用于图片场景色彩空间转换相关接口</td></tr><tr><td  style="text-align: center;align-items: center;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;"><font style="font-size: 14px;">视频细节增强</font><font style="font-size: 14px;"> API</font></td><td  style="align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供视频超分算法、锐化算法的相关接口</td></tr><tr><td  style="text-align: center;align-items: center;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;"><font style="font-size: 14px;">图片细节增强</font><font style="font-size: 14px;"> API</font></td><td  style="align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供图片超分算法、锐化算法的相关接口</td></tr><tr><td  style="text-align: center;align-items: center;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;"><font style="font-size: 14px;">视频动态元数据</font><font style="font-size: 14px;">API</font></td><td  style="align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供接口可用于视频内容动态元数据生成算法调用</td></tr><tr><td  style="text-align: center;align-items: center;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;"><font style="font-size: 14px;">图片动态元数据</font><font style="font-size: 14px;">API</font></td><td  style="align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供接口可用于图片内容动态元数据生成算法调用</td></tr><tr><td rowspan="6" colspan="1" style="height:49px;text-align: center;align-items: center;font-size: 24pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-top:1pt solid #000000;border-bottom:1pt solid #000000;">framework</td><td  style="text-align: center;align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频色彩空间原子能力</td><td  style="align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现视频场景色彩空间转换软件通路调度及上下文管理，实现视频流过程控制</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片色彩空间原子能力</td><td  style="align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现图片场景色彩空间转换软件通路调度</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频细节增强原子能力</td><td  style="align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现视频场景清晰度增强及缩放算法软件通路调度及上下文管理，实现视频流过程控制</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片细节增强原子能力</td><td  style="align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现图片场景清晰度增强及缩放算法软件通路调度</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频动态元数据原子能力</td><td  style="align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现视频场景动态元数据生成软件通路调度</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片动态元数据原子能力</td><td  style="align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现图片场景动态元数据生成软件通路调度</td></tr><tr><td rowspan="6" colspan="1" style="height:49px;text-align: center;align-items: center;font-size: 24pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-top:1pt solid #000000;border-bottom:1pt solid #000000;">插件层</td><td  style="text-align: center;align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频色彩空间处理算法插件</td><td  style="align-items: center;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;"><font style="font-size: 14px;">实现视频色彩空间转换算法功能，具体包括</font><font style="font-size: 14px;">SDR2SDR</font><font style="font-size: 14px;">、</font><font style="font-size: 14px;">HDR2SDR</font><font style="font-size: 14px;">、</font><font style="font-size: 14px;">HDR2HDR</font><font style="font-size: 14px;">场景的色域转换</font></td></tr><tr><td  style="text-align: center;align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片色彩空间算法插件</td><td  style="align-items: center;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;"><font style="font-size: 14px;">实现图片色彩空间转换算法功能，具体包括</font><font style="font-size: 14px;">SDR2SDR</font><font style="font-size: 14px;">、</font><font style="font-size: 14px;">HDR2SDR</font><font style="font-size: 14px;">、</font><font style="font-size: 14px;">HDR2HDR</font><font style="font-size: 14px;">场景的色域转换</font></td></tr><tr><td  style="text-align: center;align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频细节增强算法插件</td><td  style="align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现视频缩放、画质增强算法</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片细节增强算法插件</td><td  style="align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现图片缩放、画质增强算法</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频动态元数据算法插件</td><td  style="align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现视频源动态元数生成据算法</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片动态元数据算法插件</td><td  style="align-items: center;font-size: 14pt;font-family: DejaVu Sans;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现图片源动态元数生成据算法</td></tr></table>
+<table data-type="luckysheet_copy_action_table"><colgroup width="334px"></colgroup><colgroup width="510px"></colgroup><colgroup width="510px"></colgroup><tr><td  style="height:34px;text-align: center;align-items: center;font-size: 18pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">层级</td><td  style="text-align: center;align-items: center;font-size: 18pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">模块</td><td  style="text-align: center;align-items: center;font-size: 18pt;font-family: DejaVu Sans;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">功能描述</td></tr><tr><td rowspan="7" colspan="1" style="height:32px;text-align: center;align-items: center;font-size: 16pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-top:1pt solid #000000;border-bottom:1pt solid #000000;">Interface</td><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频色彩空间 CAPI</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供用于视频场景色彩空间转换相关接口</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片色彩空间 CAPI</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供用于图片场景色彩空间转换相关接口</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频细节增强 CAPI</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供视频超分算法、锐化算法的相关接口</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片细节增强 CAPI</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供图片超分算法、锐化算法的相关接口</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频动态元数据 CAPI</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供接口可用于视频内容动态元数据生成算法调用</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片动态元数据 CAPI</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供接口可用于图片内容动态元数据生成算法调用</td></tr><tr><td  style="text-align: center;align-items: center;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;"><font style="font-size: 11px;">图片细节增强</font><font style="font-size: 11px;">TS</font><font style="font-size: 11px;">接口</font></td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供图片超分算法、锐化算法的TS接口</td></tr><tr><td rowspan="6" colspan="1" style="height:42px;text-align: center;align-items: center;font-size: 16pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-top:1pt solid #000000;border-bottom:1pt solid #000000;">原子能力封装层</td><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频色彩空间原子能力</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现视频场景色彩空间转换软件通路调度及上下文管理，实现视频流过程控制</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片色彩空间原子能力</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现图片场景色彩空间转换软件通路调度</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频细节增强原子能力</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现视频场景清晰度增强及缩放算法软件通路调度及上下文管理，实现视频流过程控制</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片细节增强原子能力</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现图片场景清晰度增强及缩放算法软件通路调度</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频动态元数据原子能力</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现视频场景动态元数据生成软件通路调度</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片动态元数据原子能力</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现图片场景动态元数据生成软件通路调度</td></tr><tr><td rowspan="6" colspan="1" style="height:45px;text-align: center;align-items: center;font-size: 16pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-top:1pt solid #000000;border-bottom:1pt solid #000000;">算法插件层</td><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频色彩空间处理算法插件</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现视频色彩空间转换算法功能，具体包括SDR2SDR、HDR2SDR、HDR2HDR场景的色域转换</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片色彩空间算法插件</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现图片色彩空间转换算法功能，具体包括SDR2SDR、HDR2SDR、HDR2HDR场景的色域转换</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频细节增强算法插件</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现视频缩放、画质增强算法</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片细节增强算法插件</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现图片缩放、画质增强算法</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频动态元数据算法插件</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现视频源动态元数生成据算法</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片动态元数据算法插件</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现图片源动态元数生成据算法</td></tr></table>
+
+<table data-type="luckysheet_copy_action_table"><colgroup width="208px"></colgroup><colgroup width="261px"></colgroup><colgroup width="417px"></colgroup><tr><td  style="height:63px;text-align: center;align-items: center;font-size: 18pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">层级</td><td  style="text-align: center;align-items: center;font-size: 18pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">模块</td><td  style="text-align: center;align-items: center;font-size: 18pt;font-family: DejaVu Sans;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">功能描述</td></tr><tr><td rowspan="3" colspan="1" style="height:89px;text-align: center;align-items: center;font-size: 16pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-top:1pt solid #000000;border-bottom:1pt solid #000000;">插件管理</td><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">插件注册</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供系统开发者插件注册的功能</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">能力查询</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">应用开发者可通过能力查询功能确认给定插件是否在该设备或系统支持</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">插件调用</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">调用具体的插件能力完成相关算法功能</td></tr><tr><td rowspan="2" colspan="1" style="height:177px;text-align: center;align-items: center;font-size: 16pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-top:1pt solid #000000;border-bottom:1pt solid #000000;">服务管理</td><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">资源管理</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">进行资源调度及算法的上下文管理，例如视频内容前后帧的相关信息</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">进程管理</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">完成跨进程通信等功能</td></tr></table>
+
+
+<table data-type="luckysheet_copy_action_table"><colgroup width="307px"></colgroup><colgroup width="327px"></colgroup><tr><td  style="height:177px;align-items: center;font-size: 18pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">依赖模块</td><td  style="align-items: center;font-size: 18pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">功能描述</td></tr><tr><td  style="height:111px;align-items: center;font-size: 18pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">graphic_graphic_surface</td><td  style="align-items: center;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;"><font style="font-size: 18px;">提供视频</font><font style="font-size: 18px;">surface</font><font style="font-size: 18px;">支持</font></td></tr><tr><td  style="height:177px;align-items: center;font-size: 18pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">graphic_graphic_2d</td><td  style="align-items: center;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;"><font style="font-size: 18px;">提供图片</font><font style="font-size: 18px;">surfacebuffer</font><font style="font-size: 18px;">支持</font></td></tr><tr><td  style="height:67px;align-items: center;font-size: 18pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">multimedia_media_foundation</td><td  style="align-items: center;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;"><font style="font-size: 18px;">提供</font><font style="font-size: 18px;">pixelmap</font><font style="font-size: 18px;">支持</font></td></tr><tr><td  style="height:63px;align-items: center;font-size: 18pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">multimedia_image_framework</td><td  style="align-items: center;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;"><font style="font-size: 18px;">提供</font><font style="font-size: 18px;">Formatsht</font><font style="font-size: 18px;">参数设置支持</font></td></tr><tr><td  style="height:32px;align-items: center;font-size: 18pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">third_party_skia</td><td  style="align-items: center;font-size: 18pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供缩放算法</td></tr></table>
 
 
 
@@ -227,16 +231,158 @@ VPE引擎作为OpenHarmony的组件，提供系统的视频图像能力，包含
     ```
 
 #### 系统开发者实现自定义算法插件注册示例
-自定义算法插件功能与基类对应关系如下：
+视频处理引擎提供色彩空间转换、动态元数据生成以及细节增强等算法插件注册接口，系统用户可以将自己的算法注册其中，丰富算法插件。视频处理引擎定义了各类算法的基类定义，具体如下：
 | 功能 | 基类 | 头文件 |
 | :--: | :--: | :--: |
-| 视频色彩空间 | ColorSpaceConverterBase | colorspace_converter_base.h |
-| 图片色彩空间 | ColorSpaceConverterBase | colorspace_converter_base.h |
+| 视频色彩空间转换 | ColorSpaceConverterBase | colorspace_converter_base.h |
+| 图片色彩空间转换 | ColorSpaceConverterBase | colorspace_converter_base.h |
 | 视频细节增强 | DetailEnhancerBase | detail_enhancer_base.h |
 | 图片细节增强 | DetailEnhancerBase | detail_enhancer_base.h |
 | 视频动态元数据 | MetadataGeneratorBase | metadata_generator_base.h |
 | 图片动态元数据 | MetadataGeneratorBase | metadata_generator_base.h |
-以图像动态元数据生成为例，以下步骤描述了具体开发步骤。
+<br>
+以缩放算法为例，该插件算法在framework/algorithm/extensions/skia中已经实现，以下描述具体开发步骤
+
+1. 在framework/algorithm/extensions目录下新建一个文件夹，例如skia，以及对应的cpp和h文件
+
+2. 缩放算法头文件实现，具体可参考framework/algorithm/extensions/skia/include/skia_impl.h
+
+```cpp
+#ifndef SKIA_IMPL_H
+#define SKIA_IMPL_H
+
+#include "surface_buffer.h"
+#include "include/core/SkYUVAPixmaps.h"
+
+#include "algorithm_errors.h"
+#include "detail_enhancer_base.h"
+#include "detail_enhancer_capability.h"
+
+namespace OHOS {
+namespace Media {
+namespace VideoProcessingEngine {
+// 由基类DetailEnhancerBase创建一个自定义缩放算法类，例如Skia
+// 其它算法对应关系如上表所示
+class Skia : public DetailEnhancerBase {
+public:
+    Skia() = default;
+    virtual ~Skia() = default;
+    Skia(const Skia&) = delete;
+    Skia& operator=(const Skia&) = delete;
+    Skia(Skia&&) = delete;
+    Skia& operator=(Skia&&) = delete;
+    // 以下函数必须定义，基类虚函数必须实现
+    // 定义Create函数，函数名可以自定义，这里以Create()为例，用于实例创建, 返回值必须是DetailEnhancerBase指针。
+    static std::unique_ptr<DetailEnhancerBase> Create();
+    // 定义能力构建函数，函数名可以自定义，这里以BuildCapabilities()为例，用于定义算法所支持的能力，返回值必须是
+    static DetailEnhancerCapability BuildCapabilities();
+    VPEAlgoErrCode Init() override;
+    VPEAlgoErrCode Deinit() override;
+    VPEAlgoErrCode SetParameter(const DetailEnhancerParameters& parameter, int type, bool flag) override;
+    VPEAlgoErrCode Process(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output) override;
+};
+// 注册函数，函数名可自定义，满足void XXX(uintptr_t XXX)形式，如下：
+void RegisterSkiaExtensions(uintptr_t extensionListAddr);
+} // VideoProcessingEngine
+} // Media
+} // OHOS
+#endif // SKIA_IMPL_H
+```
+3. 插件算法能力注册与插件算法实现,具体可参考framework/algorithm/extensions/skia/skia_impl.cpp
+
+```cpp
+#include "skia_impl.h"
+
+#include <array>
+#include <chrono>
+#include <dlfcn.h>
+#include "detail_enhancer_extension.h"
+#include "utils.h"
+
+#include "vpe_log.h"
+
+namespace OHOS {
+namespace Media {
+namespace VideoProcessingEngine {
+
+namespace {
+// 定义算法优先级，默认RANK_DEFAULT，若设置RANK_HIGH，则存在同类型算法时，优先使用RANK_HIGH算法。
+constexpr Extension::Rank RANK = Extension::Rank::RANK_DEFAULT;
+constexpr uint32_t VERSION = 0;
+} // namespace
+
+std::unique_ptr<DetailEnhancerBase> Skia::Create()
+{
+    return std::make_unique<Skia>();
+}
+
+// 算法能力注册
+DetailEnhancerCapability Skia::BuildCapabilities()
+{
+    // 通过RANK设置当前算法高优先级，当存在同样能力的算法时，优先使用RANK_HIGH算法，默认为RANK_DEFAULT。
+    std::vector<uint32_t> levels = { DETAIL_ENH_LEVEL_NONE, DETAIL_ENH_LEVEL_LOW, DETAIL_ENH_LEVEL_MEDIUM,
+        DETAIL_ENH_LEVEL_HIGH_EVE, DETAIL_ENH_LEVEL_HIGH_AISR, DETAIL_ENH_LEVEL_VIDEO};
+    DetailEnhancerCapability capability = { levels, RANK, VERSION };
+    return capability;
+}
+
+VPEAlgoErrCode Skia::Init()
+{
+    return VPE_ALGO_ERR_OK;
+}
+
+VPEAlgoErrCode Skia::Deinit()
+{
+    return VPE_ALGO_ERR_OK;
+}
+
+VPEAlgoErrCode Skia::SetParameter([[maybe_unused]] const DetailEnhancerParameters& parameter,
+    [[maybe_unused]] int type, [[maybe_unused]] bool flag)
+{
+    return VPE_ALGO_ERR_OK;
+}
+
+// 算法实现，具体可参考framework/algorithm/extensions/skia/skia_impl.cpp
+VPEAlgoErrCode Skia::Process(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output)
+{
+    return errCode;
+}
+
+// 实现注册函数，注册函数名可自定义修改，需与下面DoRegisterExtensions中的注册函数名一致
+static std::vector<std::shared_ptr<Extension::ExtensionBase>> RegisterExtensions()
+{
+    std::vector<std::shared_ptr<Extension::ExtensionBase>> extensions;
+
+    auto extension = std::make_shared<Extension::DetailEnhancerExtension>();
+    CHECK_AND_RETURN_RET_LOG(extension != nullptr, extensions, "null pointer");
+    // 填写插件算法信息，当前算法为缩放算法，类型则填写DETAIL_ENHANCER，后面两个字符串分别为算法名称以及版本号，可自定义修改。
+    extension->info = { Extension::ExtensionType::DETAIL_ENHANCER, "SKIA", "0.0.1" };
+    extension->creator = Skia::Create;
+    extension->capabilitiesBuilder = Skia::BuildCapabilities;
+    extensions.push_back(std::static_pointer_cast<Extension::ExtensionBase>(extension));
+
+    return extensions;
+}
+// 注册函数，函数名可自定义
+void RegisterSkiaExtensions(uintptr_t extensionListAddr)
+{
+    Extension::DoRegisterExtensions(extensionListAddr, RegisterExtensions);
+}
+} // VideoProcessingEngine
+} // Media
+} // OHOS
+```
+
+4. 添加注册插件回调函数，VPE插件管理会遍历所有插件注册函数。
+  在framework/algorithm/extension_manager/include/static_extension_list.h文件staticExtensionsRegisterMap中添加算法插件。
+```cpp
+const std::unordered_map<std::string, RegisterExtensionFunc> staticExtensionsRegisterMap = {
+    // 添加自定义插件算法名和注册函数，注册函数需与cpp中定义的注册函数同名
+    { "Skia", RegisterSkiaExtensions },
+};
+```
+
+再以图像动态元数据生成为例，以下描述了具体开发步骤。
 1. 在framework/algorithm/extensions目录下新建一个文件夹，例如image_metadata_generator，以及对应的cpp和h文件
 ```
     /foundation/multimedia/video_processing_engine/
@@ -247,145 +393,145 @@ VPE引擎作为OpenHarmony的组件，提供系统的视频图像能力，包含
     │               ├── image_metadata_gen_impl.h
     │               ├── image_metadata_gen_impl.cpp
 ```
-1. 图像动态元数据生成头文件实现
+2. 图像动态元数据生成头文件实现
 
-    ```cpp
-    #ifndef IMAGE_METADATA_GEN_IMPL_H
-    #define IMAGE_METADATA_GEN_IMPL_H
+```cpp
+#ifndef IMAGE_METADATA_GEN_IMPL_H
+#define IMAGE_METADATA_GEN_IMPL_H
 
-    #include "metadata_generator_base.h"
-    #include "metadata_generator_capability.h"
+#include "metadata_generator_base.h"
+#include "metadata_generator_capability.h"
 
-    namespace OHOS {
-    namespace Media {
-    namespace VideoProcessingEngine {
-    // 由基类MetadataGeneratorBase创建一个自定义元数据生成类，例如ImageMetadataGen
-    // 其余算法对应关系如上表所示
+namespace OHOS {
+namespace Media {
+namespace VideoProcessingEngine {
+// 由基类MetadataGeneratorBase创建一个自定义元数据生成类，例如ImageMetadataGen
+// 其他算法对应关系如上表所示
 
-    class ImageMetadataGen : public MetadataGeneratorBase {
-    public:
-        // 定义Create函数，函数名可以自定义，这里以Create()为例，用于实例创建, 返回值必须是MetadataGeneratorBase指针。
-        static std::unique_ptr<MetadataGeneratorBase> Create();
-        // 定义能力构建函数，函数名可以自定义，这里以BuildCapabilities()为例，用于定义算法所支持的能力，返回值必须是vector<MetadataGeneratorCapability>。
-        static std::vector<MetadataGeneratorCapability> BuildCapabilities();
-        // 基类虚函数必须实现
-        VPEAlgoErrCode Init(VPEContext context) override;
-        VPEAlgoErrCode Deinit() override;
-        VPEAlgoErrCode SetParameter(const MetadataGeneratorParameter &parameter) override;
-        VPEAlgoErrCode GetParameter(MetadataGeneratorParameter &parameter) override;
-        VPEAlgoErrCode Process(const sptr<SurfaceBuffer> &input) override;
+class ImageMetadataGen : public MetadataGeneratorBase {
+public:
+    // 定义Create函数，函数名可以自定义，这里以Create()为例，用于实例创建, 返回值必须是MetadataGeneratorBase指针。
+    static std::unique_ptr<MetadataGeneratorBase> Create();
+    // 定义能力构建函数，函数名可以自定义，这里以BuildCapabilities()为例，用于定义算法所支持的能力，返回值必须是vector<MetadataGeneratorCapability>。
+    static std::vector<MetadataGeneratorCapability> BuildCapabilities();
+    // 基类虚函数必须实现
+    VPEAlgoErrCode Init(VPEContext context) override;
+    VPEAlgoErrCode Deinit() override;
+    VPEAlgoErrCode SetParameter(const MetadataGeneratorParameter &parameter) override;
+    VPEAlgoErrCode GetParameter(MetadataGeneratorParameter &parameter) override;
+    VPEAlgoErrCode Process(const sptr<SurfaceBuffer> &input) override;
 
-    private:
-        MetadataGeneratorParameter parameter_;
+private:
+    MetadataGeneratorParameter parameter_;
 
-    };
-    // 自定义注册函数
-    void RegisterImageMetadataGeneratorExtensions(uintptr_t extensionListAddr);
-    } // namespace VideoProcessingEngine
-    } // namespace Media
-    } // namespace OHOS
-    #endif // IMAGE_METADATA_GEN_IMPL_H
+};
+// 注册函数，函数名可自定义，满足void XXX(uintptr_t XXX)形式，如下：
+void RegisterImageMetadataGeneratorExtensions(uintptr_t extensionListAddr);
+} // namespace VideoProcessingEngine
+} // namespace Media
+} // namespace OHOS
+#endif // IMAGE_METADATA_GEN_IMPL_H
 
-    ```
+```
 3. 插件算法能力注册与插件算法实现
-    ```cpp
-    #include "image_metadata_gen_impl.h"
-    #include "metadata_generator_extension.h"
+```cpp
+#include "image_metadata_gen_impl.h"
+#include "metadata_generator_extension.h"
 
-    namespace OHOS {
-    namespace Media {
-    namespace VideoProcessingEngine {
-    // 实现create函数，创建实例
-    std::unique_ptr<MetadataGeneratorBase> ImageMetadataGen::Create()
-    {
-        return std::make_unique<ImageMetadataGen>();
-    }
-    
-    // 算法能力注册与功能实现
-    std::vector<MetadataGeneratorCapability> ImageMetadataGen::BuildCapabilities()
-    {   
-        // 设置算法支持的输入色彩空间，具体可参考framework/capi/image_processing/include/image_processing_capi_capability.h中定义
-        std::vector<ColorSpaceDescription> inColorspaceList = {
-            { GetColorSpaceInfo(CM_BT2020_PQ_LIMIT), CM_IMAGE_HDR_VIVID_SINGLE }};
-        // 设置算法支持的pixelmap
-        std::vector<GraphicPixelFormat> pixelFormatMap;
-        pixelFormatMap.emplace_back(GRAPHIC_PIXEL_FMT_YCBCR_P010);   // NV12
-        pixelFormatMap.emplace_back(GRAPHIC_PIXEL_FMT_YCRCB_P010);   // NV21
-        pixelFormatMap.emplace_back(GRAPHIC_PIXEL_FMT_RGBA_1010102); // rgba1010102
+namespace OHOS {
+namespace Media {
+namespace VideoProcessingEngine {
+// 实现create函数，创建实例
+std::unique_ptr<MetadataGeneratorBase> ImageMetadataGen::Create()
+{
+    return std::make_unique<ImageMetadataGen>();
+}
 
-        // 遍历色彩空间和pixelmap格式的所有组合，表示算法支持的所有能力，
-        std::vector<MetadataGeneratorCapability> capabilities;
-        for (const auto &inColorspace : inColorspaceList) {
-        // RANK_HIGH表示优先级高，默认为RANK_DEFAULT
-            MetadataGeneratorCapability capability = { inColorspace, pixelFormatMap, Extension::Rank::RANK_HIGH, 0 };
-            capabilities.emplace_back(capability);
-        }
-        return capabilities;
-    }
-    
-    // 实现Init函数，可以根据实际算法，用于一些资源的初始化
-    VPEAlgoErrCode ImageMetadataGen::Init(VPEContext context)
-    {
-        return VPE_ALGO_ERR_OK;
-    }
-    
-    // 实现Deinit函数，可以根据实际算法，释放初始化的资源
-    VPEAlgoErrCode ImageMetadataGen::Deinit()
-    {
-        return VPE_ALGO_ERR_OK;
-    }
-    // 实现参数设置函数
-    VPEAlgoErrCode ImageMetadataGen::SetParameter(const MetadataGeneratorParameter &parameter)
-    {
-        parameter_ = parameter;
-        return VPE_ALGO_ERR_OK;
-    }
-    // 实现参数获取函数
-    VPEAlgoErrCode ImageMetadataGen::GetParameter(MetadataGeneratorParameter &parameter)
-    {
-        parameter = parameter_;
-        return VPE_ALGO_ERR_OK;
-    }
-    // 算法功能实现
-    VPEAlgoErrCode ImageMetadataGen::Process(const sptr<SurfaceBuffer> &input)
-    {
-        return VPE_ALGO_ERR_OK;
-    }
+// 算法能力注册
+std::vector<MetadataGeneratorCapability> ImageMetadataGen::BuildCapabilities()
+{   
+    // 设置算法支持的输入色彩空间，具体可参考framework/capi/image_processing/include/image_processing_capi_capability.h中定义
+    std::vector<ColorSpaceDescription> inColorspaceList = {
+        { GetColorSpaceInfo(CM_BT2020_PQ_LIMIT), CM_IMAGE_HDR_VIVID_SINGLE }};
+    // 设置算法支持的pixelmap
+    std::vector<GraphicPixelFormat> pixelFormatMap;
+    pixelFormatMap.emplace_back(GRAPHIC_PIXEL_FMT_YCBCR_P010);   // NV12
+    pixelFormatMap.emplace_back(GRAPHIC_PIXEL_FMT_YCRCB_P010);   // NV21
+    pixelFormatMap.emplace_back(GRAPHIC_PIXEL_FMT_RGBA_1010102); // rgba1010102
 
-    // 实现注册函数，注册函数名可自定义修改，需与下面DoRegisterExtensions中的注册函数名一致
-    static std::vector<std::shared_ptr<OHOS::Media::VideoProcessingEngine::Extension::ExtensionBase>> RegisterExtensions()
-    {
-        std::vector<std::shared_ptr<OHOS::Media::VideoProcessingEngine::Extension::ExtensionBase>> extensions;
+    // 遍历色彩空间和pixelmap格式的所有组合，表示算法支持的所有能力，
+    std::vector<MetadataGeneratorCapability> capabilities;
+    for (const auto &inColorspace : inColorspaceList) {
+        // 通过RANK_HIGH设置当前算法高优先级，当存在同样能力的算法时，优先使用RANK_HIGH算法，默认为RANK_DEFAULT。
+        MetadataGeneratorCapability capability = { inColorspace, pixelFormatMap, Extension::Rank::RANK_HIGH, 0 };
+        capabilities.emplace_back(capability);
+    }
+    return capabilities;
+}
 
-        auto extension = std::make_shared<OHOS::Media::VideoProcessingEngine::Extension::MetadataGeneratorExtension>();
-        // 填写插件算法信息，当前算法为图像元数据生成，类型则填写METADATA_GENERATOR，后面两个字符串分别为算法名称以及版本号，可自定义修改。
-        extension->info = { OHOS::Media::VideoProcessingEngine::Extension::ExtensionType::METADATA_GENERATOR,
-            "ImageMetadataGen", "V1.0" };
-        extension->creator = OHOS::Media::VideoProcessingEngine::ImageMetadataGen::Create;
-        extension->capabilitiesBuilder = OHOS::Media::VideoProcessingEngine::ImageMetadataGen::BuildCapabilities;
-        extensions.push_back(
-            std::static_pointer_cast<OHOS::Media::VideoProcessingEngine::Extension::ExtensionBase>(extension));
-        return extensions;
-    }
-    
-    // 自定义注册函数
-    void RegisterImageMetadataGeneratorExtensions(uintptr_t extensionListAddr)
-    {
-        OHOS::Media::VideoProcessingEngine::Extension::DoRegisterExtensions(extensionListAddr, RegisterExtensions);
-    }
-    } // namespace VideoProcessingEngine
-    } // namespace Media
-    } // namespace OHOS
-    }
-    ```
-3. 添加注册插件回调函数，VPE插件管理会遍历所有插件注册函数。
+// 实现Init函数，可以根据实际算法，用于一些资源的初始化
+VPEAlgoErrCode ImageMetadataGen::Init(VPEContext context)
+{
+    return VPE_ALGO_ERR_OK;
+}
+
+// 实现Deinit函数，可以根据实际算法，释放初始化的资源
+VPEAlgoErrCode ImageMetadataGen::Deinit()
+{
+    return VPE_ALGO_ERR_OK;
+}
+// 实现参数设置函数
+VPEAlgoErrCode ImageMetadataGen::SetParameter(const MetadataGeneratorParameter &parameter)
+{
+    parameter_ = parameter;
+    return VPE_ALGO_ERR_OK;
+}
+// 实现参数获取函数
+VPEAlgoErrCode ImageMetadataGen::GetParameter(MetadataGeneratorParameter &parameter)
+{
+    parameter = parameter_;
+    return VPE_ALGO_ERR_OK;
+}
+// 算法功能实现
+VPEAlgoErrCode ImageMetadataGen::Process(const sptr<SurfaceBuffer> &input)
+{
+    return VPE_ALGO_ERR_OK;
+}
+
+// 实现注册函数，注册函数名可自定义修改，需与下面DoRegisterExtensions中的注册函数名一致
+static std::vector<std::shared_ptr<OHOS::Media::VideoProcessingEngine::Extension::ExtensionBase>> RegisterExtensions()
+{
+    std::vector<std::shared_ptr<OHOS::Media::VideoProcessingEngine::Extension::ExtensionBase>> extensions;
+
+    auto extension = std::make_shared<OHOS::Media::VideoProcessingEngine::Extension::MetadataGeneratorExtension>();
+    // 填写插件算法信息，当前算法为图像元数据生成，类型则填写METADATA_GENERATOR，后面两个字符串分别为算法名称以及版本号，可自定义修改。
+    extension->info = { OHOS::Media::VideoProcessingEngine::Extension::ExtensionType::METADATA_GENERATOR,
+        "ImageMetadataGen", "V1.0" };
+    extension->creator = OHOS::Media::VideoProcessingEngine::ImageMetadataGen::Create;
+    extension->capabilitiesBuilder = OHOS::Media::VideoProcessingEngine::ImageMetadataGen::BuildCapabilities;
+    extensions.push_back(
+        std::static_pointer_cast<OHOS::Media::VideoProcessingEngine::Extension::ExtensionBase>(extension));
+    return extensions;
+}
+
+// 注册函数，函数名可自定义
+void RegisterImageMetadataGeneratorExtensions(uintptr_t extensionListAddr)
+{
+    OHOS::Media::VideoProcessingEngine::Extension::DoRegisterExtensions(extensionListAddr, RegisterExtensions);
+}
+} // namespace VideoProcessingEngine
+} // namespace Media
+} // namespace OHOS
+}
+```
+4. 添加注册插件回调函数，VPE插件管理会遍历所有插件注册函数。
   在framework/algorithm/extension_manager/include/static_extension_list.h文件staticExtensionsRegisterMap中添加算法插件。
-    ```cpp
-    const std::unordered_map<std::string, RegisterExtensionFunc> staticExtensionsRegisterMap = {
-        // 添加自定义插件算法名和注册函数，注册函数需与cpp中定义的注册函数同名
-        {"ImgMetadataGeneratorExtensions", RegisterImageMetadataGeneratorExtensions}
-    };
-    ```
+```cpp
+const std::unordered_map<std::string, RegisterExtensionFunc> staticExtensionsRegisterMap = {
+    // 添加自定义插件算法名和注册函数，注册函数需与cpp中定义的注册函数同名
+    {"ImgMetadataGeneratorExtensions", RegisterImageMetadataGeneratorExtensions}
+};
+```
 ## 相关仓
 
 - [graphic_graphic_2d](https://gitee.com/openharmony/graphic_graphic_2d)
