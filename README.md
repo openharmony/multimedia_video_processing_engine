@@ -508,7 +508,4 @@ const std::unordered_map<std::string, RegisterExtensionFunc> staticExtensionsReg
 - [graphic_graphic_surface](https://gitee.com/openharmony/graphic_graphic_surface)
 - [multimedia_image_framework](https://gitee.com/openharmony/multimedia_image_framework)
 - [multimedia_media_foundation](https://gitee.com/openharmony/multimedia_media_foundation)
-- [third_party_egl](https://gitee.com/openharmony/third_party_egl)
-- [third_party_opengles](https://gitee.com/openharmony/third_party_opengles)
-- [third_party_opencl-headers](https://gitee.com/openharmony/third_party_opencl-headers)
 - [third_party_skia](https://gitee.com/openharmony/third_party_skia)
