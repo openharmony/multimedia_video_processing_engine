@@ -7,6 +7,127 @@ The following figure demonstrates the VPE architecture.
 
 ![VPE architecture](./figures/videoProcessingEngine_architecture_english.png)
 
+
+#### 各模块功能说明
+
+<table>
+<tr>
+<td bgcolor=#F5F5F5> Level </td>
+<td bgcolor=#F5F5F5> module </td>
+<td bgcolor=#F5F5F5> Description of the function </td>
+</tr>
+<tr>
+<td rowspan="7" colspan="1" > Interface </td>
+<td> Video color space CAPI </td>
+<td> Provides interfaces for color space conversion in video scenes </td>
+</tr>
+<tr>
+<td> Picture color space CAPI </td>
+<td> Provides APIs for color space conversion of image scenes </td>
+</tr>
+<tr>
+<td> Video detail enhancement CAPI </td>
+<td> Provides APIs for video superresolution algorithms and sharpening algorithms </td>
+</tr>
+<tr>
+<td> Picture detail enhancement CAPI </td>
+<td> Provides APIs related to image superresolution algorithm and sharpening algorithm </td>
+</tr>
+<tr>
+<td> Video dynamic metadata CAPI </td>
+<td> APIs are provided for invoking dynamic metadata generation algorithms for video content </td>
+</tr>
+<tr>
+<td> Image dynamic metadata CAPI </td>
+<td> APIs are provided for dynamic metadata generation algorithms for image content </td>
+</tr>
+<tr>
+<td> The TS interface is enhanced for image details </td>
+<td> Provides TS interfaces for image super-resolution algorithm and sharpening algorithm </td>
+</tr>
+<tr>
+<td rowspan="6" colspan="1" > Atomically capable encapsulation layer </td>
+<td> Video color space atomic capabilities </td>
+<td> Realize the channel scheduling and context management of the video scene color space conversion software, and realize the process control of the video stream </td>
+</tr>
+<tr>
+<td> Picture color space atomic capability </td>
+<td> Realize the color space conversion software channel scheduling of picture scenes </td>
+</tr>
+<tr>
+<td> Video details enhance atomic capabilities </td>
+<td> Realize video scene clarity enhancement and scaling algorithm software channel scheduling and context management, and realize video stream process control </td>
+</tr>
+<tr>
+<td> Picture details enhance atomic capabilities </td>
+<td> Realize the image scene clarity enhancement and scaling algorithm software channel scheduling </td>
+</tr>
+<tr>
+<td> Dynamic metadata atomic capabilities for video </td>
+<td> Realize the dynamic metadata generation software channel scheduling of video scenes </td>
+</tr>
+<tr>
+<td> Dynamic metadata atomic capabilities for images </td>
+<td> Realize the dynamic metadata generation software channel scheduling of image scenes </td>
+</tr>
+<tr>
+<td rowspan="6" colspan="1" > Algorithm plug-in layer </td>
+<td> Video color space processing algorithm plug-in </td>
+<td> Implement the function of video color space conversion algorithm, including SDR2SDR, HDR2SDR, and HDR2HDR </td>
+</tr>
+<tr>
+<td> Plug-in for image color space algorithms </td>
+<td> Realize the function of image color space conversion algorithm, including SDR2SDR, single-layer to double-layer, double-layer to single-layer </td>
+</tr>
+<tr>
+<td> Video Detail Enhancement Algorithm Plug-in </td>
+<td> Implement video scaling and image quality enhancement algorithms </td>
+</tr>
+<tr>
+<td> Plug-in for image detail enhancement algorithms </td>
+<td> Implement image scaling and image quality enhancement algorithms </td>
+</tr>
+<tr>
+<td> Video dynamic metadata algorithm plug-in </td>
+<td> Implement the video dynamic metadata production algorithm </td>
+</tr>
+<tr>
+<td> Image dynamic metadata algorithm plug-in </td>
+<td> Implement the dynamic metadata generation algorithm for images </td>
+</tr>
+<tr>
+<td rowspan="3" colspan="1"> Plugin management </td>
+<td> Plugin registration </td>
+<td> Provide the function of system developer plug-in registration </td>
+</tr>
+<tr>
+<td> Capability inquiry </td>
+<td> Application developers can use the capability query function to confirm whether a given plug-in is supported on that device or system </td>
+</tr>
+<tr>
+<td> Plug-in calls </td>
+<td> Invoke specific plug-in capabilities to complete related algorithm functions </td>
+</tr>
+<tr>
+<td rowspan="2" colspan="1"> Service management </td>
+<td> Resource management </td>
+<td> Resource scheduling and algorithm context management, such as information about the frames before and after video content </td>
+</tr>
+<tr>
+<td> Process management </td>
+<td> Complete functions such as cross-process communication </td>
+</tr>
+</table>
+
+
+| Dependency modules | Description of the function |
+| :-- | :-- |
+| graphic_graphic_surface | Provide video surface support |
+| graphic_graphic_2d | Provide image surfacebuffer support |
+| multimedia_media_foundation | Pixelmap support is available |
+| multimedia_image_framework | Format parameter setting is supported |
+| third_party_skia | Provides a scaling algorithm |
+
 ## Directory Structure
 
 The structure of the repository directory is as follows:
@@ -20,6 +141,8 @@ The structure of the repository directory is as follows:
 │       ├── colorspace_converter               # Image color space conversion algorithm framework
 │       ├── colorspace_converter_display       # Image color space display algorithm framework
 │       ├── colorspace_converter_video         # Video color space conversion algorithm framework
+│       ├── common                             # Common
+│       ├── contrast_enhancer                  # Contrast enhancement algorithm framework
 │       ├── detail_enhancer                    # Image detail enhancement algorithm framework
 │       ├── detail_enhancer_video              # Video detail enhancement algorithm framework
 │       ├── extension_manager                  # Plugin management
@@ -56,7 +179,7 @@ Run the following command to build the VPE for the 64-bit ARM system:
 ### How to Use
 As a component of OpenHarmony, the VPE provides video and image processing capabilities, including color space conversion, dynamic metadata generation, and detail enhancement.
 
-#### Image Scale
+#### The app developer calls the image scaling sample
 1. Add a header file.
     ```cpp
     #include <hilog/log.h>
@@ -99,7 +222,7 @@ As a component of OpenHarmony, the VPE provides video and image processing capab
     ```cpp
     OH_ImageProcessing_DeinitializeEnvironment();
     ```
-#### video zoom
+#### The app developer calls the video zoom sample
 1. Add a header file.
     ```cpp
     #include <ace/xcomponent/native_interface_xcomponent.h>
@@ -235,6 +358,150 @@ As a component of OpenHarmony, the VPE provides video and image processing capab
         {"ImageMetadataGeneratorExtensions", RegisterImageMetadataGeneratorExtensions}
     };
     ```
+
+#### The system developer implements a custom algorithm plug-in registration example
+The video processing engine provides algorithm plug-in registration interfaces such as color space conversion, dynamic metadata generation, and detail enhancement, and system users can register their own algorithms to enrich algorithm plug-ins. The video processing engine defines the basic classes of various algorithms, as follows:
+| Function | Base class | 	Header file |
+| :-- | :-- | :-- |
+| Video color space conversion | ColorSpaceConverterBase | colorspace_converter_base.h |
+| Picture color space conversion | ColorSpaceConverterBase | colorspace_converter_base.h |
+| Video detail enhancement | DetailEnhancerBase | detail_enhancer_base.h |
+| Picture detail enhancement | DetailEnhancerBase | detail_enhancer_base.h |
+| Video dynamic metadata | MetadataGeneratorBase | metadata_generator_base.h |
+| Image dynamic metadata | MetadataGeneratorBase | metadata_generator_base.h |
+
+<br>
+Take the scaling algorithm as an example, the plug-in algorithm has been implemented in framework/algorithm/extensions/skia, and the specific development steps are described below
+
+1. Create a new folder in the framework/algorithm/extensions directory, for example, skia, along with the corresponding cpp and h files
+
+2. The scaling algorithm header file is implemented, see framework/algorithm/extensions/skia/include/skia_impl.h
+
+```cpp
+#ifndef SKIA_IMPL_H
+#define SKIA_IMPL_H
+
+#include "surface_buffer.h"
+#include "include/core/SkYUVAPixmaps.h"
+
+#include "algorithm_errors.h"
+#include "detail_enhancer_base.h"
+#include "detail_enhancer_capability.h"
+
+namespace OHOS {
+namespace Media {
+namespace VideoProcessingEngine {
+
+class Skia : public DetailEnhancerBase {
+public:
+    Skia() = default;
+    virtual ~Skia() = default;
+    Skia(const Skia&) = delete;
+    Skia& operator=(const Skia&) = delete;
+    Skia(Skia&&) = delete;
+    Skia& operator=(Skia&&) = delete;
+    static std::unique_ptr<DetailEnhancerBase> Create();
+    static DetailEnhancerCapability BuildCapabilities();
+    VPEAlgoErrCode Init() override;
+    VPEAlgoErrCode Deinit() override;
+    VPEAlgoErrCode SetParameter(const DetailEnhancerParameters& parameter, int type, bool flag) override;
+    VPEAlgoErrCode Process(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output) override;
+};
+void RegisterSkiaExtensions(uintptr_t extensionListAddr);
+} // VideoProcessingEngine
+} // Media
+} // OHOS
+#endif // SKIA_IMPL_H
+```
+3. For details on plug-in algorithm capability registration and plug-in algorithm implementation, see framework/algorithm/extensions/skia/skia_impl.cpp
+
+```cpp
+#include "skia_impl.h"
+
+#include <array>
+#include <chrono>
+#include <dlfcn.h>
+#include "detail_enhancer_extension.h"
+#include "utils.h"
+
+#include "vpe_log.h"
+
+namespace OHOS {
+namespace Media {
+namespace VideoProcessingEngine {
+
+namespace {
+
+constexpr Extension::Rank RANK = Extension::Rank::RANK_DEFAULT;
+constexpr uint32_t VERSION = 0;
+} // namespace
+
+std::unique_ptr<DetailEnhancerBase> Skia::Create()
+{
+    return std::make_unique<Skia>();
+}
+
+
+DetailEnhancerCapability Skia::BuildCapabilities()
+{
+    std::vector<uint32_t> levels = { DETAIL_ENH_LEVEL_NONE, DETAIL_ENH_LEVEL_LOW, DETAIL_ENH_LEVEL_MEDIUM,
+        DETAIL_ENH_LEVEL_HIGH_EVE, DETAIL_ENH_LEVEL_HIGH_AISR, DETAIL_ENH_LEVEL_VIDEO};
+    DetailEnhancerCapability capability = { levels, RANK, VERSION };
+    return capability;
+}
+
+VPEAlgoErrCode Skia::Init()
+{
+    return VPE_ALGO_ERR_OK;
+}
+
+VPEAlgoErrCode Skia::Deinit()
+{
+    return VPE_ALGO_ERR_OK;
+}
+
+VPEAlgoErrCode Skia::SetParameter([[maybe_unused]] const DetailEnhancerParameters& parameter,
+    [[maybe_unused]] int type, [[maybe_unused]] bool flag)
+{
+    return VPE_ALGO_ERR_OK;
+}
+
+VPEAlgoErrCode Skia::Process(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output)
+{
+    return errCode;
+}
+
+static std::vector<std::shared_ptr<Extension::ExtensionBase>> RegisterExtensions()
+{
+    std::vector<std::shared_ptr<Extension::ExtensionBase>> extensions;
+
+    auto extension = std::make_shared<Extension::DetailEnhancerExtension>();
+    CHECK_AND_RETURN_RET_LOG(extension != nullptr, extensions, "null pointer");
+    extension->info = { Extension::ExtensionType::DETAIL_ENHANCER, "SKIA", "0.0.1" };
+    extension->creator = Skia::Create;
+    extension->capabilitiesBuilder = Skia::BuildCapabilities;
+    extensions.push_back(std::static_pointer_cast<Extension::ExtensionBase>(extension));
+
+    return extensions;
+}
+
+void RegisterSkiaExtensions(uintptr_t extensionListAddr)
+{
+    Extension::DoRegisterExtensions(extensionListAddr, RegisterExtensions);
+}
+} // VideoProcessingEngine
+} // Media
+} // OHOS
+```
+
+4. Add a callback function for registering a plug-in, and the VPE plug-in management will iterate through all plug-in registration functions.
+ see framework/algorithm/extension_manager/include/static_extension_list.h
+```cpp
+const std::unordered_map<std::string, RegisterExtensionFunc> staticExtensionsRegisterMap = {
+    { "Skia", RegisterSkiaExtensions },
+};
+```
+
 ## Repositories Involved
 
 - [graphic_graphic_2d](https://gitee.com/openharmony/graphic_graphic_2d)
