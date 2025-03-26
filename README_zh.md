@@ -17,31 +17,31 @@ VPE引擎的主要结构如下图所示：
 </tr>
 <tr>
 <td rowspan="7" colspan="1" > Interface </td>
-<td> 视频色彩空间 CAPI </td>
+<td> 视频色彩空间CAPI </td>
 <td> 提供用于视频场景色彩空间转换相关接口 </td>
 </tr>
 <tr>
-<td> 图片色彩空间 CAPI </td>
+<td> 图片色彩空间CAPI </td>
 <td> 提供用于图片场景色彩空间转换相关接口 </td>
 </tr>
 <tr>
-<td> 视频细节增强 CAPI </td>
+<td> 视频细节增强CAPI </td>
 <td> 提供视频超分算法、锐化算法的相关接口 </td>
 </tr>
 <tr>
-<td> 图片细节增强 CAPI </td>
+<td> 图片细节增强CAPI </td>
 <td> 提供图片超分算法、锐化算法的相关接口 </td>
 </tr>
 <tr>
-<td> 视频动态元数据 CAPI </td>
+<td> 视频动态元数据CAPI </td>
 <td> 提供接口可用于视频内容动态元数据生成算法调用 </td>
 </tr>
 <tr>
-<td> 图片动态元数据 CAPI </td>
+<td> 图片动态元数据CAPI </td>
 <td> 提供接口可用于图片内容动态元数据生成算法调用 </td>
 </tr>
 <tr>
-<td>  图片细节增强 TS 接口 </td>
+<td>  图片细节增强TS 接口 </td>
 <td> 提供图片超分算法、锐化算法的TS接口 </td>
 </tr>
 <tr>
