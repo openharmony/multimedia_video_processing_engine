@@ -8,7 +8,117 @@ VPE引擎的主要结构如下图所示：
 ![VPE引擎架构图](./figures/videoProcessingEngine_architecture.png)
 
 #### 各模块功能说明
-<table data-type="luckysheet_copy_action_table"><colgroup width="334px"></colgroup><colgroup width="510px"></colgroup><colgroup width="510px"></colgroup><tr><td  style="height:34px;text-align: center;align-items: center;font-size: 18pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">层级</td><td  style="text-align: center;align-items: center;font-size: 18pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">模块</td><td  style="text-align: center;align-items: center;font-size: 18pt;font-family: DejaVu Sans;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">功能描述</td></tr><tr><td rowspan="7" colspan="1" style="height:32px;text-align: center;align-items: center;font-size: 16pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-top:1pt solid #000000;border-bottom:1pt solid #000000;">Interface</td><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频色彩空间 CAPI</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供用于视频场景色彩空间转换相关接口</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片色彩空间 CAPI</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供用于图片场景色彩空间转换相关接口</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频细节增强 CAPI</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供视频超分算法、锐化算法的相关接口</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片细节增强 CAPI</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供图片超分算法、锐化算法的相关接口</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频动态元数据 CAPI</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供接口可用于视频内容动态元数据生成算法调用</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片动态元数据 CAPI</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供接口可用于图片内容动态元数据生成算法调用</td></tr><tr><td  style="text-align: center;align-items: center;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;"><font style="font-size: 11px;">图片细节增强</font><font style="font-size: 11px;">TS</font><font style="font-size: 11px;">接口</font></td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供图片超分算法、锐化算法的TS接口</td></tr><tr><td rowspan="6" colspan="1" style="height:42px;text-align: center;align-items: center;font-size: 16pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-top:1pt solid #000000;border-bottom:1pt solid #000000;">原子能力封装层</td><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频色彩空间原子能力</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现视频场景色彩空间转换软件通路调度及上下文管理，实现视频流过程控制</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片色彩空间原子能力</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现图片场景色彩空间转换软件通路调度</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频细节增强原子能力</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现视频场景清晰度增强及缩放算法软件通路调度及上下文管理，实现视频流过程控制</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片细节增强原子能力</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现图片场景清晰度增强及缩放算法软件通路调度</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频动态元数据原子能力</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现视频场景动态元数据生成软件通路调度</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片动态元数据原子能力</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现图片场景动态元数据生成软件通路调度</td></tr><tr><td rowspan="6" colspan="1" style="height:45px;text-align: center;align-items: center;font-size: 16pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-top:1pt solid #000000;border-bottom:1pt solid #000000;">算法插件层</td><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频色彩空间处理算法插件</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现视频色彩空间转换算法功能，具体包括SDR2SDR、HDR2SDR、HDR2HDR场景的色域转换</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片色彩空间算法插件</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现图片色彩空间转换算法功能，具体包括SDR2SDR、HDR2SDR、HDR2HDR场景的色域转换</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频细节增强算法插件</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现视频缩放、画质增强算法</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片细节增强算法插件</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现图片缩放、画质增强算法</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">视频动态元数据算法插件</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现视频源动态元数生成据算法</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">图片动态元数据算法插件</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">实现图片源动态元数生成据算法</td></tr></table>
+
+<table>
+<tr>
+<td bgcolor=#F5F5F5> 层级 </td>
+<td bgcolor=#F5F5F5> 模块 </td>
+<td bgcolor=#F5F5F5> 功能描述 </td>
+</tr>
+<tr>
+<td rowspan="7" colspan="1" > Interface </td>
+<td> 视频色彩空间 CAPI </td>
+<td> 提供用于视频场景色彩空间转换相关接口 </td>
+</tr>
+<tr>
+<td> 图片色彩空间 CAPI </td>
+<td> 提供用于图片场景色彩空间转换相关接口 </td>
+</tr>
+<tr>
+<td> 视频细节增强 CAPI </td>
+<td> 提供视频超分算法、锐化算法的相关接口 </td>
+</tr>
+<tr>
+<td> 图片细节增强 CAPI </td>
+<td> 提供图片超分算法、锐化算法的相关接口 </td>
+</tr>
+<tr>
+<td> 视频动态元数据 CAPI </td>
+<td> 提供接口可用于视频内容动态元数据生成算法调用 </td>
+</tr>
+<tr>
+<td> 图片动态元数据 CAPI </td>
+<td> 提供接口可用于图片内容动态元数据生成算法调用 </td>
+</tr>
+<tr>
+<td>  图片细节增强 TS 接口 </td>
+<td> 提供图片超分算法、锐化算法的TS接口 </td>
+</tr>
+<tr>
+<td rowspan="6" colspan="1" > 原子能力封装层 </td>
+<td> 视频色彩空间原子能力 </td>
+<td> 实现视频场景色彩空间转换软件通路调度及上下文管理，实现视频流过程控制 </td>
+</tr>
+<tr>
+<td> 图片色彩空间原子能力 </td>
+<td> 实现图片场景色彩空间转换软件通路调度 </td>
+</tr>
+<tr>
+<td> 视频细节增强原子能力 </td>
+<td> 实现视频场景清晰度增强及缩放算法软件通路调度及上下文管理，实现视频流过程控制 </td>
+</tr>
+<tr>
+<td> 图片细节增强原子能力 </td>
+<td> 实现图片场景清晰度增强及缩放算法软件通路调度 </td>
+</tr>
+<tr>
+<td> 视频动态元数据原子能力 </td>
+<td> 实现视频场景动态元数据生成软件通路调度 </td>
+</tr>
+<tr>
+<td> 图片动态元数据原子能力 </td>
+<td> 实现图片场景动态元数据生成软件通路调度 </td>
+</tr>
+<tr>
+<td rowspan="6" colspan="1" > 算法插件层 </td>
+<td> 视频色彩空间处理算法插件 </td>
+<td> 实现视频色彩空间转换算法功能，具体包括SDR2SDR、HDR2SDR、HDR2HDR场景的色域转换 </td>
+</tr>
+<tr>
+<td> 图片色彩空间算法插件 </td>
+<td> 实现图片色彩空间转换算法功能，具体包括SDR2SDR、HDR2SDR、HDR2HDR场景的色域转换 </td>
+</tr>
+<tr>
+<td> 视频细节增强算法插件 </td>
+<td> 实现视频缩放、画质增强算法 </td>
+</tr>
+<tr>
+<td> 图片细节增强算法插件 </td>
+<td> 实现图片缩放、画质增强算法 </td>
+</tr>
+<tr>
+<td> 视频动态元数据算法插件 </td>
+<td> 实现视频源动态元数生成据算法 </td>
+</tr>
+<tr>
+<td> 图片动态元数据算法插件 </td>
+<td> 实现图片源动态元数生成据算法 </td>
+</tr>
+<tr>
+<td rowspan="3" colspan="1"> 插件管理 </td>
+<td> 插件注册 </td>
+<td> 提供系统开发者插件注册的功能 </td>
+</tr>
+<tr>
+<td> 能力查询 </td>
+<td> 应用开发者可通过能力查询功能确认给定插件是否在该设备或系统支持 </td>
+</tr>
+<tr>
+<td> 插件调用 </td>
+<td> 调用具体的插件能力完成相关算法功能 </td>
+</tr>
+<tr>
+<td rowspan="2" colspan="1"> 服务管理 </td>
+<td> 资源管理 </td>
+<td> 进行资源调度及算法的上下文管理，例如视频内容前后帧的相关信息 </td>
+</tr>
+<tr>
+<td> 进程管理 </td>
+<td> 完成跨进程通信等功能 </td>
+</tr>
+</table>
+
+
 
 <table data-type="luckysheet_copy_action_table"><colgroup width="208px"></colgroup><colgroup width="261px"></colgroup><colgroup width="417px"></colgroup><tr><td  style="height:63px;text-align: center;align-items: center;font-size: 18pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">层级</td><td  style="text-align: center;align-items: center;font-size: 18pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">模块</td><td  style="text-align: center;align-items: center;font-size: 18pt;font-family: DejaVu Sans;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">功能描述</td></tr><tr><td rowspan="3" colspan="1" style="height:89px;text-align: center;align-items: center;font-size: 16pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-top:1pt solid #000000;border-bottom:1pt solid #000000;">插件管理</td><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">插件注册</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">提供系统开发者插件注册的功能</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">能力查询</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">应用开发者可通过能力查询功能确认给定插件是否在该设备或系统支持</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">插件调用</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">调用具体的插件能力完成相关算法功能</td></tr><tr><td rowspan="2" colspan="1" style="height:177px;text-align: center;align-items: center;font-size: 16pt;font-family: 微软雅黑;font-weight: bold;border-left:1pt solid #000000;border-right:1pt solid #000000;border-top:1pt solid #000000;border-bottom:1pt solid #000000;">服务管理</td><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">资源管理</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">进行资源调度及算法的上下文管理，例如视频内容前后帧的相关信息</td></tr><tr><td  style="text-align: center;align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">进程管理</td><td  style="align-items: center;font-size: 11pt;font-family: 微软雅黑;border-left:1pt solid #000000;border-right:1pt solid #000000;border-bottom:1pt solid #000000;border-top:1pt solid #000000;">完成跨进程通信等功能</td></tr></table>
 
