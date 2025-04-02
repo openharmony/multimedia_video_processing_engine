@@ -52,6 +52,7 @@ ohos_unittest("image_processing_unit_test") {
     "hitrace:hitrace_meter",
     "media_foundation:native_media_core",
     "image_framework:pixelmap",
+    "image_framework:image",
   ]
  
   subsystem_name = "multimedia"

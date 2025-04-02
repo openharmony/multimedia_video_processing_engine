@@ -28,6 +28,7 @@
 #include "external_window.h"
 #include "metadata_generator_video_impl.h"
 #include "vpe_log.h"
+#include "securec.h"
 
 constexpr uint32_t DEFAULT_WIDTH = 3840; // 1920;
 constexpr uint32_t DEFAULT_HEIGHT = 2160; // 1080;

@@ -59,6 +59,7 @@ ohos_unittest("colorSpace_converter_video_ndk_unit_test") {
     "graphic_2d:librender_service_client",
     "hilog:libhilog",
     "hitrace:hitrace_meter",
+    "media_foundation:media_foundation",
     "media_foundation:native_media_core",
     "ipc:ipc_core",
     "memory_utils:libdmabufheap",

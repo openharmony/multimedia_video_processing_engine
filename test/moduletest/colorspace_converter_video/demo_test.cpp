@@ -29,6 +29,7 @@
 #include "colorspace_converter_video_description.h"
 #include "colorspace_converter_video_common.h"
 #include "vpe_log.h"
+#include "securec.h"
 
 constexpr uint32_t DEFAULT_WIDTH = 3840; // 1920;
 constexpr uint32_t DEFAULT_HEIGHT = 2160; // 1080;
