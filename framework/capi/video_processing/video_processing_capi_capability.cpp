@@ -301,7 +301,7 @@ bool VideoProcessingCapiCapability::IsColorSpaceConversionSupported(
     const VideoProcessing_ColorSpaceInfo* sourceVideoInfo,
     const VideoProcessing_ColorSpaceInfo* destinationVideoInfo)
 {
-    if (!access("/system/lib64/libvideoprocessingengine_ext.z.so", 0)) {
+    if (access("/system/lib64/libvideoprocessingengine_ext.z.so", 0)) {
         return false;
     }
     CHECK_AND_RETURN_RET_LOG(sourceVideoInfo != nullptr, false, "sourceVideoInfo is null!");
@@ -352,7 +352,7 @@ MetaSupportKey VideoColorSpaceInfoToMetaKey(const VideoProcessing_ColorSpaceInfo
 bool VideoProcessingCapiCapability::IsMetadataGenerationSupported(
     const VideoProcessing_ColorSpaceInfo* sourceVideoInfo)
 {
-    if (!access("/system/lib64/libvideoprocessingengine_ext.z.so", 0)) {
+    if (access("/system/lib64/libvideoprocessingengine_ext.z.so", 0)) {
         return false;
     }
     CHECK_AND_RETURN_RET_LOG(sourceVideoInfo != nullptr, false, "sourceVideoInfo is null!");
