@@ -301,6 +301,9 @@ bool VideoProcessingCapiCapability::IsColorSpaceConversionSupported(
     const VideoProcessing_ColorSpaceInfo* sourceVideoInfo,
     const VideoProcessing_ColorSpaceInfo* destinationVideoInfo)
 {
+    if (!access("/system/lib64/libvideoprocessingengine_ext.z.so", 0)) {
+        return false;
+    }
     CHECK_AND_RETURN_RET_LOG(sourceVideoInfo != nullptr, false, "sourceVideoInfo is null!");
     CHECK_AND_RETURN_RET_LOG(destinationVideoInfo != nullptr, false, "destinationVideoInfo is null!");
     CscvSupportKey keySource = VideoColorSpaceInfoToCscvKey(sourceVideoInfo, destinationVideoInfo);
@@ -349,6 +352,9 @@ MetaSupportKey VideoColorSpaceInfoToMetaKey(const VideoProcessing_ColorSpaceInfo
 bool VideoProcessingCapiCapability::IsMetadataGenerationSupported(
     const VideoProcessing_ColorSpaceInfo* sourceVideoInfo)
 {
+    if (!access("/system/lib64/libvideoprocessingengine_ext.z.so", 0)) {
+        return false;
+    }
     CHECK_AND_RETURN_RET_LOG(sourceVideoInfo != nullptr, false, "sourceVideoInfo is null!");
     MetaSupportKey keySource = VideoColorSpaceInfoToMetaKey(sourceVideoInfo);
     auto it = VIDEO_META_SUPPORT_MAP.find(keySource);

@@ -149,7 +149,7 @@ ImageProcessing_ErrorCode ImageProcessingNativeBase::ConvertColorSpace(
     [[maybe_unused]] const std::shared_ptr<OHOS::Media::PixelMap>& sourceImage,
     [[maybe_unused]] std::shared_ptr<OHOS::Media::PixelMap>& destinationImage)
 {
-    return IMAGE_PROCESSING_SUCCESS;
+    return IMAGE_PROCESSING_ERROR_UNSUPPORTED_PROCESSING;
 }
 
 ImageProcessing_ErrorCode ImageProcessingNativeBase::Compose(
@@ -157,7 +157,7 @@ ImageProcessing_ErrorCode ImageProcessingNativeBase::Compose(
     [[maybe_unused]] const std::shared_ptr<OHOS::Media::PixelMap>& sourceGainmap,
     [[maybe_unused]] std::shared_ptr<OHOS::Media::PixelMap>& destinationImage)
 {
-    return IMAGE_PROCESSING_SUCCESS;
+    return IMAGE_PROCESSING_ERROR_UNSUPPORTED_PROCESSING;
 }
 
 ImageProcessing_ErrorCode ImageProcessingNativeBase::Decompose(
@@ -165,18 +165,18 @@ ImageProcessing_ErrorCode ImageProcessingNativeBase::Decompose(
     [[maybe_unused]] std::shared_ptr<OHOS::Media::PixelMap>& destinationImage,
     [[maybe_unused]] std::shared_ptr<OHOS::Media::PixelMap>& destinationGainmap)
 {
-    return IMAGE_PROCESSING_SUCCESS;
+    return IMAGE_PROCESSING_ERROR_UNSUPPORTED_PROCESSING;
 }
 
 ImageProcessing_ErrorCode ImageProcessingNativeBase::GenerateMetadata(
     [[maybe_unused]] const std::shared_ptr<OHOS::Media::PixelMap>& sourceImage)
 {
-    return IMAGE_PROCESSING_SUCCESS;
+    return IMAGE_PROCESSING_ERROR_UNSUPPORTED_PROCESSING;
 }
 
 ImageProcessing_ErrorCode ImageProcessingNativeBase::EnhanceDetail(
     [[maybe_unused]] const std::shared_ptr<OHOS::Media::PixelMap>& sourceImage,
     [[maybe_unused]] std::shared_ptr<OHOS::Media::PixelMap>& destinationImage)
 {
-    return IMAGE_PROCESSING_SUCCESS;
+    return IMAGE_PROCESSING_ERROR_UNSUPPORTED_PROCESSING;
 }
