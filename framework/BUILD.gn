@@ -212,7 +212,7 @@ ohos_shared_library("videoprocessingengine") {
 
   if (has_skia) {
     defines += [ "SKIA_ENABLE" ]
-    external_deps += [ "//third_party/skia:skia_ohos" ]
+    deps += [ "//third_party/skia:skia_ohos" ]
     include_dirs += [ "$ALGORITHM_EXTENSION_SKIA_DIR/include" ]
     sources += [ "$ALGORITHM_EXTENSION_SKIA_DIR/skia_impl.cpp" ]
   }
