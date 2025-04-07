@@ -48,7 +48,7 @@ const std::unordered_map<int, std::function<std::shared_ptr<IImageProcessingNati
 bool ImageProcessingFactory::IsValid(int type)
 {
     if (access("/system/lib64/libvideoprocessingengine_ext.z.so", 0)) {
-        if (type != VIDEO_PROCESSING_TYPE_DETAIL_ENHANCER) {
+        if (type != IMAGE_PROCESSING_TYPE_DETAIL_ENHANCER) {
             return false;
         }
     }
