@@ -48,6 +48,11 @@ const std::unordered_map<int, std::function<std::shared_ptr<IVideoProcessingNati
 
 bool VideoProcessingFactory::IsValid(int type)
 {
+    if (access("/system/lib64/libvideoprocessingengine_ext.z.so", 0)) {
+        if (type != VIDEO_PROCESSING_TYPE_DETAIL_ENHANCER) {
+            return false;
+        }
+    }
     return CREATORS.find(type) != CREATORS.end();
 }
 

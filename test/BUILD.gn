@@ -31,6 +31,25 @@ declare_args() {
   aihdr_enhancer_unit_test = true
 }
 
+if (defined(global_parts_info) &&
+    defined(global_parts_info.multimedia_video_processing_engine_ext)) {
+  vpe_support_demo_test = false
+  vpe_support_unit_test = false
+  vpe_support_module_test = false
+  cscv_support_demo_test = false
+  cscv_support_unit_test = false
+  video_support_demo_test = false
+  image_processing_unit_test = false
+  detail_enhancer_video_unit_test = false
+  detail_enhancer_unit_test = false
+  detail_enhancer_video_ndk_unit_test = false
+  colorSpace_converter_video_ndk_unit_test = false
+  metadata_gen_video_ndk_unit_test = false
+  video_variable_refreshrate_unit_test = false
+  aihdr_enhancer_video_unit_test = false
+  aihdr_enhancer_unit_test = false
+}
+
 group("demo_test") {
   testonly = true
   deps = []
@@ -55,7 +74,9 @@ group("unit_test") {
     deps += [ "unittest/detail_enhancer_video:detail_enhancer_video_unit_test" ]
   }
   if (detail_enhancer_video_ndk_unit_test) {
-    deps += [ "unittest/detail_enhancer_video_ndk:detail_enhancer_video_ndk_unit_test" ]
+    deps += [
+      "unittest/detail_enhancer_video_ndk:detail_enhancer_video_ndk_unit_test",
+    ]
   }
   if (cscv_support_unit_test) {
     deps += [ "unittest/colorspace_converter_video:colorspace_converter_video_unit_test" ]
@@ -64,7 +85,8 @@ group("unit_test") {
     deps += [ "unittest/colorSpace_converter_video_ndk:colorSpace_converter_video_ndk_unit_test" ]
   }
   if (metadata_gen_video_ndk_unit_test) {
-    deps += [ "unittest/metadata_gen_video_ndk:metadata_gen_video_ndk_unit_test" ]
+    deps +=
+        [ "unittest/metadata_gen_video_ndk:metadata_gen_video_ndk_unit_test" ]
   }
   if (video_variable_refreshrate_unit_test) {
     deps += [ "unittest/video_variable_refreshrate_test:video_variable_refreshrate_unit_test" ]
@@ -83,8 +105,8 @@ group("module_test") {
   if (vpe_support_module_test) {
     deps += [
       "moduletest/colorspace_converter:colorspace_converter_module_test",
-      "moduletest/metadata_generator:metadata_generator_module_test",
       "moduletest/colorspace_converter_video:colorspace_converter_video_module_test",
+      "moduletest/metadata_generator:metadata_generator_module_test",
       "moduletest/metadata_generator_video:metadata_generator_video_module_test",
     ]
   }
