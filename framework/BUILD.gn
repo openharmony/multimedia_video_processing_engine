@@ -200,8 +200,7 @@ ohos_shared_library("videoprocessingengine") {
     "${target_gen_dir}/../services/video_processing_service_manager_proxy.cpp",
     "${target_gen_dir}/../services/video_processing_service_manager_stub.cpp",
     "$ALGORITHM_COMMON_DIR/image_opencl_wrapper.cpp",
-    "$ALGORITHM_COMMON_DIR/image_openclsetup.cpp",
-    "$ALGORITHM_EXTENSION_SKIA_DIR/skia_impl.cpp"
+    "$ALGORITHM_COMMON_DIR/image_openclsetup.cpp"
   ]
 
   deps = [
@@ -212,7 +211,10 @@ ohos_shared_library("videoprocessingengine") {
   ]
 
   if (has_skia) {
-    deps += ["//third_party/skia:skia_ohos"]
+    defines += [ "SKIA_ENABLE" ]
+    external_deps += [ "skia:skia_canvaskit" ]
+    include_dirs += [ "$ALGORITHM_EXTENSION_SKIA_DIR/include" ]
+    sources += [ "$ALGORITHM_EXTENSION_SKIA_DIR/skia_impl.cpp" ]
   }
 
   external_deps = [
@@ -350,13 +352,6 @@ ohos_shared_library("image_processing") {
     "samgr:samgr_proxy",
   ]
 
-  if (has_skia) {
-    defines += [ "SKIA_ENABLE" ]
-    external_deps += [ "skia:skia_canvaskit" ]
-    include_dirs += [ "$ALGORITHM_EXTENSION_SKIA_DIR/include" ]
-    sources += [ "$ALGORITHM_EXTENSION_SKIA_DIR/skia_impl.cpp" ]
-  }
-
   innerapi_tags = [ "ndk" ]
   output_extension = "so"
   subsystem_name = "multimedia"
@@ -437,13 +432,6 @@ ohos_shared_library("video_processing") {
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
-
-  if (has_skia) {
-    defines += [ "SKIA_ENABLE" ]
-    external_deps += [ "skia:skia_canvaskit" ]
-    include_dirs += [ "$ALGORITHM_EXTENSION_SKIA_DIR/include" ]
-    sources += [ "$ALGORITHM_EXTENSION_SKIA_DIR/skia_impl.cpp" ]
-  }
 
   innerapi_tags = [ "ndk" ]
   output_extension = "so"
