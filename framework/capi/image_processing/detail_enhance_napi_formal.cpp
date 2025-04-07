@@ -22,7 +22,6 @@
 
 #include <algorithm>
 
-#include "image_processing_types.h"
 #include "image_napi_utils.h"
 #include "media_errors.h"
 #include "memory_manager.h"
@@ -43,16 +42,25 @@ constexpr uint32_t NUM_3 = 3;
 constexpr uint32_t NUM_4 = 4;
 constexpr uint32_t NUM_5 = 5;
 constexpr uint32_t NUM_6 = 6;
+constexpr uint32_t NUM_7 = 7;
+constexpr uint32_t NUM_8 = 8;
+constexpr uint32_t NUM_9 = 9;
 constexpr int32_t NEW_INSTANCE_ARGC = 1;
+constexpr int32_t MIN_WIDTH_CONTRAST = 720; // min support width 720, consistent with fwk
+constexpr int32_t MIN_HEIGHT_CONTRAST = 720; // min support height 720, consistent with fwk
+constexpr int32_t MAX_RESOLUTION_CONTRAST = 20000; // max support resolution 20000, consistent with fwk
+constexpr int32_t MIN_RESOLUTION_DETAIL = 32; // min support resolution 32, consistent with fwk
+constexpr int32_t MAX_RESOLUTION_DETAIL = 8192; // max support resolution 8192, consistent with fwk
+constexpr float ROUNDING_OPERATOR = 0.5;
 const std::string CLASS_NAME = "ImageProcessor";
 static std::mutex g_imageProcessorMutex{std::mutex()};
-static std::mutex g_detailLock{std::mutex()};
 static std::mutex g_contrastLock{std::mutex()};
 }
 
 namespace OHOS {
 namespace Media {
 using namespace VideoProcessingEngine;
+using namespace std::chrono;
 thread_local napi_ref VpeNapi::constructor_ = nullptr;
 thread_local napi_ref VpeNapi::qualityLevelTypeRef_ = nullptr;
 thread_local std::shared_ptr<VpeNapi::DetailEnhanceContext> VpeNapi::detailContext_ = nullptr;
@@ -102,6 +110,7 @@ ImageType VpeNapi::ParserImageType(napi_env env, napi_value argv)
     ret = napi_get_named_property(env, global, "PixelMap", &constructor);
     if (ret != napi_ok) {
         VPE_LOGI("Get VpeNapi property failed!");
+        return ImageType::TYPE_UNKNOWN;
     }
     bool isInstance = false;
     ret = napi_instanceof(env, argv, constructor, &isInstance);
@@ -142,7 +151,6 @@ bool VpeNapi::ConfigResolution(napi_env env, napi_value& width, napi_value& heig
 bool VpeNapi::ParseDetailEnhanceParameter(napi_env env, napi_callback_info info)
 {
     VPETrace vpeTrace("VpeNapi::DetailEnhanceParseParameter");
-    std::lock_guard<std::mutex> lock(g_detailLock);
     CHECK_AND_RETURN_RET_LOG(detailContext_ != nullptr, false, "detailContext_ == nullptr");
     NapiValues nVal;
     nVal.argc = NUM_4; // Use the maximum value to initialize argc before executing PrepareNapiEnv
@@ -182,8 +190,8 @@ bool VpeNapi::ParseDetailEnhanceParameter(napi_env env, napi_callback_info info)
     if (nVal.argc == NUM_4) { // 4 parameter: pixelmap x y level
         CHECK_AND_RETURN_RET_LOG(ConfigResolution(env, nVal.argv[NUM_1], nVal.argv[NUM_2], detailContext_),
             false, "ConfigResolution failed");
-        CHECK_AND_RETURN_RET_LOG(napi_ok == napi_get_value_int32(env, nVal.argv[NUM_3],
-            &(detailContext_->qualityLevel)), false, "Arg 3 type mismatch");
+        CHECK_AND_RETURN_RET_LOG(napi_get_value_int32(env, nVal.argv[NUM_3],
+            &(detailContext_->qualityLevel)) == napi_ok, false, "Arg 3 type mismatch");
     }
     return true;
 }
@@ -198,7 +206,6 @@ napi_value VpeNapi::InitializeEnvironment(napi_env env, napi_callback_info info)
 napi_value VpeNapi::DeinitializeEnvironment(napi_env env, napi_callback_info info)
 {
     VPETrace vpeTrace("VpeNapi::DetailEnhanceDeinitializeEnvironment");
-    std::lock_guard<std::mutex> lock(g_detailLock);
     napi_value result;
     napi_get_boolean(env, true, &result);
     return result;
@@ -216,10 +223,22 @@ void VpeNapi::SetDstPixelMapInfo(PixelMap& source, void* dstPixels, uint32_t dst
         VPE_LOGW("Invalid memory");
         return;
     }
+    if (memory->extend.data == nullptr) {
+        VPE_LOGE("memory->extend.data == nullptr");
+        return;
+    }
     dstPixelMap.SetPixelsAddr(dstPixels, memory->extend.data, memory->data.size, sourceType, nullptr);
     if (source.GetAllocatorType() == AllocatorType::DMA_ALLOC && source.IsHdr()) {
         sptr<SurfaceBuffer> sourceSurfaceBuffer(reinterpret_cast<SurfaceBuffer*> (source.GetFd()));
         sptr<SurfaceBuffer> dstSurfaceBuffer(reinterpret_cast<SurfaceBuffer*> (dstPixelMap.GetFd()));
+        if (sourceSurfaceBuffer == nullptr) {
+            VPE_LOGE("sourceSurfaceBuffer == nullptr");
+            return;
+        }
+        if (dstSurfaceBuffer == nullptr) {
+            VPE_LOGE("dstSurfaceBuffer == nullptr");
+            return;
+        }
         VpeUtils::CopySurfaceBufferInfo(sourceSurfaceBuffer, dstSurfaceBuffer);
     }
     OHOS::ColorManager::ColorSpace colorspace = source.InnerGetGrColorSpace();
@@ -277,6 +296,7 @@ std::unique_ptr<PixelMap> VpeNapi::CreateDstPixelMap(PixelMap& source, const Ini
         return nullptr;
     }
     if (!AllocMemory(source, *dstPixelMap.get(), opts)) {
+        VPE_LOGE("alloc memory failed");
         return nullptr;
     }
     return dstPixelMap;
@@ -329,25 +349,27 @@ napi_value VpeNapi::Create(napi_env env, napi_callback_info info)
         ThrowExceptionError(env, IMAGE_PROCESSING_ERROR_CREATE_FAILED, "create instance failed");
         return nullptr;
     }
-    VPE_LOGE("create done");
+    VPE_LOGI("create done");
     return result;
 }
 
 std::shared_ptr<PixelMap> VpeNapi::PrepareDstPixelMap(napi_env env, DetailEnhanceContext* context)
 {
-    CHECK_AND_RETURN_RET_LOG(context->inputPixelMap->GetWidth() != 0 && context->inputPixelMap->GetHeight() != 0,
+    CHECK_AND_RETURN_RET_LOG(context->inputPixelMap->GetWidth() >= MIN_RESOLUTION_DETAIL &&
+        context->inputPixelMap->GetHeight() >= MIN_RESOLUTION_DETAIL &&
+        context->inputPixelMap->GetWidth() <= MAX_RESOLUTION_DETAIL &&
+        context->inputPixelMap->GetHeight() <= MAX_RESOLUTION_DETAIL,
         nullptr, "invalid resolution");
-    float ratio = std::min(static_cast<float>(context->xArg) / static_cast<float>(context->inputPixelMap->GetWidth()),
-        static_cast<float>(context->yArg) / static_cast<float>(context->inputPixelMap->GetHeight()));
     InitializationOptions opts {
         .size = {
-            .width = ratio < 1.0 ? static_cast<int>(context->xArg) :
-                static_cast<int>(context->inputPixelMap->GetWidth()),
-            .height = ratio < 1.0 ? static_cast<int>(context->yArg) :
-                static_cast<int>(context->inputPixelMap->GetHeight()),
+            .width = static_cast<int>(context->xArg),
+            .height = static_cast<int>(context->yArg),
         },
     };
-    std::unique_ptr<PixelMap> outputPtr = CreateDstPixelMap(*context->inputPixelMap, opts);
+    VPE_LOGD("res:w %{public}d, h %{public}d, -> w %{public}d, h %{public}d",
+        context->inputPixelMap->GetWidth(), context->inputPixelMap->GetHeight(),
+        static_cast<int>(context->xArg), static_cast<int>(context->yArg));
+    std::unique_ptr<PixelMap> outputPtr = context->inputPixelMap->Create(*context->inputPixelMap, opts);
     if (outputPtr == nullptr) {
         ThrowExceptionError(env, IMAGE_PROCESSING_ERROR_INVALID_VALUE, "create failed");
         return nullptr;
@@ -356,12 +378,20 @@ std::shared_ptr<PixelMap> VpeNapi::PrepareDstPixelMap(napi_env env, DetailEnhanc
     return dstPixelMap;
 }
 
-bool VpeNapi::InitDetailAlgo(napi_env env, int level)
+bool VpeNapi::InitDetailAlgo(napi_env env)
 {
     VPETrace vpeTrace("VpeNapi::DetailEnhanceInitAlgo");
-    CHECK_AND_RETURN_RET_LOG(g_detailEnh == nullptr, true, "DetailEnhancerImage handle has created");
+    if (g_detailEnh != nullptr) {
+        VPE_LOGW("DetailEnhancerImage handle has created");
+        return true;
+    }
     g_detailEnh = DetailEnhancerImage::Create();
     CHECK_AND_RETURN_RET_LOG(g_detailEnh != nullptr, false, "create DetailEnhancerImage failed");
+    return true;
+}
+
+bool VpeNapi::SetDetailAlgoParam(napi_env env, int level)
+{
     DetailEnhancerParameters param {
         .uri = "",
         .level = static_cast<DetailEnhancerLevel>(level),
@@ -380,9 +410,18 @@ std::shared_ptr<PixelMap> VpeNapi::DetailEnhanceImpl(napi_env env, DetailEnhance
         VPE_LOGE("context == nullptr");
         return nullptr;
     }
-    if (!InitDetailAlgo(env, context->qualityLevel)) {
+    if (context->inputPixelMap->GetPixelFormat() == PixelFormat::YCBCR_P010 ||
+        context->inputPixelMap->GetPixelFormat() == PixelFormat::YCRCB_P010) {
+        VPE_LOGI("not support P010");
+        return context->inputPixelMap;
+    }
+    if (!InitDetailAlgo(env)) {
         VPE_LOGE("init algo failed");
         ThrowExceptionError(env, IMAGE_PROCESSING_ERROR_CREATE_FAILED, "init algo failed");
+        return nullptr;
+    }
+    if (!SetDetailAlgoParam(env, context->qualityLevel)) {
+        VPE_LOGE("set detail param failed");
         return nullptr;
     }
     if (context->inputPixelMap == nullptr) {
@@ -398,9 +437,47 @@ std::shared_ptr<PixelMap> VpeNapi::DetailEnhanceImpl(napi_env env, DetailEnhance
     auto input = GetSurfaceBufferFromDMAPixelMap(context->inputPixelMap);
     CHECK_AND_RETURN_RET_LOG((g_detailEnh != nullptr && g_detailEnh->Process(input, output) == VPE_ALGO_ERR_OK),
         nullptr, "process failed");
-    VPE_LOGI("process done");
     return dstPixelMap;
 }
+
+void VpeNapi::EnhanceDetailWork(napi_env env, void* data)
+{
+    DetailEnhanceContext* innerAsyncContext = reinterpret_cast<DetailEnhanceContext*>(data);
+    if (innerAsyncContext == nullptr) {
+        std::string errCodeStr = std::to_string(IMAGE_PROCESSING_ERROR_PROCESS_FAILED);
+        std::string errMsg = "innerAsyncContext is nullptr";
+        napi_throw_error(env, errCodeStr.c_str(), errMsg.c_str());
+        return;
+    }
+    innerAsyncContext->outputPixelMap = DetailEnhanceImpl(env, innerAsyncContext);
+};
+
+void VpeNapi::EnhanceDetailCallBackWork(napi_env env, napi_status status, void* data)
+{
+    DetailEnhanceContext* innerAsyncContext = reinterpret_cast<DetailEnhanceContext*>(data);
+    if (innerAsyncContext == nullptr) {
+        std::string errCodeStr = std::to_string(IMAGE_PROCESSING_ERROR_PROCESS_FAILED);
+        std::string errMsg = "innerAsyncContext is nullptr";
+        napi_throw_error(env, errCodeStr.c_str(), errMsg.c_str());
+        return;
+    }
+    napi_value outputPixelMapNapi = (innerAsyncContext->outputPixelMap == nullptr) ?
+        nullptr : PixelMapNapi::CreatePixelMap(env, innerAsyncContext->outputPixelMap);
+    if (outputPixelMapNapi == nullptr) {
+        return;
+    }
+    if (innerAsyncContext->deferred) {
+        napi_resolve_deferred(env, innerAsyncContext->deferred, outputPixelMapNapi);
+    } else {
+        napi_value callback = nullptr;
+        napi_get_reference_value(env, innerAsyncContext->callbackRef, &callback);
+        napi_call_function(env, nullptr, callback, 1, &(outputPixelMapNapi), nullptr);
+        napi_delete_reference(env, innerAsyncContext->callbackRef);
+        innerAsyncContext->callbackRef = nullptr;
+    }
+    napi_delete_async_work(env, innerAsyncContext->asyncWork);
+    delete innerAsyncContext;
+};
 
 napi_value VpeNapi::EnhanceDetail(napi_env env, napi_callback_info info)
 {
@@ -412,44 +489,19 @@ napi_value VpeNapi::EnhanceDetail(napi_env env, napi_callback_info info)
     napi_deferred deferred;
     napi_value promise;
     NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
-    CHECK_AND_RETURN_RET_LOG(ParseDetailEnhanceParameter(env, info), nullptr, "parse parameter failed");
+    if (!ParseDetailEnhanceParameter(env, info)) {
+        VPE_LOGE("parse parameter failed");
+        return nullptr;
+    }
     detailContext_->deferred = deferred;
     napi_value resourceName;
     napi_create_string_latin1(env, "Asynchronous processing", NAPI_AUTO_LENGTH, &resourceName);
-    napi_status status = napi_create_async_work(env, nullptr, resourceName,
-        [](napi_env env, void* data) {
-            DetailEnhanceContext* innerAsyncContext = reinterpret_cast<DetailEnhanceContext*>(data);
-            if (innerAsyncContext == nullptr) {
-                ThrowExceptionError(env, IMAGE_PROCESSING_ERROR_PROCESS_FAILED, "innerAsyncContext is nullptr");
-                return;
-            }
-            innerAsyncContext->outputPixelMap = DetailEnhanceImpl(env, innerAsyncContext);
-        },
-        [](napi_env env, napi_status status, void* data) {
-            DetailEnhanceContext* innerAsyncContext = reinterpret_cast<DetailEnhanceContext*>(data);
-            if (innerAsyncContext == nullptr) {
-                ThrowExceptionError(env, IMAGE_PROCESSING_ERROR_PROCESS_FAILED, "innerAsyncContext is nullptr");
-                return;
-            }
-            napi_value outputPixelMapNapi = (innerAsyncContext->outputPixelMap == nullptr) ?
-                nullptr : PixelMapNapi::CreatePixelMap(env, innerAsyncContext->outputPixelMap);
-            if (outputPixelMapNapi == nullptr) {
-                VPE_LOGI("outputPixelMap is nullptr");
-                return;
-            }
-            if (innerAsyncContext->deferred) {
-                napi_resolve_deferred(env, innerAsyncContext->deferred, outputPixelMapNapi);
-            } else {
-                napi_value callback = nullptr;
-                napi_get_reference_value(env, innerAsyncContext->callbackRef, &callback);
-                napi_call_function(env, nullptr, callback, 1, &(outputPixelMapNapi), nullptr);
-                napi_delete_reference(env, innerAsyncContext->callbackRef);
-                innerAsyncContext->callbackRef = nullptr;
-            }
-            napi_delete_async_work(env, innerAsyncContext->asyncWork);
-            delete innerAsyncContext;
-        }, reinterpret_cast<void*>(detailContext_.get()), &detailContext_->asyncWork);
-    CHECK_AND_RETURN_RET_LOG(status == napi_ok, nullptr, "create aysnc failed");
+    napi_status status = napi_create_async_work(env, nullptr, resourceName, EnhanceDetailWork,
+        EnhanceDetailCallBackWork, reinterpret_cast<void*>(detailContext_.get()), &detailContext_->asyncWork);
+    if (status != napi_ok) {
+        VPE_LOGE("create aysnc failed");
+        return nullptr;
+    }
     napi_queue_async_work(env, detailContext_->asyncWork);
     return promise;
 }
@@ -471,15 +523,42 @@ napi_value VpeNapi::EnhanceDetailSync(napi_env env, napi_callback_info info)
     return outputPixelMapNapi;
 }
 
-bool VpeNapi::UpdateMetadataBasedOnLcd(ContrastEnhanceContext* context)
+OHOS::Rect VpeNapi::PrepareRect(std::shared_ptr<PixelMap> input, OHOS::Rect& displayArea, float ratio)
 {
-    sptr<SurfaceBuffer> surfaceBuffer = GetSurfaceBufferFromDMAPixelMap(context->inputPixelMap);
-    return g_contrastEnh->UpdateMetadataBasedOnLcd(context->displayArea, context->lcdWidth, context->lcdHeight,
-        surfaceBuffer);
+    OHOS::Rect rect;
+    rect.x = static_cast<int>(displayArea.x * ratio + ROUNDING_OPERATOR);
+    rect.y = static_cast<int>(displayArea.y * ratio + ROUNDING_OPERATOR);
+    rect.w = std::min(input->GetWidth() - 1 - rect.x,
+        static_cast<int>(displayArea.w * ratio + ROUNDING_OPERATOR));
+    rect.h = std::min(input->GetHeight() - 1 - rect.y,
+        static_cast<int>(displayArea.h * ratio + ROUNDING_OPERATOR));
+    return rect;
 }
 
-bool VpeNapi::UpdateMetadataBasedOnDetail(ContrastEnhanceContext* context)
+bool VpeNapi::UpdateMetadataBasedOnHist(ContrastEnhanceContext* context)
 {
+    CHECK_AND_RETURN_RET_LOG(context->inputPixelMap != nullptr && context->oriWidth >= MIN_WIDTH_CONTRAST &&
+        context->oriHeight >= MIN_HEIGHT_CONTRAST && context->oriHeight < MAX_RESOLUTION_CONTRAST &&
+        context->oriWidth < MAX_RESOLUTION_CONTRAST, false, "unsupport resolution");
+    CHECK_AND_RETURN_RET_LOG(context->inputPixelMap->IsHdr(), false, "It's not hdr pixelmap");
+    sptr<SurfaceBuffer> surfaceBuffer = GetSurfaceBufferFromDMAPixelMap(context->inputPixelMap);
+    OHOS::Rect rect = PrepareRect(context->inputPixelMap, context->displayArea, context->fullRatio);
+    VPE_LOGI("area x:%{public}d, y:%{public}d, w:%{public}d, h:%{public}d",
+        context->displayArea.x, context->displayArea.y, context->displayArea.w, context->displayArea.h);
+    VPE_LOGI("cur pixelmap:w:%{public}d, h:%{public}d, ori pixelmap:w:%{public}d, h:%{public}d",
+        context->inputPixelMap->GetWidth(), context->inputPixelMap->GetHeight(), context->oriWidth, context->oriHeight);
+    std::tuple<int, int, double, double, double, int> pixelmapInfo =
+        std::make_tuple(context->inputPixelMap->GetUniqueId(), context->contentId,
+        context->curRatio, context->maxRatio, context->defaultRatio, context->animationDuration);
+    return g_contrastEnh->UpdateMetadataBasedOnHist(rect, surfaceBuffer, pixelmapInfo);
+}
+
+bool VpeNapi::UpdateMetadataBasedOnPixel(ContrastEnhanceContext* context)
+{
+    CHECK_AND_RETURN_RET_LOG(context->inputPixelMap != nullptr &&
+        context->inputPixelMap->GetWidth() >= MIN_WIDTH_CONTRAST &&
+        context->inputPixelMap->GetHeight() >= MIN_HEIGHT_CONTRAST && context->oriHeight < MAX_RESOLUTION_CONTRAST &&
+        context->oriWidth < MAX_RESOLUTION_CONTRAST, false, "unsupport resolution");
     OHOS::Rect completePixelmapArea = {
         .x = 0,
         .y = 0,
@@ -487,13 +566,15 @@ bool VpeNapi::UpdateMetadataBasedOnDetail(ContrastEnhanceContext* context)
         .h = context->oriHeight,
     };
     sptr<SurfaceBuffer> surfaceBuffer = GetSurfaceBufferFromDMAPixelMap(context->inputPixelMap);
-    return g_contrastEnh->UpdateMetadataBasedOnDetail(context->displayArea, context->curPixelmapArea,
+    VPE_LOGI("area x:%{public}d, y:%{public}d, w:%{public}d, h:%{public}d",
+        context->displayArea.x, context->displayArea.y, context->displayArea.w, context->displayArea.h);
+    return g_contrastEnh->UpdateMetadataBasedOnPixel(context->displayArea, context->curPixelmapArea,
         completePixelmapArea, surfaceBuffer, context->fullRatio);
 }
 
 napi_value VpeNapi::SetDetailImage(napi_env env, napi_callback_info info)
 {
-    VPETrace vpeTrace("VpeNapi::DetailEnhanceProcess");
+    VPETrace vpeTrace("VpeNapi::ContrastProcess");
     if (contrastContext_ == nullptr) {
         contrastContext_ = std::make_shared<ContrastEnhanceContext>();
         VPE_LOGI("create new contrast context");
@@ -501,11 +582,10 @@ napi_value VpeNapi::SetDetailImage(napi_env env, napi_callback_info info)
     CHECK_AND_RETURN_RET_LOG(contrastContext_ != nullptr, nullptr, "context == nullptr");
     NapiValues nVal;
     CHECK_AND_RETURN_RET_LOG(ParseDetailImageParameter(env, info, nVal), nullptr, "parse parameter failed");
+    CHECK_AND_RETURN_RET_LOG(InitContrastAlgo(env), nullptr, "init contrast algo failed");
     // 不管是不是区域解码，都先使用直方图的结果进行展示，之后再转变成bitmap的结果
-    UpdateMetadataBasedOnLcd(contrastContext_.get());
     CallCallback(env, contrastContext_.get());
     // 如果在计算完成前坐标位置已经发生了变化，则不需要继续进行计算
-    CHECK_AND_RETURN_RET_LOG(!contrastContext_->genFinalEffect, nullptr, "It's still moving. Stop processing");
     if (contrastContext_->callbackRef == nullptr) {
         napi_create_promise(env, &(contrastContext_->deferred), &(nVal.result));
     }
@@ -519,7 +599,7 @@ napi_value VpeNapi::SetDetailImage(napi_env env, napi_callback_info info)
                 ThrowExceptionError(env, IMAGE_PROCESSING_ERROR_PROCESS_FAILED, "innerAsyncContext == nullptr");
                 return;
             }
-            UpdateMetadataBasedOnDetail(innerAsyncContext);
+            UpdateMetadataBasedOnHist(innerAsyncContext);
         },
         [](napi_env env, napi_status status, void* data) {
             ContrastEnhanceContext* innerAsyncContext = reinterpret_cast<ContrastEnhanceContext*>(data);
@@ -527,7 +607,7 @@ napi_value VpeNapi::SetDetailImage(napi_env env, napi_callback_info info)
             if (status != napi_ok) {
                 VPE_LOGE("process failed");
             }
-            VPE_LOGI("process detail image done");
+            VPE_LOGD("process detail image done");
         },
         (void*)(contrastContext_.get()), &contrastContext_->asyncWork);
     CHECK_AND_RETURN_RET_LOG(status == napi_ok, nullptr, "create aysnc failed");
@@ -538,6 +618,7 @@ napi_value VpeNapi::SetDetailImage(napi_env env, napi_callback_info info)
 
 bool VpeNapi::GenerateRegionHist(napi_env env, ContrastEnhanceContext* context)
 {
+    CHECK_AND_RETURN_RET_LOG(InitContrastAlgo(env), false, "init contrast algo failed");
     CHECK_AND_RETURN_RET_LOG(context != nullptr, false, "context == nullptr");
     CHECK_AND_RETURN_RET_LOG(context->lcdPixelMap != nullptr, false, "lcdPixelMap == nullptr");
     auto input = GetSurfaceBufferFromDMAPixelMap(context->lcdPixelMap);
@@ -553,11 +634,15 @@ bool VpeNapi::GenerateRegionHist(napi_env env, ContrastEnhanceContext* context)
 bool VpeNapi::InitContrastAlgo(napi_env env)
 {
     VPETrace vpeTrace("VpeNapi::DetailEnhanceInitAlgo");
-    CHECK_AND_RETURN_RET_LOG(g_contrastEnh == nullptr, true, "ContrastEnhancerImage handle has created");
+    if (g_contrastEnh != nullptr) {
+        VPE_LOGD("ContrastEnhancerImage handle has created");
+        return true;
+    }
     g_contrastEnh = ContrastEnhancerImage::Create();
     CHECK_AND_RETURN_RET_LOG(g_contrastEnh != nullptr, false, "create ContrastEnhancerImage failed");
     ContrastEnhancerParameters param {
         .uri = "",
+        .type = ADAPTIVE_FOV,
     };
     if (g_contrastEnh->SetParameter(param)!= VPE_ALGO_ERR_OK) {
         ThrowExceptionError(env, IMAGE_PROCESSING_ERROR_CREATE_FAILED, "set parameter failed");
@@ -592,13 +677,13 @@ bool VpeNapi::ParseDetailImageParameter(napi_env env, napi_callback_info info, N
 {
     VPETrace vpeTrace("VpeNapi::DetailEnhance");
     std::lock_guard<std::mutex> lock(g_contrastLock);
-    nVal.argc = NUM_6;
-    napi_value argValue[NUM_6] = {0};
+    nVal.argc = NUM_9;
+    napi_value argValue[NUM_9] = {0};
     nVal.argv = argValue;
     if (!PrepareNapiEnv(env, info, &nVal)) {
         return false;
     }
-    if (nVal.argc != NUM_6) {
+    if (nVal.argc != NUM_9) {
         VPE_LOGE("Invalid args count %{public}zu", nVal.argc);
         return false;
     } else {
@@ -616,12 +701,23 @@ bool VpeNapi::ParseDetailImageParameter(napi_env env, napi_callback_info info, N
         CHECK_AND_RETURN_RET_LOG(ParseSize(env, argValue[NUM_4]), false, "parse resolution of original image failed");
         CHECK_AND_RETURN_RET_LOG(napi_get_value_bool(env, nVal.argv[NUM_5],
             &(contrastContext_->genFinalEffect)) == napi_ok, false, "Arg 5 type mismatch");
+        CHECK_AND_RETURN_RET_LOG(napi_get_value_double(env, nVal.argv[NUM_6],
+            &(contrastContext_->maxRatio)) == napi_ok, false, "Arg 6 type mismatch");
+        CHECK_AND_RETURN_RET_LOG(napi_get_value_int32(env, nVal.argv[NUM_7],
+            &(contrastContext_->animationDuration)) == napi_ok, false, "Arg 7 type mismatch");
+        CHECK_AND_RETURN_RET_LOG(napi_get_value_double(env, nVal.argv[NUM_8],
+            &(contrastContext_->curRatio)) == napi_ok, false, "Arg 8 type mismatch");
     }
     contrastContext_->fullRatio = std::min(
         static_cast<float>(contrastContext_->inputPixelMap->GetWidth()) /
             static_cast<float>(contrastContext_->curPixelmapArea.w),
         static_cast<float>(contrastContext_->inputPixelMap->GetHeight()) /
             static_cast<float>(contrastContext_->curPixelmapArea.h));
+
+    VPE_LOGI("res: %{public}d x %{public}d, curArea: %{public}d x %{public}d, ratio:%{puiblic}f, maxRatio:%{public}f",
+        contrastContext_->inputPixelMap->GetWidth(), contrastContext_->inputPixelMap->GetHeight(),
+        contrastContext_->curPixelmapArea.w, contrastContext_->curPixelmapArea.h,
+        contrastContext_->curRatio, contrastContext_->maxRatio);
     return true;
 }
 
@@ -642,12 +738,15 @@ bool VpeNapi::ParseLCDParameter(napi_env env, napi_callback_info info, NapiValue
         CHECK_AND_RETURN_RET_LOG(ParserImageType(env, argValue[NUM_0]) == ImageType::TYPE_PIXEL_MAP,
             false, "Arg 0 type is not pixelmap");
         contrastContext_->lcdPixelMap = PixelMapNapi::GetPixelMap(env, argValue[NUM_0]);
+        CHECK_AND_RETURN_RET_LOG(contrastContext_->lcdPixelMap != nullptr, false, "pixelmap is nullptr");
         CHECK_AND_RETURN_RET_LOG(napi_get_value_int32(env, nVal.argv[NUM_1],
             &(contrastContext_->contentId)) == napi_ok, false, "Failed to parse lcd param. Arg 1 type mismatch");
         CHECK_AND_RETURN_RET_LOG(napi_get_value_double(env, nVal.argv[NUM_2],
             &(contrastContext_->defaultRatio)) == napi_ok, false, "Failed to parse lcd param. Arg 2 type mismatch");
-        contrastContext_->lcdWidth = contrastContext_->lcdPixelMap->GetWidth();
-        contrastContext_->lcdHeight = contrastContext_->lcdPixelMap->GetHeight();
+        CHECK_AND_RETURN_RET_LOG(contrastContext_->lcdPixelMap->GetWidth() > 0 &&
+            contrastContext_->lcdPixelMap->GetHeight() > 0, false, "invalid resolution");
+        contrastContext_->lcdWidth = static_cast<unsigned int>(contrastContext_->lcdPixelMap->GetWidth());
+        contrastContext_->lcdHeight = static_cast<unsigned int>(contrastContext_->lcdPixelMap->GetHeight());
     }
     VPE_LOGI("update content info: lcdWidth:%{public}d, lcdHeight:%{public}d",
         contrastContext_->lcdWidth, contrastContext_->lcdHeight);
@@ -834,9 +933,10 @@ napi_value VpeNapi::Init(napi_env env, napi_value exports)
     CHECK_AND_RETURN_RET_LOG(napi_create_reference(env, constructor, 1, &constructor_) == napi_ok,
         nullptr, "create reference fail");
 
-    static napi_property_descriptor desc[] = {
-        DECLARE_NAPI_PROPERTY("QualityLevel",
-            CreateEnumTypeObject(env, napi_number, &qualityLevelTypeRef_, g_qualityLevels)),
+    napi_value qualityLevel = CreateEnumTypeObject(env, napi_number, &qualityLevelTypeRef_, g_qualityLevels);
+    CHECK_AND_RETURN_RET_LOG(qualityLevel != nullptr, nullptr, "CreateEnumTypeObject failed");
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_PROPERTY("QualityLevel", qualityLevel),
         DECLARE_NAPI_FUNCTION("create", VpeNapi::Create),
         DECLARE_NAPI_FUNCTION("initializeEnvironment", VpeNapi::InitializeEnvironment),
         DECLARE_NAPI_FUNCTION("deinitializeEnvironment", VpeNapi::DeinitializeEnvironment),

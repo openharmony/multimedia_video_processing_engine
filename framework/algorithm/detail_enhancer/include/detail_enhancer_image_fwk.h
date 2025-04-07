@@ -35,7 +35,9 @@ public:
 
     VPEAlgoErrCode SetParameter(const DetailEnhancerParameters& parameter) override;
     VPEAlgoErrCode GetParameter(DetailEnhancerParameters& parameter) const override;
-    VPEAlgoErrCode Process(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output, bool flag) override;
+    VPEAlgoErrCode Process(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output) override;
+    VPEAlgoErrCode EnableProtection(bool enable) final;
+    VPEAlgoErrCode ResetProtectionStatus() final;
 
 private:
     std::shared_ptr<DetailEnhancerBase> GetAlgorithm(int feature);
@@ -43,13 +45,23 @@ private:
     bool IsValidProcessedObject(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output);
     int EvaluateTargetLevel(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output,
         float widthRatio, float heightRatio) const;
-    VPEAlgoErrCode ProcessVideo(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output, bool flag);
+    VPEAlgoErrCode DoProcess(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output);
+    VPEAlgoErrCode ProcessVideo(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output);
+    void UpdateLastAlgorithm(const std::shared_ptr<DetailEnhancerBase>& algorithm);
+    void Clear();
+    VPEAlgoErrCode ProcessAlgorithm(const std::shared_ptr<DetailEnhancerBase>& algo, const sptr<SurfaceBuffer>& input,
+        const sptr<SurfaceBuffer>& output);
 
     DetailEnhancerParameters parameter_{};
     mutable std::mutex lock_{};
     std::unordered_map<int, std::shared_ptr<DetailEnhancerBase>> algorithms_{};
+    std::shared_ptr<DetailEnhancerBase> lastAlgorithm_{};
     int type_;
     std::atomic<bool> parameterUpdated{};
+    bool hasParameter_{};
+    bool enableProtection_{};
+    mutable std::mutex restoreLock_{};
+    bool needRestore_{}; // Guarded by restoreLock_
 };
 } // namespace VideoProcessingEngine
 } // namespace Media

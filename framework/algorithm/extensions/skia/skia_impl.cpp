@@ -188,6 +188,7 @@ int CreateYUVPixmap(const sptr<SurfaceBuffer>& buffer, std::array<SkPixmap, SkYU
         for (int i = 0; i < SkYUVAInfo::kMaxPlanes; i++) {
             rowbyte[i] = static_cast<size_t>(buffer->GetStride());
         }
+        return 0;
     }
 
     rowbyte[CHANNEL_Y] = planesInfo->planes[CHANNEL_Y].columnStride;
@@ -256,8 +257,17 @@ VPEAlgoErrCode Skia::Deinit()
     return VPE_ALGO_ERR_OK;
 }
 
-VPEAlgoErrCode Skia::SetParameter([[maybe_unused]] const DetailEnhancerParameters& parameter,
-    [[maybe_unused]] int type, [[maybe_unused]] bool flag)
+VPEAlgoErrCode Skia::SetParameter([[maybe_unused]] const DetailEnhancerParameters& parameter)
+{
+    return VPE_ALGO_ERR_OK;
+}
+
+VPEAlgoErrCode Skia::EnableProtection([[maybe_unused]] bool enable)
+{
+    return VPE_ALGO_ERR_OK;
+}
+
+VPEAlgoErrCode Skia::ResetProtectionStatus()
 {
     return VPE_ALGO_ERR_OK;
 }
@@ -283,7 +293,7 @@ static std::vector<std::shared_ptr<Extension::ExtensionBase>> RegisterExtensions
 
     auto extension = std::make_shared<Extension::DetailEnhancerExtension>();
     CHECK_AND_RETURN_RET_LOG(extension != nullptr, extensions, "null pointer");
-    extension->info = { Extension::ExtensionType::DETAIL_ENHANCER, "SKIA", "0.0.1" };
+    extension->info = { Extension::ExtensionType::DETAIL_ENHANCER, "AISR", "0.0.1" };
     extension->creator = Skia::Create;
     extension->capabilitiesBuilder = Skia::BuildCapabilities;
     extensions.push_back(std::static_pointer_cast<Extension::ExtensionBase>(extension));
@@ -291,10 +301,12 @@ static std::vector<std::shared_ptr<Extension::ExtensionBase>> RegisterExtensions
     return extensions;
 }
 
+
 void RegisterSkiaExtensions(uintptr_t extensionListAddr)
 {
     Extension::DoRegisterExtensions(extensionListAddr, RegisterExtensions);
 }
+
 } // VideoProcessingEngine
 } // Media
 } // OHOS

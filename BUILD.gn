@@ -18,5 +18,6 @@ group("video_processing_engine_packages") {
   public_deps = [
     "framework:videoprocessingengine",
     "services:videoprocessingservice"
+    "services:videoprocessingserviceimpl"
   ]
 }

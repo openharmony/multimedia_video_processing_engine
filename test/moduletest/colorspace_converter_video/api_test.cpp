@@ -145,8 +145,8 @@ GSError CSCVInnerApiTest::SetMeatadata(sptr<SurfaceBuffer> &buffer, CM_ColorSpac
 
 void CSCVInnerApiTest::InitBufferConfig()
 {
-    requestCfg_.usage =
-        BUFFER_USAGE_CPU_READ | BUFFER_USAGE_CPU_WRITE | BUFFER_USAGE_HW_RENDER | BUFFER_USAGE_HW_TEXTURE;
+    requestCfg_.usage = BUFFER_USAGE_CPU_READ | BUFFER_USAGE_CPU_WRITE
+        | BUFFER_USAGE_HW_RENDER | BUFFER_USAGE_HW_TEXTURE | BUFFER_USAGE_MEM_MMZ_CACHE;
     requestCfg_.width = DEFAULT_WIDTH;
     requestCfg_.height = DEFAULT_HEIGHT;
     requestCfg_.timeout = 0;
@@ -393,7 +393,7 @@ HWTEST_F(CSCVInnerApiTest, CSCV_API_0061, TestSize.Level2)
     ASSERT_EQ(err, GSERROR_OK);
     ret = cscv_->NotifyEos();
     ASSERT_EQ(ret, VPE_ALGO_ERR_OK);
-    cout << "begin to call cscv2->Release()" << endl;
+    sleep(2);
     cscv2->Release();
 }
 
@@ -439,6 +439,7 @@ HWTEST_F(CSCVInnerApiTest, CSCV_API_0062, TestSize.Level2)
     ASSERT_EQ(ret, VPE_ALGO_ERR_OK);
     ret = cscv_->NotifyEos();
     ASSERT_EQ(ret, VPE_ALGO_ERR_OK);
+    sleep(2);
     cscv2->Release();
     cscv3->Release();
 }

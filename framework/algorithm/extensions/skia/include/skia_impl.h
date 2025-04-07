@@ -39,8 +39,10 @@ public:
     static DetailEnhancerCapability BuildCapabilities();
     VPEAlgoErrCode Init() override;
     VPEAlgoErrCode Deinit() override;
-    VPEAlgoErrCode SetParameter(const DetailEnhancerParameters& parameter, int type, bool flag) override;
+    VPEAlgoErrCode SetParameter(const DetailEnhancerParameters& parameter) override;
     VPEAlgoErrCode Process(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output) override;
+    VPEAlgoErrCode EnableProtection(bool enable) override;
+    VPEAlgoErrCode ResetProtectionStatus() override;
 };
 
 void RegisterSkiaExtensions(uintptr_t extensionListAddr);

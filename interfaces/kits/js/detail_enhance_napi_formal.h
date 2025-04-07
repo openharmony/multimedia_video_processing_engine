@@ -19,6 +19,7 @@
 #include "detail_enhancer_image.h"
 #include "contrast_enhancer_image.h"
 #include "image_type.h"
+#include "image_processing_types.h"
 #include "pixel_map_napi.h"
 
 namespace OHOS {
@@ -56,9 +57,7 @@ private:
         napi_deferred deferred;
         napi_ref callbackRef;
         std::shared_ptr<PixelMap> inputPixelMap{};
-        std::shared_ptr<PixelMap> scaledPixelMap{};
         std::shared_ptr<PixelMap> lcdPixelMap{};
-        sptr<SurfaceBuffer> pazzleBuffer{};
         OHOS::Rect curPixelmapArea;
         OHOS::Rect displayArea;
         int pixelmapId = -1;
@@ -75,6 +74,9 @@ private:
         bool isLCDLutFinished{};
         bool isCanceled{};
         bool genFinalEffect{};
+        double maxRatio{};
+        int animationDuration{};
+        double curRatio{};
     };
 
     struct NapiValues {
@@ -110,22 +112,26 @@ private:
         napi_valuetype type, napi_ref* ref, std::vector<struct QualityLevelEnum>& imageEnumMap);
 
     // detail enhancer
-    static bool InitDetailAlgo(napi_env env, int level);
+    static bool InitDetailAlgo(napi_env env);
     static bool ConfigResolutionBasedOnRatio(napi_env env, napi_value& nVal,
         std::shared_ptr<VpeNapi::DetailEnhanceContext> context);
     static bool ConfigResolution(napi_env env, napi_value& width, napi_value& height,
         std::shared_ptr<VpeNapi::DetailEnhanceContext> context);
     static bool ParseDetailEnhanceParameter(napi_env env, napi_callback_info info);
     static std::shared_ptr<PixelMap> DetailEnhanceImpl(napi_env env, VpeNapi::DetailEnhanceContext* context);
+    static bool SetDetailAlgoParam(napi_env env, int level);
+    static void EnhanceDetailWork(napi_env env, void* data);
+    static void EnhanceDetailCallBackWork(napi_env env, napi_status status, void* data);
 
     // contrast enhancer
     static bool InitContrastAlgo(napi_env env);
     static bool ParseLCDParameter(napi_env env, napi_callback_info info, NapiValues& nVal);
     static bool ParseDetailImageParameter(napi_env env, napi_callback_info info, NapiValues& nVal);
     static bool GenerateRegionHist(napi_env env, ContrastEnhanceContext* context);
-    static bool UpdateMetadataBasedOnLcd(ContrastEnhanceContext* context);
-    static bool UpdateMetadataBasedOnDetail(ContrastEnhanceContext* context);
+    static bool UpdateMetadataBasedOnHist(ContrastEnhanceContext* context);
+    static bool UpdateMetadataBasedOnPixel(ContrastEnhanceContext* context);
     static napi_value CallCallback(napi_env env, ContrastEnhanceContext* context);
+    static OHOS::Rect PrepareRect(std::shared_ptr<PixelMap> input, OHOS::Rect& displayArea, float ratio);
 
     static napi_value Constructor(napi_env env, napi_callback_info info);
     static void Destructor(napi_env env, void* nativeObject, void* finalize);

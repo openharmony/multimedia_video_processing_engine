@@ -26,7 +26,7 @@ ohos_source_set("csc_test_utils") {
   external_deps = [
     "c_utils:utils",
     "graphic_surface:surface",
-    "drivers_interface_display:display_commontype_idl_headers",
+    "drivers_interface_display:libdisplay_commontype_proxy_2.1",
   ]
 
   deps = [

@@ -113,7 +113,7 @@ ImageProcessing_ErrorCode DetailEnhancerImageNative::Process(const std::shared_p
     auto ret = CheckParameter();
     CHECK_AND_RETURN_RET_LOG(ret == IMAGE_PROCESSING_SUCCESS, ret, "check parameter failed!");
     ret = ImageProcessingUtils::InnerErrorToCAPI(
-        detailEnhancer_->Process(sourceImageSurfaceBuffer, destinationImageSurfaceBuffer, true));
+        detailEnhancer_->Process(sourceImageSurfaceBuffer, destinationImageSurfaceBuffer));
     CHECK_AND_RETURN_RET_LOG(ret == IMAGE_PROCESSING_SUCCESS, ret, "process failed!");
     ret = ImageProcessingUtils::SetSurfaceBufferToPixelMap(destinationImageSurfaceBuffer, destinationImage);
     CHECK_AND_RETURN_RET_LOG(ret == IMAGE_PROCESSING_SUCCESS, ret, "convert to pixelmap failed!");

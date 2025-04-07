@@ -51,8 +51,8 @@ public:
     static void TearDownTestCase(void) {};
     void SetUp()
     {
-        requestCfg_.usage =
-            BUFFER_USAGE_CPU_READ | BUFFER_USAGE_CPU_WRITE | BUFFER_USAGE_HW_RENDER | BUFFER_USAGE_HW_TEXTURE;
+        requestCfg_.usage = BUFFER_USAGE_CPU_READ | BUFFER_USAGE_CPU_WRITE
+        | BUFFER_USAGE_HW_RENDER | BUFFER_USAGE_HW_TEXTURE | BUFFER_USAGE_MEM_MMZ_CACHE;
         requestCfg_.width = DEFAULT_WIDTH;
         requestCfg_.height = DEFAULT_HEIGHT;
         requestCfg_.timeout = 0;

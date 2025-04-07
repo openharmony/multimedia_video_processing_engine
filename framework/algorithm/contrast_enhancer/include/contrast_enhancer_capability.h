@@ -20,13 +20,14 @@
 #include <vector>
 
 #include "algorithm_common.h"
+#include "contrast_enhancer_base.h"
 #include "extension_base.h"
 
 namespace OHOS {
 namespace Media {
 namespace VideoProcessingEngine {
 struct ContrastEnhancerCapability {
-    std::vector<uint32_t> levels;
+    std::vector<ContrastEnhancerType> types;
     Extension::Rank rank;
     int32_t version;
 };

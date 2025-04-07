@@ -42,7 +42,7 @@ ohos_executable("vpe_demo") {
   external_deps = [
     "c_utils:utils",
     "graphic_surface:surface",
-    "drivers_interface_display:display_commontype_idl_headers",
+    "drivers_interface_display:libdisplay_commontype_proxy_2.1",
   ]
  
   subsystem_name = "multimedia"
@@ -85,7 +85,7 @@ ohos_executable("detailEnh_demo") {
     "c_utils:utils",
     "graphic_surface:surface",
     "media_foundation:media_foundation",
-    "drivers_interface_display:display_commontype_idl_headers",
+    "drivers_interface_display:libdisplay_commontype_proxy_2.1",
   ]
 
   subsystem_name = "multimedia"

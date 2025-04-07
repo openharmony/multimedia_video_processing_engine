@@ -28,7 +28,8 @@ enum class ExtensionType {
     METADATA_GENERATOR,
     DETAIL_ENHANCER,
     VIDEO_REFRESHRATE_PREDICTION,
-    AIHDR_ENHANCER
+    AIHDR_ENHANCER,
+    CONTRAST_ENHANCER,
 };
 
 enum class Rank : uint32_t {

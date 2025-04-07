@@ -16,7 +16,6 @@
 #include "colorspace_converter_display_fwk.h"
 #include "securec.h"
 #include "extension_manager.h"
-#include "vpe_parse_metadata.h"
 #include "vpe_trace.h"
 #include "vpe_log.h"
 
@@ -43,12 +42,9 @@ VPEAlgoErrCode ColorSpaceConverterDisplayFwk::Process(const std::shared_ptr<OHOS
     VPE_LOGD("size of impl %{public}zu", impl_.size());
     CHECK_AND_RETURN_RET_LOG(!impl_.empty(), VPE_ALGO_ERR_NOT_IMPLEMENTED, "Extension is not found");
 
-    DeserializedDisplayParameter localParameter;
-    DeserializeDisplayParameter(parameter, localParameter);
-
     VPE_SYNC_TRACE;
     for (const auto& impl : impl_) {
-        ret = impl->Process(input, output, localParameter);
+        ret = impl->Process(input, output, parameter);
         if (ret == VPE_ALGO_ERR_OK) {
             return VPE_ALGO_ERR_OK;
         }
@@ -72,52 +68,6 @@ VPEAlgoErrCode ColorSpaceConverterDisplayFwk::Init()
     initialized_ = true;
     VPE_LOGI("Successed");
     return VPE_ALGO_ERR_OK;
-}
-
-void ColorSpaceConverterDisplayFwk::DeserializeDisplayParameter(const ColorSpaceConverterDisplayParameter& parameter,
-                                                                DeserializedDisplayParameter& deserialzed)
-{
-    deserialzed.inputColorSpace = parameter.inputColorSpace;
-    deserialzed.outputColorSpace = parameter.outputColorSpace;
-    deserialzed.sdrNits = parameter.sdrNits;
-    deserialzed.tmoNits = parameter.tmoNits;
-    deserialzed.currentDisplayNits = parameter.currentDisplayNits;
-    deserialzed.disableHdrFloatHeadRoom = parameter.disableHdrFloatHeadRoom;
-    deserialzed.linearMatrix = parameter.layerLinearMatrix;
-    DeserializeStaticMetadata(parameter, deserialzed);
-    DeserializeDynamicMetadata(parameter, deserialzed);
-}
-
-void ColorSpaceConverterDisplayFwk::DeserializeStaticMetadata(const ColorSpaceConverterDisplayParameter& parameter,
-                                                              DeserializedDisplayParameter& deserialzed)
-{
-    if (parameter.staticMetadata.size() == 0) {
-        deserialzed.staticMetadata = std::nullopt;
-        return;
-    }
-
-    HdrStaticMetadata data;
-    errno_t ret = memcpy_s(&data, sizeof(data), parameter.staticMetadata.data(), parameter.staticMetadata.size());
-    if (ret != EOK) {
-        VPE_LOGE("memcpy_s failed, err = %d\n", ret);
-        return;
-    }
-    deserialzed.staticMetadata = data;
-}
-
-void ColorSpaceConverterDisplayFwk::DeserializeDynamicMetadata(const ColorSpaceConverterDisplayParameter& parameter,
-                                                               DeserializedDisplayParameter& deserialzed)
-{
-    if (parameter.dynamicMetadata.size() == 0) {
-        deserialzed.hdrVividMetadata = std::nullopt;
-        return;
-    }
-
-    HdrVividMetadataV1 data;
-    HwDisplayMeta displayMeta;
-    (void)PraseMetadataFromArray(parameter.dynamicMetadata, data, displayMeta);
-    deserialzed.hdrVividMetadata = data;
-    deserialzed.displayMeta = displayMeta;
 }
 
 std::shared_ptr<ColorSpaceConverterDisplay> ColorSpaceConverterDisplay::Create()

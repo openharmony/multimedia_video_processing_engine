@@ -90,7 +90,7 @@ int32_t DetailEnhancerVideoImpl::Init()
 {
     std::lock_guard<std::mutex> lock(lock_);
     CHECK_AND_RETURN_RET_LOG(!isInitialized_.load(), VPE_ALGO_ERR_INVALID_STATE, "Already initialized!");
-    detailEnhancerVideo_ = DetailEnhancerVideoFwk::Create();
+    detailEnhancerVideo_ = DetailEnhancerVideoFwk::CreateEx(false);
     CHECK_AND_RETURN_RET_LOG(detailEnhancerVideo_ != nullptr, VPE_ALGO_ERR_UNKNOWN,
         "Failed to create video detail enhancer!");
     isInitialized_ = true;

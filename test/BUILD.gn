@@ -14,40 +14,46 @@
 import("//build/ohos.gni")
 
 declare_args() {
-  vpe_support_demo_test = true
-  vpe_support_unit_test = true
-  vpe_support_module_test = true
-  cscv_support_demo_test = true
-  cscv_support_unit_test = true
-  video_support_demo_test = true
-  image_processing_unit_test = true
-  detail_enhancer_video_unit_test = true
-  detail_enhancer_unit_test = true
-  detail_enhancer_video_ndk_unit_test = true
-  colorSpace_converter_video_ndk_unit_test = true
-  metadata_gen_video_ndk_unit_test = true
-  video_variable_refreshrate_unit_test = true
-  aihdr_enhancer_video_unit_test = true
-  aihdr_enhancer_unit_test = true
-}
-
-if (defined(global_parts_info) &&
-    defined(global_parts_info.multimedia_video_processing_engine_ext)) {
-  vpe_support_demo_test = false
-  vpe_support_unit_test = false
-  vpe_support_module_test = false
-  cscv_support_demo_test = false
-  cscv_support_unit_test = false
-  video_support_demo_test = false
-  image_processing_unit_test = false
-  detail_enhancer_video_unit_test = false
-  detail_enhancer_unit_test = false
-  detail_enhancer_video_ndk_unit_test = false
-  colorSpace_converter_video_ndk_unit_test = false
-  metadata_gen_video_ndk_unit_test = false
-  video_variable_refreshrate_unit_test = false
-  aihdr_enhancer_video_unit_test = false
-  aihdr_enhancer_unit_test = false
+  if (defined(global_parts_info) &&
+      defined(global_parts_info.multimedia_video_processing_engine_ext)) {
+    vpe_support_demo_test = true
+    vpe_support_unit_test = true
+    vpe_support_module_test = true
+    cscv_support_demo_test = true
+    cscv_support_unit_test = true
+    video_support_demo_test = true
+    image_processing_unit_test = true
+    detail_enhancer_video_unit_test = true
+    detail_enhancer_unit_test = true
+    detail_enhancer_video_ndk_unit_test = true
+    colorSpace_converter_video_ndk_unit_test = true
+    metadata_gen_video_ndk_unit_test = true
+    video_variable_refreshrate_unit_test = true
+    aihdr_enhancer_video_unit_test = true
+    service_unit_test = true
+    aihdr_enhancer_unit_test = true
+    contrast_enhancer_unit_test = true
+    services_fuzzer_test = true
+  } else {
+    vpe_support_demo_test = false
+    vpe_support_unit_test = false
+    vpe_support_module_test = false
+    cscv_support_demo_test = false
+    cscv_support_unit_test = false
+    video_support_demo_test = false
+    image_processing_unit_test = false
+    detail_enhancer_video_unit_test = false
+    detail_enhancer_unit_test = false
+    detail_enhancer_video_ndk_unit_test = false
+    colorSpace_converter_video_ndk_unit_test = false
+    metadata_gen_video_ndk_unit_test = false
+    video_variable_refreshrate_unit_test = false
+    aihdr_enhancer_video_unit_test = false
+    aihdr_enhancer_unit_test = false
+    service_unit_test = false
+    contrast_enhancer_unit_test = false
+    services_fuzzer_test = false
+  }
 }
 
 group("demo_test") {
@@ -94,8 +100,14 @@ group("unit_test") {
   if (aihdr_enhancer_video_unit_test) {
     deps += [ "unittest/aihdr_enhancer_video:aihdr_enhancer_video_unit_test" ]
   }
+  if (service_unit_test) {
+    deps += [ "unittest/service:services_test" ]
+  }
   if (aihdr_enhancer_unit_test) {
     deps += [ "unittest/aihdr_enhancer_video:aihdr_enhancer_video_unit_test" ]
+  }
+  if (contrast_enhancer_unit_test) {
+    deps += [ "unittest/contrast_enhancer:contrast_enhancer_unit_test" ]
   }
 }
 
@@ -108,6 +120,16 @@ group("module_test") {
       "moduletest/colorspace_converter_video:colorspace_converter_video_module_test",
       "moduletest/metadata_generator:metadata_generator_module_test",
       "moduletest/metadata_generator_video:metadata_generator_video_module_test",
+    ]
+  }
+}
+
+group("fuzz_test") {
+  testonly = true
+  deps = []
+  if (services_fuzzer_test) {
+    deps += [
+       "fuzztest/services_fuzzer:ServicesFuzzTest",
     ]
   }
 }

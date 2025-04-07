@@ -34,6 +34,8 @@ DETAIL_ENHANCER_DIR                 = "$ALGORITHM_DIR/detail_enhancer"
 DETAIL_ENHANCER_VIDEO_DIR           = "$ALGORITHM_DIR/detail_enhancer_video"
 VIDEO_REFRESHRATE_PREDICTION_DIR    = "$ALGORITHM_DIR/video_variable_refresh_rate"
 
+SERVICES_DIR                       = "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services"
+
 #CAPI
 CAPI_IMAGE_DIR                      = "$FRAMEWORK_DIR/capi/image_processing"
 CAPI_COLORSPACE_CONVERTER_DIR       = "$CAPI_IMAGE_DIR/colorspace_converter"

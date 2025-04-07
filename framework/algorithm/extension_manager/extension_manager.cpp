@@ -49,6 +49,9 @@ ExtensionManager::ExtensionManager()
 {
     (void)Init();
     g_algoHandle = dlopen("libvideoprocessingengine_ext.z.so", RTLD_NOW);
+    if (g_algoHandle == nullptr) {
+        VPE_LOGE("dlopen libvideoprocessingengine_ext failed %{public}s", dlerror());
+    }
 }
 
 ExtensionManager::~ExtensionManager()
@@ -210,6 +213,19 @@ std::shared_ptr<DetailEnhancerBase> ExtensionManager::CreateDetailEnhancer(uint3
     CHECK_AND_RETURN_RET_LOG(impl != nullptr, nullptr,
         "Call extension creator failed, return a empty impl, extension: %{public}s, level: %{public}d",
         extension->info.name.c_str(), level);
+    return impl;
+}
+
+std::shared_ptr<ContrastEnhancerBase> ExtensionManager::CreateContrastEnhancer(ContrastEnhancerType type) const
+{
+    CHECK_AND_RETURN_RET_LOG(initialized_ == true, nullptr, "Not initialized");
+    auto extension = FindContrastEnhancerExtension(type);
+    CHECK_AND_RETURN_RET_LOG(extension != nullptr, nullptr,
+        "Create failed, get an empty extension. type: %{public}d", type);
+    auto impl = extension->creator();
+    CHECK_AND_RETURN_RET_LOG(impl != nullptr, nullptr,
+        "Call extension creator failed, return a empty impl, extension: %{public}s, type: %{public}d",
+        extension->info.name.c_str(), type);
     return impl;
 }
 
@@ -487,7 +503,13 @@ T ExtensionManager::BuildCaps(const ExtensionList& extensionList) const
                 CHECK_AND_LOG(err == VPE_ALGO_ERR_OK, "Build caps failed, extension: %{public}s",
                     extension->info.name.c_str());
             }
-        } else if constexpr (std::is_same_v<T, AihdrEnhancerCapabilityMap>) {
+        } else if constexpr (std::is_same_v<T, ContrastEnhancerCapabilityMap>) {
+            if (extension->info.type == ExtensionType::CONTRAST_ENHANCER) {
+                err = BuildContrastEnhancerCaps(extension, idx, capMap);
+                CHECK_AND_LOG(err == VPE_ALGO_ERR_OK, "Build caps failed, extension: %{public}s",
+                    extension->info.name.c_str());
+            }
+         } else if constexpr (std::is_same_v<T, AihdrEnhancerCapabilityMap>) {
             if (extension->info.type == ExtensionType::AIHDR_ENHANCER) {
                 err = BuildAihdrEnhancerCaps(extension, idx, capMap);
                 CHECK_AND_LOG(err == VPE_ALGO_ERR_OK, "Build caps failed, extension: %{public}s",
@@ -498,7 +520,6 @@ T ExtensionManager::BuildCaps(const ExtensionList& extensionList) const
             return {};
         }
     }
-
     return capMap;
 }
 
@@ -526,7 +547,7 @@ std::shared_ptr<ColorSpaceConverterExtension> ExtensionManager::FindColorSpaceCo
             (CSDesc).range, outputInfo.pixelFormat, outputInfo.colorSpace.metadataType);
         return nullptr;
     }
-    size_t idx = std::get<2>(*(iter->second.cbegin())); // 2
+    size_t idx = std::get<2>(*(iter->second.cbegin()));
     for (const auto &cap : iter->second) {
         if (std::get<0>(cap) == Rank::RANK_HIGH) {
             idx = std::get<2>(cap); // 2
@@ -563,7 +584,7 @@ std::shared_ptr<MetadataGeneratorExtension> ExtensionManager::FindMetadataGenera
     const auto iter = metadataGeneratorCapabilityMap.find(key);
     CHECK_AND_RETURN_RET_LOG(iter != metadataGeneratorCapabilityMap.cend() && !iter->second.empty(), nullptr,
         "CSC metadata generator extension is not found");
-    size_t idx = std::get<2>(*(iter->second.cbegin())); // 2
+    size_t idx = std::get<2>(*(iter->second.cbegin()));
     for (const auto &cap : iter->second) {
         if (std::get<0>(cap) == Rank::RANK_HIGH) {
             idx = std::get<2>(cap); // 2
@@ -608,7 +629,7 @@ std::shared_ptr<AihdrEnhancerExtension> ExtensionManager::FindAihdrEnhancerExten
     const auto iter = aihdrEnhancerCapabilityMap.find(key);
     CHECK_AND_RETURN_RET_LOG(iter != aihdrEnhancerCapabilityMap.cend() && !iter->second.empty(), nullptr,
         "Aihdr enhancer extension is not found");
-    size_t idx = std::get<2>(*(iter->second.cbegin())); // 2
+    size_t idx = std::get<2>(*(iter->second.cbegin()));
     for (const auto &cap : iter->second) {
         if (std::get<0>(cap) == Rank::RANK_HIGH) {
             idx = std::get<2>(cap); // 2
@@ -616,6 +637,20 @@ std::shared_ptr<AihdrEnhancerExtension> ExtensionManager::FindAihdrEnhancerExten
         }
     }
     return std::static_pointer_cast<AihdrEnhancerExtension>(extensionList[idx]);
+}
+
+std::shared_ptr<ContrastEnhancerExtension> ExtensionManager::FindContrastEnhancerExtension(
+    ContrastEnhancerType type) const
+{
+    auto extensionList = LoadExtensions();
+    CHECK_AND_RETURN_RET_LOG(!extensionList.empty(), nullptr, "No extension found");
+    auto contrastEnhancerCapabilityMap = BuildCaps<ContrastEnhancerCapabilityMap>(extensionList);
+    CHECK_AND_RETURN_RET_LOG(!contrastEnhancerCapabilityMap.empty(), nullptr, "No extension available");
+    const auto iter = contrastEnhancerCapabilityMap.find(type);
+    CHECK_AND_RETURN_RET_LOG(iter != contrastEnhancerCapabilityMap.cend(), nullptr,
+        "Contrast enhancer Extension is not found");
+    size_t idx = iter->second;
+    return std::static_pointer_cast<ContrastEnhancerExtension>(extensionList[idx]);
 }
 
 VPEAlgoErrCode ExtensionManager::ExtractColorSpaceConverterCap(const ColorSpaceConverterCapability& cap, size_t idx,
@@ -719,6 +754,16 @@ VPEAlgoErrCode ExtensionManager::BuildAihdrEnhancerCaps(const std::shared_ptr<Ex
         err = ExtractAihdrEnhancerCap(cap, idx, aihdrEnhancerCapabilityMap);
     }
     return err;
+}
+VPEAlgoErrCode ExtensionManager::BuildContrastEnhancerCaps(const std::shared_ptr<ExtensionBase>& ext, size_t idx,
+    ContrastEnhancerCapabilityMap& contrastEnhancerCapabilityMap) const
+{
+    auto realExtension = std::static_pointer_cast<ContrastEnhancerExtension>(ext);
+    auto capabilities = realExtension->capabilitiesBuilder();
+    for (const auto &level : capabilities.types) {
+        contrastEnhancerCapabilityMap.emplace(level, idx);
+    }
+    return VPE_ALGO_ERR_OK;
 }
 } // namespace Extension
 } // namespace VideoProcessingEngine

@@ -25,7 +25,6 @@
 namespace OHOS {
 namespace Media {
 namespace VideoProcessingEngine {
-
 class ContrastEnhancerBase {
 public:
     ContrastEnhancerBase() = default;
@@ -37,12 +36,12 @@ public:
 
     virtual VPEAlgoErrCode Init() = 0;
     virtual VPEAlgoErrCode Deinit() = 0;
-    virtual VPEAlgoErrCode SetParameter(const ContrastEnhancerParameters& parameter, int type, bool flag) = 0;
+    virtual VPEAlgoErrCode SetParameter(const ContrastEnhancerParameters& parameter) = 0;
 
     virtual VPEAlgoErrCode GetRegionHist(const sptr<SurfaceBuffer>& input) = 0;
-    virtual bool UpdateMetadataBasedOnLcd(OHOS::Rect rect, int lcdWidth, int lcdHeight,
-        sptr<SurfaceBuffer> surfaceBuffer) = 0;
-    virtual bool UpdateMetadataBasedOnDetail(OHOS::Rect displayArea, OHOS::Rect curPixelmapArea,
+    virtual VPEAlgoErrCode UpdateMetadataBasedOnHist(OHOS::Rect rect, sptr<SurfaceBuffer> surfaceBuffer,
+        std::tuple<int, int, double, double, double, int> pixelmapInfo) = 0;
+    virtual VPEAlgoErrCode UpdateMetadataBasedOnPixel(OHOS::Rect displayArea, OHOS::Rect curPixelmapArea,
         OHOS::Rect completePixelmapArea, sptr<SurfaceBuffer> surfaceBuffer, float fullRatio) = 0;
 };
 

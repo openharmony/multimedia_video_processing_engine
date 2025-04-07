@@ -44,8 +44,8 @@ sptr<SurfaceBuffer> CreateSurfaceBuffer(uint32_t pixelFormat, int32_t width, int
     inputCfg.width = width;
     inputCfg.height = height;
     inputCfg.strideAlignment = width;
-    inputCfg.usage = BUFFER_USAGE_CPU_READ | BUFFER_USAGE_CPU_WRITE | BUFFER_USAGE_HW_RENDER
-    | BUFFER_USAGE_HW_TEXTURE;
+    inputCfg.usage = BUFFER_USAGE_CPU_READ | BUFFER_USAGE_CPU_WRITE
+        | BUFFER_USAGE_HW_RENDER | BUFFER_USAGE_HW_TEXTURE | BUFFER_USAGE_MEM_MMZ_CACHE;
     inputCfg.format = pixelFormat;
     inputCfg.timeout = 0;
     GSError err = buffer->Alloc(inputCfg);

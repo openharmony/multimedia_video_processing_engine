@@ -35,7 +35,7 @@ ohos_unittest("image_processing_unit_test") {
     "$ALGORITHM_DIR/detail_enhancer/include",
     "$FRAMEWORK_DIR/capi/image_processing/detail_enhancer/include",
     "$INTERFACES_DIR/kits/c",
-    "$FRAMEWORK_DIR/capi/image_processing/include"
+    "$FRAMEWORK_DIR/capi/image_processing/include",
   ]
  
   sources = [ "image_processing_unit_test.cpp" ]
@@ -46,13 +46,13 @@ ohos_unittest("image_processing_unit_test") {
  
   external_deps = [
     "c_utils:utils",
-    "drivers_interface_display:display_commontype_idl_headers",
+    "drivers_interface_display:libdisplay_commontype_proxy_2.1",
     "graphic_surface:surface",
     "hilog:libhilog",
     "hitrace:hitrace_meter",
     "media_foundation:native_media_core",
     "image_framework:pixelmap",
-    "image_framework:image",
+    "image_framework:image"
   ]
  
   subsystem_name = "multimedia"

@@ -28,8 +28,9 @@ namespace VideoProcessingEngine {
 class DetailEnhancerVideoFwk : public VpeVideoImpl {
 public:
     static std::shared_ptr<VpeVideoImpl> Create();
+    static std::shared_ptr<VpeVideoImpl> CreateEx(bool disable);
 
-    explicit DetailEnhancerVideoFwk(uint32_t type) : VpeVideoImpl(type) {}
+    explicit DetailEnhancerVideoFwk(uint32_t type, bool disable) : VpeVideoImpl(type), isAutoDisable_(disable) {}
     ~DetailEnhancerVideoFwk() = default;
     DetailEnhancerVideoFwk(const DetailEnhancerVideoFwk&) = delete;
     DetailEnhancerVideoFwk& operator=(const DetailEnhancerVideoFwk&) = delete;
@@ -43,7 +44,10 @@ protected:
     VPEAlgoErrCode OnInitialize() final;
     VPEAlgoErrCode OnDeinitialize() final;
     VPEAlgoErrCode Process(const sptr<SurfaceBuffer>& sourceImage, sptr<SurfaceBuffer>& destinationImage) final;
+    VPEAlgoErrCode ResetAfterDisable() final;
+    bool IsDisableAfterProcessFail() final;
     bool IsProducerSurfaceValid(const sptr<Surface>& surface) final;
+    bool IsConsumerBufferValid(const sptr<SurfaceBuffer>& buffer) final;
     VPEAlgoErrCode UpdateRequestCfg(const sptr<Surface>& surface, BufferRequestConfig& requestCfg) final;
     void UpdateRequestCfg(const sptr<SurfaceBuffer>& consumerBuffer, BufferRequestConfig& requestCfg) final;
 
@@ -68,6 +72,7 @@ private:
     // Guarded by lock_ end
 
     std::shared_ptr<DetailEnhancerImage> detailEnh_{};
+    bool isAutoDisable_{};
 };
 } // namespace VideoProcessingEngine
 } // namespace Media

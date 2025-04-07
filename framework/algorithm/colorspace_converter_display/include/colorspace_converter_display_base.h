@@ -21,7 +21,6 @@
 #include "nocopyable.h"
 #include "effect/shader_effect.h"
 #include "algorithm_common.h"
-#include "deserialized_display_parameter.h"
 
 namespace OHOS {
 namespace Media {
@@ -34,7 +33,7 @@ public:
     virtual ~ColorSpaceConverterDisplayBase() = default;
     virtual VPEAlgoErrCode Process(const std::shared_ptr<OHOS::Rosen::Drawing::ShaderEffect>& input,
         std::shared_ptr<OHOS::Rosen::Drawing::ShaderEffect>& output,
-        const DeserializedDisplayParameter& parameter) = 0;
+        const ColorSpaceConverterDisplayParameter& parameter) = 0;
 };
 
 using ColorSpaceConverterDisplayCreator = std::function<std::shared_ptr<ColorSpaceConverterDisplayBase>()>;

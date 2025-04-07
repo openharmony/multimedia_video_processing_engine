@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (C) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -38,7 +38,7 @@ public:
         DETAIL_ENH_TYPE_IMAGE = 0,
         DETAIL_ENH_TYPE_VIDEO,
     };
- 
+
     DetailEnhancerBase() = default;
     virtual ~DetailEnhancerBase() = default;
     DetailEnhancerBase(const DetailEnhancerBase&) = delete;
@@ -48,8 +48,10 @@ public:
 
     virtual VPEAlgoErrCode Init() = 0;
     virtual VPEAlgoErrCode Deinit() = 0;
-    virtual VPEAlgoErrCode SetParameter(const DetailEnhancerParameters& parameter, int type, bool flag) = 0;
+    virtual VPEAlgoErrCode SetParameter(const DetailEnhancerParameters& parameter) = 0;
     virtual VPEAlgoErrCode Process(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output) = 0;
+    virtual VPEAlgoErrCode EnableProtection(bool enable) = 0;
+    virtual VPEAlgoErrCode ResetProtectionStatus() = 0;
 };
 
 using DetailEnhancerCreator = std::function<std::shared_ptr<DetailEnhancerBase>()>;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,18 +15,25 @@
 
 #include "vpe_utils_common.h"
 
+#include <fstream>
+#include <memory>
+#include <string>
 #include <unordered_map>
 #include "securec.h"
+#include "algorithm_errors.h"
 #include "algorithm_utils.h"
+#include "image_type.h"
 #include "surface_buffer_impl.h"
 #include "surface_type.h"
 #include "vpe_log.h"
+#include "vpe_model_path.h"
 
 using namespace OHOS;
 using namespace OHOS::Media::VideoProcessingEngine;
 
 namespace {
-const std::map<OHOS::Media::PixelFormat, GraphicPixelFormat> FORMAT_MAP = {
+constexpr int VPE_MODEL_FILE_MAX_SIZE = 20485760;
+const std::unordered_map<OHOS::Media::PixelFormat, GraphicPixelFormat> FORMAT_MAP = {
     { OHOS::Media::PixelFormat::RGBA_8888,  GraphicPixelFormat::GRAPHIC_PIXEL_FMT_RGBA_8888 },
     { OHOS::Media::PixelFormat::BGRA_8888,  GraphicPixelFormat::GRAPHIC_PIXEL_FMT_BGRA_8888 },
     { OHOS::Media::PixelFormat::NV21,       GraphicPixelFormat::GRAPHIC_PIXEL_FMT_YCRCB_420_SP },
@@ -262,4 +269,36 @@ bool VpeUtils::SetSurfaceBufferToPixelMap(const sptr<SurfaceBuffer>& buffer,
         return true;
     }
     return ConvertSurfaceBufferToPixelmap(buffer, pixelmap);
+}
+
+VPEAlgoErrCode VpeUtils::LoadModel(int modelKey, sptr<SurfaceBuffer>& modelBuffer)
+{
+    CHECK_AND_RETURN_RET_LOG(modelKey >= 0 && modelKey < VPE_MODEL_KEY_NUM, VPE_ALGO_ERR_INVALID_VAL,
+        "Invalid input: modelKey is %{public}d(Expected:[0,%{public}d)!", modelKey, VPE_MODEL_KEY_NUM);
+    std::string path = VPE_MODEL_PATHS[modelKey];
+    std::unique_ptr<std::ifstream> fileStream = std::make_unique<std::ifstream>(path, std::ios::binary);
+    CHECK_AND_RETURN_RET_LOG(fileStream->is_open(), VPE_ALGO_ERR_NO_MEMORY, "Failed to open %{public}s!", path.c_str());
+    fileStream->seekg(0, std::ios::end);
+    int fileSize = fileStream->tellg();
+    fileStream->seekg(0, std::ios::beg);
+    CHECK_AND_RETURN_RET_LOG(fileSize > 0 && fileSize <= VPE_MODEL_FILE_MAX_SIZE, VPE_ALGO_ERR_INVALID_VAL,
+        "Invalid input: '%{public}s' size is %{public}d(Expected:(0,%{public}d]!", path.c_str(), fileSize,
+        VPE_MODEL_FILE_MAX_SIZE);
+
+    modelBuffer = SurfaceBuffer::Create();
+    CHECK_AND_RETURN_RET_LOG(modelBuffer != nullptr, VPE_ALGO_ERR_NO_MEMORY,
+        "Failed to create surface buffer for '%{public}s'!", path.c_str());
+    BufferRequestConfig requestCfg;
+    requestCfg.width = fileSize;
+    requestCfg.height = 1;
+    requestCfg.strideAlignment = fileSize;
+    requestCfg.usage = BUFFER_USAGE_CPU_READ | BUFFER_USAGE_CPU_WRITE | BUFFER_USAGE_MEM_DMA;
+    requestCfg.format = GRAPHIC_PIXEL_FMT_YCBCR_420_SP;
+    requestCfg.timeout = 0;
+    CHECK_AND_RETURN_RET_LOG(modelBuffer->Alloc(requestCfg) == GSERROR_OK, VPE_ALGO_ERR_NO_MEMORY,
+        "Failed to alloc surface buffer size:%{public}d for '%{public}s'!", fileSize, path.c_str());
+    fileStream->read(reinterpret_cast<char*>(modelBuffer->GetVirAddr()), fileSize);
+    fileStream->close();
+    VPE_LOGD("Load model '%{public}s' size:%{public}d", path.c_str(), fileSize);
+    return VPE_ALGO_ERR_OK;
 }
