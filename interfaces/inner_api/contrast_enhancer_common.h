@@ -21,12 +21,14 @@
 namespace OHOS {
 namespace Media {
 namespace VideoProcessingEngine {
-enum ContrastEnhancerLevel {
-    CONTRAST_ENHANCER = 0,
+enum ContrastEnhancerType {
+    ADAPTIVE_FOV,
+    INVALID_CONTRAST_ENHANCER_TYPE,
 };
 
 struct ContrastEnhancerParameters {
     std::string uri{};
+    ContrastEnhancerType type{INVALID_CONTRAST_ENHANCER_TYPE};
 };
 } // namespace VideoProcessingEngine
 } // namespace Media

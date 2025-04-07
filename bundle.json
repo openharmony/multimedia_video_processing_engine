@@ -38,13 +38,14 @@
         "safwk",
         "samgr",
         "eventhandler",
+        "libxml2",
+        "skia",
+        "egl",
+        "opengles",
         "bounds_checking_function",
         "opencl-headers"
       ],
       "third_party": [
-        "skia",
-        "egl",
-        "opengles"
       ]
     },
     "build": {
@@ -75,12 +76,23 @@
           }
         },
         {
-          "name": "//foundation/multimedia/video_processing_engine/services:videoprocessingservice_idl_headers",
+          "type": "so",
+          "name": "//foundation/multimedia/video_processing_engine/services:videoprocessingservice",
           "header": {
             "header_files": [
-              "video_processing_service_manager_proxy.h"
+              "video_processing_client.h"
             ],
-            "header_base": "//foundation/multimedia/video_processing_engine/services"
+            "header_base": "//foundation/multimedia/video_processing_engine/services/include"
+          }
+        },
+        {
+          "type": "so",
+          "name": "//foundation/multimedia/video_processing_engine/services:videoprocessingserviceimpl",
+          "header": {
+            "header_files": [
+              "ivideo_processing_algorithm.h"
+            ],
+            "header_base": "//foundation/multimedia/video_processing_engine/services/algorithm/include"
           }
         },
         {
@@ -135,7 +147,8 @@
       "test": [
         "//foundation/multimedia/video_processing_engine/test:demo_test",
         "//foundation/multimedia/video_processing_engine/test:unit_test",
-        "//foundation/multimedia/video_processing_engine/test:module_test"
+        "//foundation/multimedia/video_processing_engine/test:module_test",
+        "//foundation/multimedia/video_processing_engine/test:fuzz_test"
       ]
     }
   }

@@ -28,6 +28,7 @@ declare_args() {
   metadata_gen_video_ndk_unit_test = true
   video_variable_refreshrate_unit_test = true
   aihdr_enhancer_video_unit_test = true
+  service_unit_test = true
   aihdr_enhancer_unit_test = true
 }
 
@@ -48,6 +49,7 @@ if (defined(global_parts_info) &&
   video_variable_refreshrate_unit_test = false
   aihdr_enhancer_video_unit_test = false
   aihdr_enhancer_unit_test = false
+  service_unit_test = false
 }
 
 group("demo_test") {
@@ -94,8 +96,14 @@ group("unit_test") {
   if (aihdr_enhancer_video_unit_test) {
     deps += [ "unittest/aihdr_enhancer_video:aihdr_enhancer_video_unit_test" ]
   }
+  if (service_unit_test) {
+    deps += [ "unittest/service:services_test" ]
+  }
   if (aihdr_enhancer_unit_test) {
     deps += [ "unittest/aihdr_enhancer_video:aihdr_enhancer_video_unit_test" ]
+  }
+  if (contrast_enhancer_unit_test) {
+    deps += [ "unittest/contrast_enhancer:contrast_enhancer_unit_test" ]
   }
 }
 
@@ -108,6 +116,16 @@ group("module_test") {
       "moduletest/colorspace_converter_video:colorspace_converter_video_module_test",
       "moduletest/metadata_generator:metadata_generator_module_test",
       "moduletest/metadata_generator_video:metadata_generator_video_module_test",
+    ]
+  }
+}
+
+group("fuzz_test") {
+  testonly = true
+  deps = []
+  if (services_fuzzer_test) {
+    deps += [
+       "fuzztest/services_fuzzer:ServicesFuzzTest",
     ]
   }
 }

@@ -19,7 +19,7 @@
 namespace OHOS::Media::VideoProcessingEngine::Extension {
 using RegisterExtensionFunc = void (*)(uintptr_t extensionListAddr);
 const std::unordered_map<std::string, RegisterExtensionFunc> staticExtensionsRegisterMap = {
-    { "Skia", RegisterSkiaExtensions },
+    {"Skia", RegisterSkiaExtensions},
 };
 } // namespace OHOS::Media::VideoProcessingEngine::Extension
 

@@ -222,7 +222,7 @@ sptr<Surface> MetadataGeneratorVideoImpl::CreateInputSurface()
     sptr<Surface> producerSurface = Surface::CreateSurfaceAsProducer(producer);
     CHECK_AND_RETURN_RET_LOG(producerSurface != nullptr, nullptr, "CreateSurfaceAsProducer fail");
     producerSurface->SetDefaultUsage(BUFFER_USAGE_CPU_READ | BUFFER_USAGE_CPU_WRITE | BUFFER_USAGE_HW_RENDER |
-        BUFFER_USAGE_MEM_DMA | BUFFER_USAGE_MEM_MMZ_CACHE);
+        BUFFER_USAGE_MEM_DMA);
     inputSurface_->SetQueueSize(inBufferCnt_);
     state_ = VPEAlgoState::CONFIGURING;
 
@@ -259,7 +259,10 @@ int32_t MetadataGeneratorVideoImpl::Prepare()
 
 void MetadataGeneratorVideoImpl::InitBuffers()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    if (!isRunning_.load()) {
+        VPE_LOGD("Skip when died.");
+        return;
+    }
     CHECK_AND_RETURN_LOG(outputSurface_ != nullptr, "outputSurface_ is nullptr");
     flushCfg_.damage.x = 0;
     flushCfg_.damage.y = 0;
@@ -327,8 +330,8 @@ int32_t MetadataGeneratorVideoImpl::Reset()
 
 int32_t MetadataGeneratorVideoImpl::Release()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
     {
+        std::lock_guard<std::mutex> lock(mutex_);
         std::unique_lock<std::mutex> lockTask(mtxTaskDone_);
         state_ = VPEAlgoState::UNINITIALIZED;
         cvTaskDone_.wait(lockTask, [this]() { return isProcessing_.load() == false; });
@@ -393,6 +396,7 @@ void MetadataGeneratorVideoImpl::Process(std::shared_ptr<SurfaceBufferWrapper> i
     outputBuffer->timestamp = inputBuffer->timestamp;
     sptr<SurfaceBuffer> surfaceInputBuffer = inputBuffer->memory;
     sptr<SurfaceBuffer> surfaceOutputBuffer = outputBuffer->memory;
+    surfaceInputBuffer->InvalidateCache();
     bool copyRet = AlgorithmUtils::CopySurfaceBufferToSurfaceBuffer(surfaceInputBuffer, surfaceOutputBuffer);
     if (!copyRet) {
         requestCfg_.width = surfaceInputBuffer->GetWidth();
@@ -433,6 +437,7 @@ bool MetadataGeneratorVideoImpl::WaitProcessing()
     {
         std::unique_lock<std::mutex> lock(mtxTaskStart_);
         cvTaskStart_.wait(lock, [this]() {
+            std::lock_guard<std::mutex> lock(mutex_);
             std::lock_guard<std::mutex> inQueueLock(onBqMutex_);
             std::lock_guard<std::mutex> outQueueLock(renderQueMutex_);
             if (initBuffer_.load()) {
@@ -597,6 +602,10 @@ GSError MetadataGeneratorVideoImpl::OnProducerBufferReleased()
 
 GSError MetadataGeneratorVideoImpl::OnConsumerBufferAvailable()
 {
+    if (!isRunning_.load()) {
+        VPE_LOGD("Skip when died.");
+        return GSERROR_OK;
+    }
     std::lock_guard<std::mutex> lock(mutex_);
     std::lock_guard<std::mutex> lockInQue(onBqMutex_);
     CHECK_AND_RETURN_RET_LOG(inputSurface_ != nullptr, GSERROR_OK, "inputSurface is nullptr");
@@ -607,6 +616,10 @@ GSError MetadataGeneratorVideoImpl::OnConsumerBufferAvailable()
     if (err != GSERROR_OK || buffer->memory == nullptr) {
         VPE_LOGW("AcquireBuffer failed, GSError=%{public}d", err);
         return err;
+    }
+    constexpr uint32_t waitForEver = -1; // wait fence -1
+    if (buffer->fence != nullptr) {
+        (void)buffer->fence->Wait(waitForEver);
     }
     inputBufferAvilQue_.push(buffer);
 

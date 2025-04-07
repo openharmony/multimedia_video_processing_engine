@@ -85,7 +85,7 @@ public:
      * @return 返回错误码VPEAlgoErrCode
      * @since 16
      */
-    virtual VPEAlgoErrCode UpdateMetadataBasedOnDetail(OHOS::Rect displayArea, OHOS::Rect curPixelmapArea,
+    virtual VPEAlgoErrCode UpdateMetadataBasedOnPixel(OHOS::Rect displayArea, OHOS::Rect curPixelmapArea,
         OHOS::Rect completePixelmapArea, sptr<SurfaceBuffer> surfaceBuffer, float fullRatio) = 0;
 
     /**
@@ -98,8 +98,8 @@ public:
      * @return 返回错误码VPEAlgoErrCode
      * @since 16
      */
-    virtual VPEAlgoErrCode UpdateMetadataBasedOnLcd(OHOS::Rect displayArea, int lcdWidth, int lcdHeight,
-        sptr<SurfaceBuffer> surfaceBuffer) = 0;
+    virtual VPEAlgoErrCode UpdateMetadataBasedOnHist(OHOS::Rect displayArea, sptr<SurfaceBuffer> surfaceBuffer,
+        std::tuple<int, int, double, double, double, int> pixelmapInfo) = 0;
 
 protected:
     ContrastEnhancerImage() = default;

@@ -171,7 +171,7 @@ HWTEST_F(CscvDemoTest, DEMO_RUN_TEST, TestSize.Level1)
     GraphicPixelFormat surfacePixelFmt = GRAPHIC_PIXEL_FMT_YCBCR_P010;
     requestCfg_.format = surfacePixelFmt;
     requestCfg_.usage = BUFFER_USAGE_CPU_READ | BUFFER_USAGE_CPU_WRITE
-        | BUFFER_USAGE_HW_RENDER | BUFFER_USAGE_HW_TEXTURE;
+        | BUFFER_USAGE_HW_RENDER | BUFFER_USAGE_HW_TEXTURE | BUFFER_USAGE_MEM_MMZ_CACHE;
     requestCfg_.width = DEFAULT_WIDTH;
     requestCfg_.height = DEFAULT_HEIGHT;
     requestCfg_.timeout = 0;

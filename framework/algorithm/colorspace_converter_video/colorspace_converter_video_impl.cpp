@@ -414,7 +414,10 @@ void GetFormatFromSurfaceBuffer(Format &outputFormat, sptr<SurfaceBuffer> &buffe
 
 void ColorSpaceConverterVideoImpl::InitBuffers()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    if (!isRunning_.load()) {
+        VPE_LOGD("Skip when died.");
+        return;
+    }
     CHECK_AND_RETURN_LOG(outputSurface_ != nullptr, "outputSurface_ is nullptr");
     flushCfg_.damage.x = 0;
     flushCfg_.damage.y = 0;
@@ -490,8 +493,8 @@ int32_t ColorSpaceConverterVideoImpl::Reset()
 
 int32_t ColorSpaceConverterVideoImpl::Release()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
     {
+        std::lock_guard<std::mutex> lock(mutex_);
         std::unique_lock<std::mutex> lockTask(mtxTaskDone_);
         state_ = VPEAlgoState::UNINITIALIZED;
         cvTaskDone_.wait(lockTask, [this]() { return isProcessing_.load() == false; });
@@ -633,6 +636,7 @@ bool ColorSpaceConverterVideoImpl::WaitProcessing()
     {
         std::unique_lock<std::mutex> lock(mtxTaskStart_);
         cvTaskStart_.wait(lock, [this]() {
+            std::lock_guard<std::mutex> lock(mutex_);
             std::lock_guard<std::mutex> inQueueLock(onBqMutex_);
             std::lock_guard<std::mutex> outQueueLock(renderQueMutex_);
             if (initBuffer_.load()) {
@@ -802,6 +806,10 @@ GSError ColorSpaceConverterVideoImpl::OnProducerBufferReleased()
 
 GSError ColorSpaceConverterVideoImpl::OnConsumerBufferAvailable()
 {
+    if (!isRunning_.load()) {
+        VPE_LOGD("Skip when died.");
+        return GSERROR_OK;
+    }
     std::lock_guard<std::mutex> lock(mutex_);
     std::lock_guard<std::mutex> lockInQue(onBqMutex_);
     CHECK_AND_RETURN_RET_LOG(inputSurface_ != nullptr, GSERROR_OK, "inputSurface is nullptr");

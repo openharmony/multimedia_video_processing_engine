@@ -27,11 +27,18 @@ using namespace std::chrono_literals;
 namespace {
 constexpr int MAX_TARGET_WIDTH = 2000;
 constexpr int MAX_TARGET_HEIGHT = 2000;
+constexpr int MIN_SOURCE_WIDTH = 320;
+constexpr int MIN_SOURCE_HEIGHT = 320;
 } // namespace
 
 std::shared_ptr<VpeVideoImpl> DetailEnhancerVideoFwk::Create()
 {
-    auto obj = std::make_shared<DetailEnhancerVideoFwk>(VIDEO_TYPE_DETAIL_ENHANCER);
+    return CreateEx(true);
+}
+
+std::shared_ptr<VpeVideoImpl> DetailEnhancerVideoFwk::CreateEx(bool disable)
+{
+    auto obj = std::make_shared<DetailEnhancerVideoFwk>(VIDEO_TYPE_DETAIL_ENHANCER, disable);
     CHECK_AND_RETURN_RET_LOG(obj != nullptr, nullptr, "Failed to create detail enhancer!");
     CHECK_AND_RETURN_RET_LOG(obj->Initialize() == VPE_ALGO_ERR_OK, nullptr, "Failed to initialize detail enhancer!");
     return obj;
@@ -69,7 +76,7 @@ VPEAlgoErrCode DetailEnhancerVideoFwk::OnInitialize()
 {
     detailEnh_ = DetailEnhancerImage::Create(VIDEO);
     CHECK_AND_RETURN_RET_LOG(detailEnh_ != nullptr, VPE_ALGO_ERR_UNKNOWN, "Failed to create DetailEnhancer!");
-    return VPE_ALGO_ERR_OK;
+    return detailEnh_->EnableProtection(isAutoDisable_);
 }
 
 VPEAlgoErrCode DetailEnhancerVideoFwk::OnDeinitialize()
@@ -107,9 +114,28 @@ VPEAlgoErrCode DetailEnhancerVideoFwk::Process(const sptr<SurfaceBuffer>& source
     return ret;
 }
 
+VPEAlgoErrCode DetailEnhancerVideoFwk::ResetAfterDisable()
+{
+    CHECK_AND_RETURN_RET_LOG(IsInitialized(), VPE_ALGO_ERR_INVALID_OPERATION, "NOT initialized!");
+    return detailEnh_->ResetProtectionStatus();
+}
+
+bool DetailEnhancerVideoFwk::IsDisableAfterProcessFail()
+{
+    return isAutoDisable_;
+}
+
 bool DetailEnhancerVideoFwk::IsProducerSurfaceValid([[maybe_unused]] const sptr<Surface>& surface)
 {
     // Check resolution for detail enhancer is valid or not
+    return true;
+}
+
+bool DetailEnhancerVideoFwk::IsConsumerBufferValid(const sptr<SurfaceBuffer>& buffer)
+{
+    CHECK_AND_RETURN_RET_LOG(buffer != nullptr, false, "buffer is null!");
+    CHECK_AND_RETURN_RET_LOG(buffer->GetWidth() > MIN_SOURCE_WIDTH && buffer->GetHeight() > MIN_SOURCE_HEIGHT, false,
+        "Invalid input: %{public}dx%{public}d!", buffer->GetWidth(), buffer->GetHeight());
     return true;
 }
 
@@ -144,8 +170,10 @@ void DetailEnhancerVideoFwk::UpdateRequestCfg(const sptr<SurfaceBuffer>& consume
         requestCfg.width = size_.width;
         requestCfg.height = size_.height;
     } else {
-        requestCfg.width = consumerBuffer->GetWidth();
-        requestCfg.height = consumerBuffer->GetHeight();
+        if (requestCfg.width == 0 || requestCfg.height == 0) {
+            requestCfg.width = consumerBuffer->GetWidth();
+            requestCfg.height = consumerBuffer->GetHeight();
+        }
     }
     requestCfg.format = consumerBuffer->GetFormat();
 }

@@ -36,19 +36,20 @@ public:
     VPEAlgoErrCode SetParameter(const ContrastEnhancerParameters& parameter) override;
     VPEAlgoErrCode GetParameter(ContrastEnhancerParameters& parameter) const override;
     VPEAlgoErrCode GetRegionHist(const sptr<SurfaceBuffer>& input) override;
-    VPEAlgoErrCode UpdateMetadataBasedOnLcd(OHOS::Rect displayArea, int lcdWidth, int lcdHeight,
-        sptr<SurfaceBuffer> surfaceBuffer) override;
-    VPEAlgoErrCode UpdateMetadataBasedOnDetail(OHOS::Rect displayArea, OHOS::Rect curPixelmapArea,
+    VPEAlgoErrCode UpdateMetadataBasedOnHist(OHOS::Rect displayArea, sptr<SurfaceBuffer> surfaceBuffer,
+        std::tuple<int, int, double, double, double, int> pixelmapInfo) override;
+    VPEAlgoErrCode UpdateMetadataBasedOnPixel(OHOS::Rect displayArea, OHOS::Rect curPixelmapArea,
         OHOS::Rect completePixelmapArea, sptr<SurfaceBuffer> surfaceBuffer, float fullRatio) override;
 private:
-    std::shared_ptr<ContrastEnhancerBase> GetAlgorithm(int feature);
-    std::shared_ptr<ContrastEnhancerBase> CreateAlgorithm(int feature);
+    std::shared_ptr<ContrastEnhancerBase> GetAlgorithm(ContrastEnhancerType feature);
+    std::shared_ptr<ContrastEnhancerBase> CreateAlgorithm(ContrastEnhancerType feature);
     bool IsValidProcessedObject(const sptr<SurfaceBuffer>& buffer);
 
     ContrastEnhancerParameters parameter_{};
     mutable std::mutex lock_{};
     std::mutex getAlgoLock_{};
-    std::unordered_map<int, std::shared_ptr<ContrastEnhancerBase>> algorithms_{};
+    std::unordered_map<ContrastEnhancerType, std::shared_ptr<ContrastEnhancerBase>> algorithms_{};
+    std::atomic<int> failureCount_{};
 };
 } // namespace VideoProcessingEngine
 } // namespace Media

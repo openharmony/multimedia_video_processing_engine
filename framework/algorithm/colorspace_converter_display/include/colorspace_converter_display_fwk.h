@@ -37,12 +37,6 @@ public:
         const ColorSpaceConverterDisplayParameter& parameter) override;
 private:
     VPEAlgoErrCode Init();
-    void DeserializeDisplayParameter(const ColorSpaceConverterDisplayParameter& parameter,
-                                     DeserializedDisplayParameter& deserialzed);
-    void DeserializeStaticMetadata(const ColorSpaceConverterDisplayParameter& parameter,
-                                   DeserializedDisplayParameter& deserialzed);
-    void DeserializeDynamicMetadata(const ColorSpaceConverterDisplayParameter& parameter,
-                                    DeserializedDisplayParameter& deserialzed);
 
     std::set<std::shared_ptr<ColorSpaceConverterDisplayBase>> impl_;
     std::atomic<bool> initialized_ {false};

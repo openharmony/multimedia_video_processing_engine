@@ -19,6 +19,7 @@ import("//foundation/multimedia/video_processing_engine/config.gni")
 group("video_processing_service_group") {
   deps = [
     ":videoprocessingservice",
+    ":videoprocessingserviceimpl",
     "sa_profile:video_processing_service",
     "sa_profile:video_processing_service_etc"
   ]
@@ -48,9 +49,21 @@ config("videoprocessingservice_config") {
   }
 }
 
-ohos_shared_library("videoprocessingservice") {
+config("videoprocessingservice_export_config") {
+  include_dirs = [
+    "$ALGORITHM_COMMON_DIR/include",
+    "$ALGORITHM_EXTENSION_MANAGER_DIR/include",
+    "$DFX_DIR/include",
+    "$INTERFACES_INNER_API_DIR",
+    "$SERVICES_DIR/algorithm/include/",
+    "$SERVICES_DIR/utils/include/",
+    "${target_gen_dir}",
+  ]
+}
+
+ohos_shared_library("videoprocessingserviceimpl") {
   install_enable = true
-  
+
   sanitize = {
     boundary_sanitize = true
     cfi = true
@@ -61,40 +74,90 @@ ohos_shared_library("videoprocessingservice") {
   }
 
   configs = [ ":videoprocessingservice_config" ]
+  public_configs = [ ":videoprocessingservice_export_config" ]
+
+  sources = [
+    # common for VPE
+    "$ALGORITHM_COMMON_DIR/vpe_utils_common.cpp",
+    "$DFX_DIR/vpe_trace.cpp",
+    # Only for service
+    "algorithm/video_processing_algorithm_base.cpp",
+    "algorithm/video_processing_algorithm_factory.cpp",
+    "algorithm/video_processing_algorithm_without_data.cpp",
+    "utils/configuration_helper.cpp",
+    "utils/surface_buffer_info.cpp",
+    "utils/vpe_sa_utils.cpp",
+  ]
+  defines = [ "AMS_LOG_TAG = \"VideoProcessingService\"" ]
+
+  include_dirs = [
+    "include",
+    "${target_gen_dir}",
+  ]
+
+  external_deps = [
+    "c_utils:utils",
+    "graphic_2d:2d_graphics",
+    "graphic_surface:surface",
+    "hilog:libhilog",
+    "hitrace:hitrace_meter",
+    "image_framework:image_native",
+    "image_framework:pixelmap",
+    "libxml2:libxml2",
+    "media_foundation:media_foundation",
+  ]
+  subsystem_name = "multimedia"
+  part_name = "video_processing_engine"
+}
+
+ohos_shared_library("videoprocessingservice") {
+  install_enable = true
+
+  sanitize = {
+    boundary_sanitize = true
+    cfi = true
+    cfi_cross_dso = true
+    integer_overflow = true
+    ubsan = true
+    debug = false
+  }
+
+  shlib_type = "sa"
+
+  configs = [ ":videoprocessingservice_config" ]
+  public_configs = [ ":videoprocessingservice_export_config" ]
+
   output_values = get_target_outputs(":videoprocessingservice_interface")
   sources = [
-    "src/surface_buffer_info.cpp",
     "src/video_processing_server.cpp",
-    "src/event_handler_factory.cpp",
   ]
   sources += filter_include(output_values, [ "*.cpp" ])
   defines = [ "AMS_LOG_TAG = \"VideoProcessingService\"" ]
 
   include_dirs = [
     "include",
-    "${target_gen_dir}",
-    "//foundation/multimedia/video_processing_engine/framework/dfx/include"
+    "${target_gen_dir}"
   ]
 
   deps = [
     ":videoprocessingservice_interface",
+    ":videoprocessingserviceimpl",
   ]
 
   external_deps = [
     "c_utils:utils",
+    "eventhandler:libeventhandler",
+    "graphic_2d:2d_graphics",
+    "graphic_surface:surface",
     "hilog:libhilog",
     "hitrace:hitrace_meter",
+    "image_framework:image_native",
+    "image_framework:pixelmap",
     "ipc:ipc_single",
-    "graphic_surface:surface",
+    "media_foundation:media_foundation",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
-    "eventhandler:libeventhandler",
   ]
   subsystem_name = "multimedia"
   part_name = "video_processing_engine"
-}
-
-group("videoprocessingservice_idl_headers") {
-  public_configs = [ ":videoprocessingservice_config" ]
-  deps = [ ":videoprocessingservice_interface" ]
 }

@@ -151,7 +151,7 @@ void MdgDemoTest::InitCfg(BufferRequestConfig &requestCfg, BufferFlushConfig &fl
     GraphicPixelFormat surfacePixelFmt = GRAPHIC_PIXEL_FMT_YCBCR_P010;
     requestCfg.format = surfacePixelFmt;
     requestCfg.usage = BUFFER_USAGE_CPU_READ | BUFFER_USAGE_CPU_WRITE
-        | BUFFER_USAGE_HW_RENDER | BUFFER_USAGE_HW_TEXTURE;
+        | BUFFER_USAGE_HW_RENDER | BUFFER_USAGE_HW_TEXTURE | BUFFER_USAGE_MEM_MMZ_CACHE;
     requestCfg.width = DEFAULT_WIDTH;
     requestCfg.height = DEFAULT_HEIGHT;
     requestCfg.timeout = 0;

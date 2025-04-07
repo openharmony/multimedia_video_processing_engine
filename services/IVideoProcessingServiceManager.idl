@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,6 +14,18 @@
  */
 
 sequenceable SurfaceBufferInfo..OHOS.SurfaceBufferInfo;
+
 interface OHOS.IVideoProcessingServiceManager {
     void LoadInfo([in] int key, [out] SurfaceBufferInfo bufferInfo);
+
+    void Create([in] String feature, [in] String clientName, [out] int clientID);
+    void Destroy([in] int clientID);
+    void SetParameter([in] int clientID, [in] int tag, [in] unsigned char[] parameter);
+    void GetParameter([in] int clientID, [in] int tag, [inout] unsigned char[] parameter);
+    void UpdateMetadata([in] int clientID, [inout] SurfaceBufferInfo image);
+    void Process([in] int clientID, [in] SurfaceBufferInfo input, [inout] SurfaceBufferInfo output);
+    void ComposeImage([in] int clientID, [in] SurfaceBufferInfo inputSdrImage, [in] SurfaceBufferInfo inputGainmap,
+        [inout] SurfaceBufferInfo outputHdrImage, [in] boolean legacy);
+    void DecomposeImage([in] int clientID, [in] SurfaceBufferInfo inputImage, [inout] SurfaceBufferInfo outputSdrImage,
+        [inout] SurfaceBufferInfo outputGainmap);
 }

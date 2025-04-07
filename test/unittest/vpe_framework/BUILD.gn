@@ -54,7 +54,7 @@ ohos_unittest("vpe_framework_unit_test") {
     "graphic_surface:surface",
     "hilog:libhilog",
     "hitrace:hitrace_meter",
-    "drivers_interface_display:display_commontype_idl_headers",
+    "drivers_interface_display:libdisplay_commontype_proxy_2.1",
   ]
 
   subsystem_name = "multimedia"

@@ -27,7 +27,6 @@
 #include "log_tags.h"
 #include "media_errors.h"
 #include "memory_manager.h"
-#include "native_avformat.h"
 #include "pixelmap_native_impl.h"
 #include "pixelmap_native.h"
 #include "vpe_utils.h"
@@ -106,7 +105,6 @@ napi_value DetailEnhanceNapi::Init(napi_env env, napi_callback_info info)
     DetailEnhancerParameters param {
         .uri = "",
         .level = static_cast<DetailEnhancerLevel>(DETAIL_ENH_LEVEL_HIGH),
-        .forceEve = 1,
     };
     if (mDetailEnh->SetParameter(param)!= VPE_ALGO_ERR_OK) {
         printf("Init failed!");

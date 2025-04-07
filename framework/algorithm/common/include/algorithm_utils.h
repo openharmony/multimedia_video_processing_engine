@@ -21,6 +21,7 @@
 #include "algorithm_errors.h"
 #include "algorithm_video_common.h"
 #include "surface_buffer.h"
+#include "graphic_common_c.h"
 
 #define VPE_TO_STR(val) (std::string(#val) + "(" + std::to_string(static_cast<int>(val)) + ")")
 
@@ -29,6 +30,7 @@ namespace Media {
 namespace VideoProcessingEngine {
 class AlgorithmUtils {
 public:
+    static std::string ToString(GSError errorCode);
     static std::string ToString(VPEAlgoErrCode errorCode);
     static std::string ToString(VPEAlgoState state);
     static bool CopySurfaceBufferToSurfaceBuffer(const sptr<SurfaceBuffer>& srcBuffer,

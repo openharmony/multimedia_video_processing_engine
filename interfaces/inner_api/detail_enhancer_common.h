@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,17 +28,20 @@ enum DetailEnhancerLevel {
      // High gear is the highest gear. If you need to add a higher gear, you should
      // pay attention to the level configuration of the high gear in impl.
     DETAIL_ENH_LEVEL_HIGH,
+    DETAIL_ENH_LEVEL_NUM
 };
 
 enum SourceType {
-    IMAGE = 0,
+    SOURCE_TYPE_INVALID = -1,
+    IMAGE,
     VIDEO,
+    SOURCE_TYPE_NUM
 };
 
 struct DetailEnhancerParameters {
     std::string uri{};
     DetailEnhancerLevel level{DETAIL_ENH_LEVEL_LOW};
-    int forceEve{};
+    int contentId;
 };
 } // namespace VideoProcessingEngine
 } // namespace Media

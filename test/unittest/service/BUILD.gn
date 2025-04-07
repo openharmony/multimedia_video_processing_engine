@@ -1,0 +1,76 @@
+# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/test.gni")
+import("//foundation/multimedia/video_processing_engine/config.gni")
+
+ohos_unittest("services_test") {
+  module_out_path = UNIT_TEST_OUTPUT_PATH
+
+  sanitize = {
+    boundary_sanitize = true
+    cfi = true
+    cfi_cross_dso = true
+    integer_overflow = true
+    ubsan = true
+    debug = false
+  }
+
+  cflags = VIDEO_PROCESSING_ENGINE_CFLAGS
+
+  include_dirs = [
+    "$INTERFACES_DIR/inner_api",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/test/unittest/utils",
+    "$SERVICES_DIR/include/",
+    "$SERVICES_DIR/utils/include/",
+    "${target_gen_dir}/../../../services",
+    "$ALGORITHM_COMMON_DIR/include",
+    "$ALGORITHM_EXTENSION_MANAGER_DIR/include",
+    "$SERVICES_DIR/algorithm/include/",
+    "$SERVICES_DIR/utils/include/",
+  ]
+
+  sources = [ "video_processing_client_test.cpp", 
+              "video_processing_load_callback_test.cpp", 
+              "video_processing_server_test.cpp", 
+              "video_processing_algorithm_factory_test.cpp",
+              "video_processing_algorithm_without_data_test.cpp",
+              "configuration_helper_test.cpp",
+              "surface_buffer_info_test.cpp",
+              "vpe_sa_utils_test.cpp",
+              "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services/src/video_processing_server.cpp"
+            ]
+  deps = [
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services:videoprocessingservice_interface",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services:videoprocessingserviceimpl",
+  ]
+  external_deps = [
+    "video_processing_engine:videoprocessingengine",
+    "video_processing_engine:videoprocessingservice",
+    "c_utils:utils",
+    "eventhandler:libeventhandler",
+    "graphic_2d:2d_graphics",
+    "graphic_surface:surface",
+    "hilog:libhilog",
+    "hitrace:hitrace_meter",
+    "image_framework:image_native",
+    "image_framework:pixelmap",
+    "ipc:ipc_single",
+    "media_foundation:media_foundation",
+    "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
+  ]
+
+  subsystem_name = "multimedia"
+  part_name = "video_processing_engine"
+}

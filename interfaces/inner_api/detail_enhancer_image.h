@@ -73,8 +73,10 @@ public:
      * @return 返回错误码VPEAlgoErrCode
      * @since 12
      */
-    virtual VPEAlgoErrCode Process(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output,
-        bool flag = false) = 0;
+    virtual VPEAlgoErrCode Process(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output) = 0;
+
+    virtual VPEAlgoErrCode EnableProtection(bool enable) = 0;
+    virtual VPEAlgoErrCode ResetProtectionStatus() = 0;
 
 protected:
     DetailEnhancerImage() = default;

@@ -17,6 +17,7 @@
 #define ALGORITHM_VIDEO_IMPL_H
 
 #include <atomic>
+#include <chrono>
 #include <cinttypes>
 #include <condition_variable>
 #include <functional>
@@ -30,9 +31,12 @@
 
 #include "refbase.h"
 #include "surface.h"
+#include "surface_buffer.h"
+#include "sync_fence.h"
 
 #include "algorithm_errors.h"
 #include "algorithm_video.h"
+#include "vpe_log.h"
 
 namespace OHOS {
 namespace Media {
@@ -60,16 +64,23 @@ protected:
     VpeVideoImpl(VpeVideoImpl&&) = delete;
     VpeVideoImpl& operator=(VpeVideoImpl&&) = delete;
 
+    // These funcions may be called by derived class as necessary.
     bool IsInitialized() const;
     VPEAlgoErrCode Initialize();
     VPEAlgoErrCode Deinitialize();
     void RefreshBuffers();
     void OnOutputFormatChanged(const Format& format);
 
+    // These funcions may be overried by derived class as necessary.
     virtual VPEAlgoErrCode OnInitialize();
     virtual VPEAlgoErrCode OnDeinitialize();
     virtual VPEAlgoErrCode Process(const sptr<SurfaceBuffer>& sourceImage, sptr<SurfaceBuffer>& destinationImage);
+    // This function will be called after disable, you may reset such as timeout protection status in derived class.
+    // if you do NOT reset the protection status, the feature may not response properly when user call Enable() again.
+    virtual VPEAlgoErrCode ResetAfterDisable();
+    virtual bool IsDisableAfterProcessFail();
     virtual bool IsProducerSurfaceValid(const sptr<Surface>& surface);
+    virtual bool IsConsumerBufferValid(const sptr<SurfaceBuffer>& buffer);
     virtual VPEAlgoErrCode UpdateRequestCfg(const sptr<Surface>& surface, BufferRequestConfig& requestCfg);
     virtual void UpdateRequestCfg(const sptr<SurfaceBuffer>& consumerBuffer, BufferRequestConfig& requestCfg);
 
@@ -82,8 +93,11 @@ private:
 
     struct SurfaceBufferInfo {
         sptr<SurfaceBuffer> buffer{};
+        sptr<SyncFence> fence{};
         VpeBufferFlag bufferFlag{VPE_BUFFER_FLAG_NONE};
         int64_t timestamp{};
+        bool isFlushed{};
+        std::chrono::time_point<std::chrono::steady_clock> flushedTime{};
     };
 
     class ConsumerListener : public IBufferConsumerListener {
@@ -109,23 +123,27 @@ private:
     GSError OnConsumerBufferAvailable();
     GSError OnProducerBufferReleased();
 
+    bool CheckEnableNotifyStatus(bool isEnable, const std::string& status);
+    VPEAlgoErrCode DisableLocked();
     VPEAlgoErrCode UpdateProducerLocked();
     VPEAlgoErrCode RenderOutputBuffer(uint32_t index, int64_t renderTimestamp, bool render);
     sptr<Surface> CreateConsumerSurfaceLocked();
-    bool RequestBuffer(SurfaceBufferInfo& bufferInfo, GSError& errorCode);
+    bool RequestBuffer(SurfaceBufferInfo& bufferInfo, GSError& errorCode, const LogInfoEx& logInfos);
     void PrepareBuffers();
-    void AttachAndRefreshProducerBuffers(const sptr<Surface>& producer);
-    void AttachBuffers(const sptr<Surface>& producer, std::queue<SurfaceBufferInfo>& bufferQueue);
-    void RefreshProducerBuffers(std::queue<SurfaceBufferInfo>& bufferQueue,
-        std::function<bool(SurfaceBufferInfo&)>&& refresher);
+    bool AttachAndRefreshProducerBuffers(const sptr<Surface>& producer);
+    void AddProducerBuffers(std::queue<SurfaceBufferInfo>& bufferQueue, std::set<uint32_t>& producerBufferIDs);
+    void AddBufferToCache(const SurfaceBufferInfo& bufferInfo);
+    void DelBufferFromCache(const SurfaceBufferInfo& bufferInfo);
+    void CheckAndUpdateProducerCache();
     void ProcessBuffers();
+    bool GetConsumerAndProducerBuffer(SurfaceBufferInfo& srcBufferInfo, SurfaceBufferInfo& dstBufferInfo);
     bool ProcessBuffer(SurfaceBufferInfo& srcBufferInfo, SurfaceBufferInfo& dstBufferInfo);
     void BypassBuffer(SurfaceBufferInfo& srcBufferInfo, SurfaceBufferInfo& dstBufferInfo);
     void OutputBuffer(const SurfaceBufferInfo& bufferInfo, const SurfaceBufferInfo& bufferImage,
-        std::function<void(void)>&& getReadyToRender);
+        std::function<void(void)>&& getReadyToRender, const LogInfo& logInfo);
     void NotifyEnableStatus(uint32_t type, const std::string& status);
     bool PopBuffer(std::queue<SurfaceBufferInfo>& bufferQueue, uint32_t index, SurfaceBufferInfo& bufferInfo,
-        std::function<void(sptr<SurfaceBuffer>&)>&& func);
+        std::function<void(sptr<SurfaceBuffer>&)>&& func, const LogInfoEx& logInfos);
     void PrintBufferSize() const;
     void SetRequestCfgLocked(const sptr<SurfaceBuffer>& buffer);
     bool WaitTrigger();
@@ -136,11 +154,14 @@ private:
     void ClearConsumerLocked(std::queue<SurfaceBufferInfo>& bufferQueue);
     void ClearBufferQueues();
 
-    VPEAlgoErrCode ExecuteWhenIdle(std::function<VPEAlgoErrCode(void)>&& operation, const std::string& errorMessage);
-    VPEAlgoErrCode ExecuteWhenNotIdle(std::function<VPEAlgoErrCode(void)>&& operation, const std::string& errorMessage);
-    VPEAlgoErrCode ExecuteWhenRunning(std::function<VPEAlgoErrCode(void)>&& operation, const std::string& errorMessage);
+    VPEAlgoErrCode ExecuteWhenIdle(std::function<VPEAlgoErrCode(void)>&& operation, const std::string& errorMessage,
+        const LogInfo& logInfo);
+    VPEAlgoErrCode ExecuteWhenNotIdle(std::function<VPEAlgoErrCode(void)>&& operation, const std::string& errorMessage,
+        const LogInfo& logInfo);
+    VPEAlgoErrCode ExecuteWhenRunning(std::function<VPEAlgoErrCode(void)>&& operation, const std::string& errorMessage,
+        const LogInfo& logInfo);
     VPEAlgoErrCode ExecuteWithCheck(std::function<bool(void)>&& checker,
-        std::function<VPEAlgoErrCode(void)>&& operation, const std::string& errorMessage);
+        std::function<VPEAlgoErrCode(void)>&& operation, const std::string& errorMessage, const LogInfo& logInfo);
 
     // Common
     uint32_t type_{};
@@ -149,6 +170,15 @@ private:
     std::condition_variable cvTrigger_{};
     std::condition_variable cvDone_{};
 
+    // [WARNING]
+    // The lock must be held in the following order:
+    //  waitLock_
+    //  lock_
+    //  taskLock_
+    //  producerLock_
+    //  consumerBufferLock_
+    //  bufferLock_
+    mutable std::mutex waitLock_{};
     mutable std::mutex lock_{};
     // Guarded by lock_ begin
     std::atomic<bool> isInitialized_{false};
@@ -184,9 +214,11 @@ private:
 
     mutable std::mutex bufferLock_{};
     // Guarded by bufferLock_ begin
+    std::atomic<bool> needPrepareBuffersForNewProducer_{false};
     std::queue<SurfaceBufferInfo> producerBufferQueue_{};
     std::unordered_map<uint32_t, SurfaceBufferInfo> renderBufferQueue_{};
     std::queue<SurfaceBufferInfo> flushBufferQueue_{};
+    std::unordered_map<uint32_t, SurfaceBufferInfo> producerBufferCache_{};
     std::queue<SurfaceBufferInfo> attachBufferQueue_{};
     std::set<uint32_t> attachBufferIDs_{};
     // Guarded by bufferLock_ end

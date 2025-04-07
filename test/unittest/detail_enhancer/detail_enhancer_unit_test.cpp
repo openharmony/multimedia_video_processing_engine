@@ -970,7 +970,7 @@ HWTEST_F(DetailEnhancerUnitTest, detailenhancer_process_43, TestSize.Level1)
     EXPECT_NE(ret, VPE_ALGO_ERR_OK);
 }
 
-// process NV12 to NV12 input output different width/height ratio, aisr MOVED TO VPE_EXT
+// process NV12 to NV12 input output different width/height ratio, aisr MOVED TO VPE_EXT, unsupport resolution
 HWTEST_F(DetailEnhancerUnitTest, detailenhancer_process_44, TestSize.Level1)
 {
     auto detailEnh = DetailEnhancerImage::Create();
@@ -984,7 +984,7 @@ HWTEST_F(DetailEnhancerUnitTest, detailenhancer_process_44, TestSize.Level1)
     auto input = CreateSurfaceBuffer(DEFAULT_FORMAT_YCBCRSP, 1024, 768);
     auto output = CreateSurfaceBuffer(DEFAULT_FORMAT_YCBCRSP, outputWidth, outputHeight);
     int32_t ret = detailEnh->Process(input, output);
-    EXPECT_EQ(ret, VPE_ALGO_ERR_OK);
+    EXPECT_NE(ret, VPE_ALGO_ERR_OK);
 }
 
 // process NV12 to NV12 input output different width/height ratio, high
@@ -1906,7 +1906,6 @@ HWTEST_F(DetailEnhancerUnitTest, extream_vision_engine_process_25, TestSize.Leve
     DetailEnhancerParameters param {
         .uri = "",
         .level = DETAIL_ENH_LEVEL_HIGH,
-        .forceEve = 1,
     };
     detailEnh->SetParameter(param);
     int32_t inputWidth = 4096;
@@ -1928,7 +1927,6 @@ HWTEST_F(DetailEnhancerUnitTest, extream_vision_engine_process_26, TestSize.Leve
     DetailEnhancerParameters param {
         .uri = "",
         .level = DETAIL_ENH_LEVEL_MEDIUM,
-        .forceEve = 1,
     };
     detailEnh->SetParameter(param);
     int32_t inputWidth = 4096;
@@ -1940,7 +1938,7 @@ HWTEST_F(DetailEnhancerUnitTest, extream_vision_engine_process_26, TestSize.Leve
     auto input = CreateSurfaceBuffer(inputFormat, inputWidth, inputHeight);
     auto output = CreateSurfaceBuffer(outputFormat, outputWidth, outputHeight);
     int32_t ret = detailEnh->Process(input, output);
-    EXPECT_EQ(ret, VPE_ALGO_ERR_OK);
+    EXPECT_NE(ret, VPE_ALGO_ERR_OK);  // medium not support RGB1010102
 }
 
 // check enforce extension extream vision engine, process RGBA1010102, LOW
@@ -1950,7 +1948,6 @@ HWTEST_F(DetailEnhancerUnitTest, extream_vision_engine_process_27, TestSize.Leve
     DetailEnhancerParameters param {
         .uri = "",
         .level = DETAIL_ENH_LEVEL_LOW,
-        .forceEve = 1,
     };
     detailEnh->SetParameter(param);
     int32_t inputWidth = 4096;
@@ -1962,7 +1959,7 @@ HWTEST_F(DetailEnhancerUnitTest, extream_vision_engine_process_27, TestSize.Leve
     auto input = CreateSurfaceBuffer(inputFormat, inputWidth, inputHeight);
     auto output = CreateSurfaceBuffer(outputFormat, outputWidth, outputHeight);
     int32_t ret = detailEnh->Process(input, output);
-    EXPECT_EQ(ret, VPE_ALGO_ERR_OK);
+    EXPECT_NE(ret, VPE_ALGO_ERR_OK); // low not support RGB1010102
 }
 
 // check enforce extension extream vision engine, process RGBA1010102, NONE
@@ -1972,7 +1969,6 @@ HWTEST_F(DetailEnhancerUnitTest, extream_vision_engine_process_28, TestSize.Leve
     DetailEnhancerParameters param {
         .uri = "",
         .level = DETAIL_ENH_LEVEL_NONE,
-        .forceEve = 1,
     };
     detailEnh->SetParameter(param);
     int32_t inputWidth = 4096;
@@ -1984,7 +1980,7 @@ HWTEST_F(DetailEnhancerUnitTest, extream_vision_engine_process_28, TestSize.Leve
     auto input = CreateSurfaceBuffer(inputFormat, inputWidth, inputHeight);
     auto output = CreateSurfaceBuffer(outputFormat, outputWidth, outputHeight);
     int32_t ret = detailEnh->Process(input, output);
-    EXPECT_EQ(ret, VPE_ALGO_ERR_OK);
+    EXPECT_NE(ret, VPE_ALGO_ERR_OK); // none not support RGB1010102
 }
 
 // check extension extream vision engine, process RGBA1010102, HIGH

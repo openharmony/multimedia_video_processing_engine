@@ -18,9 +18,49 @@
 #include <unordered_map>
 #include "securec.h"
 #include "vpe_log.h"
+
+using namespace OHOS;
 using namespace OHOS::Media::VideoProcessingEngine;
 
 namespace {
+const std::unordered_map<GSError, std::string> GSERROR_STR_MAP = {
+    { GSERROR_OK,                              VPE_TO_STR(GSERROR_OK) },
+    { GSERROR_MEM_OPERATION_ERROR,             VPE_TO_STR(GSERROR_MEM_OPERATION_ERROR) },
+    { GSERROR_INVALID_ARGUMENTS,               VPE_TO_STR(GSERROR_INVALID_ARGUMENTS) },
+    { GSERROR_NO_PERMISSION,                   VPE_TO_STR(GSERROR_NO_PERMISSION) },
+    { GSERROR_CONNOT_CONNECT_SAMGR,            VPE_TO_STR(GSERROR_CONNOT_CONNECT_SAMGR) },
+    { GSERROR_CONNOT_CONNECT_SERVER,           VPE_TO_STR(GSERROR_CONNOT_CONNECT_SERVER) },
+    { GSERROR_CONNOT_CONNECT_WESTON,           VPE_TO_STR(GSERROR_CONNOT_CONNECT_WESTON) },
+    { GSERROR_NO_BUFFER,                       VPE_TO_STR(GSERROR_NO_BUFFER) },
+    { GSERROR_NO_ENTRY,                        VPE_TO_STR(GSERROR_NO_ENTRY) },
+    { GSERROR_OUT_OF_RANGE,                    VPE_TO_STR(GSERROR_OUT_OF_RANGE) },
+    { GSERROR_NO_SCREEN,                       VPE_TO_STR(GSERROR_NO_SCREEN) },
+    { GSERROR_NO_BUFFER_READY,                 VPE_TO_STR(GSERROR_NO_BUFFER_READY) },
+    { GSERROR_INVALID_OPERATING,               VPE_TO_STR(GSERROR_INVALID_OPERATING) },
+    { GSERROR_NO_CONSUMER,                     VPE_TO_STR(GSERROR_NO_CONSUMER) },
+    { GSERROR_NOT_INIT,                        VPE_TO_STR(GSERROR_NOT_INIT) },
+    { GSERROR_TYPE_ERROR,                      VPE_TO_STR(GSERROR_TYPE_ERROR) },
+    { GSERROR_DESTROYED_OBJECT,                VPE_TO_STR(GSERROR_DESTROYED_OBJECT) },
+    { GSERROR_CONSUMER_IS_CONNECTED,           VPE_TO_STR(GSERROR_CONSUMER_IS_CONNECTED) },
+    { GSERROR_BUFFER_STATE_INVALID,            VPE_TO_STR(GSERROR_BUFFER_STATE_INVALID) },
+    { GSERROR_BUFFER_IS_INCACHE,               VPE_TO_STR(GSERROR_BUFFER_IS_INCACHE) },
+    { GSERROR_BUFFER_QUEUE_FULL,               VPE_TO_STR(GSERROR_BUFFER_QUEUE_FULL) },
+    { GSERROR_BUFFER_NOT_INCACHE,              VPE_TO_STR(GSERROR_BUFFER_NOT_INCACHE) },
+    { GSERROR_CONSUMER_DISCONNECTED,           VPE_TO_STR(GSERROR_CONSUMER_DISCONNECTED) },
+    { GSERROR_CONSUMER_UNREGISTER_LISTENER,    VPE_TO_STR(GSERROR_CONSUMER_UNREGISTER_LISTENER) },
+    { GSERROR_API_FAILED,                      VPE_TO_STR(GSERROR_API_FAILED) },
+    { GSERROR_INTERNAL,                        VPE_TO_STR(GSERROR_INTERNAL) },
+    { GSERROR_NO_MEM,                          VPE_TO_STR(GSERROR_NO_MEM) },
+    { GSERROR_PROXY_NOT_INCLUDE,               VPE_TO_STR(GSERROR_PROXY_NOT_INCLUDE) },
+    { GSERROR_SERVER_ERROR,                    VPE_TO_STR(GSERROR_SERVER_ERROR) },
+    { GSERROR_ANIMATION_RUNNING,               VPE_TO_STR(GSERROR_ANIMATION_RUNNING) },
+    { GSERROR_HDI_ERROR,                       VPE_TO_STR(GSERROR_HDI_ERROR) },
+    { GSERROR_NOT_IMPLEMENT,                   VPE_TO_STR(GSERROR_NOT_IMPLEMENT) },
+    { GSERROR_NOT_SUPPORT,                     VPE_TO_STR(GSERROR_NOT_SUPPORT) },
+    { GSERROR_BINDER,                          VPE_TO_STR(GSERROR_BINDER) },
+    { GSERROR_EGL_STATE_UNKOWN,                VPE_TO_STR(GSERROR_EGL_STATE_UNKOWN) },
+    { GSERROR_EGL_API_FAILED,                  VPE_TO_STR(GSERROR_EGL_API_FAILED) },
+};
 const std::unordered_map<VPEAlgoErrCode, std::string> ERROR_STR_MAP = {
     { VPE_ALGO_ERR_OK,                          VPE_TO_STR(VPE_ALGO_ERR_OK) },
     { VPE_ALGO_ERR_NO_MEMORY,                   VPE_TO_STR(VPE_ALGO_ERR_NO_MEMORY) },
@@ -46,26 +86,31 @@ const std::unordered_map<VPEAlgoState, std::string> STATE_STR_MAP = {
     { VPEAlgoState::EOS,            VPE_TO_STR(VPEAlgoState::EOS) },
     { VPEAlgoState::ERROR,          VPE_TO_STR(VPEAlgoState::ERROR) },
 };
+
+template <typename T>
+std::string CodeToString(T code, const std::unordered_map<T, std::string>& codeMap, const std::string& name)
+{
+    auto it = codeMap.find(code);
+    if (it == codeMap.end()) [[unlikely]] {
+        return "unknown " + name + "(" + std::to_string(static_cast<int>(code)) + ")";
+    }
+    return it->second;
+}
+} // namespace
+
+std::string AlgorithmUtils::ToString(GSError errorCode)
+{
+    return CodeToString(errorCode, GSERROR_STR_MAP, "GSError");
 }
 
 std::string AlgorithmUtils::ToString(VPEAlgoErrCode errorCode)
 {
-    auto it = ERROR_STR_MAP.find(errorCode);
-    if (it == ERROR_STR_MAP.end()) [[unlikely]] {
-        VPE_LOGE("Invalid error code:%{public}d", errorCode);
-        return "Unsupported error:" + std::to_string(static_cast<int>(errorCode));
-    }
-    return it->second;
+    return CodeToString(errorCode, ERROR_STR_MAP, "VPEAlgoErrCode");
 }
 
 std::string AlgorithmUtils::ToString(VPEAlgoState state)
 {
-    auto it = STATE_STR_MAP.find(state);
-    if (it == STATE_STR_MAP.end()) [[unlikely]] {
-        VPE_LOGE("Invalid state:%{public}d", state);
-        return "Unsupported state:" + std::to_string(static_cast<int>(state));
-    }
-    return it->second;
+    return CodeToString(state, STATE_STR_MAP, "VPEAlgoState");
 }
 
 bool AlgorithmUtils::CopySurfaceBufferToSurfaceBuffer(const sptr<SurfaceBuffer>& srcBuffer,

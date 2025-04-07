@@ -24,6 +24,7 @@
 #include "video_processing_client.h"
 #include "securec.h"
 #include "vpe_log.h"
+#include "vpe_sa_constants.h"
 #include "vpe_trace.h"
 
 namespace {
@@ -40,8 +41,8 @@ constexpr float EPSILON = 1e-6; // extremely small value
 const int MAX_URL_LENGTH = 100;
 const int SUPPORTED_MIN_WIDTH = 32;
 const int SUPPORTED_MIN_HEIGHT = 32;
-const int SUPPORTED_MAX_WIDTH = 8192;
-const int SUPPORTED_MAX_HEIGHT = 8192;
+const int SUPPORTED_MAX_WIDTH = 20000; // 20000 max support width
+const int SUPPORTED_MAX_HEIGHT = 20000; // 20000 max support height
 const int TIMEOUT_THRESHOLD = 10; // 10 millisecond
 const std::unordered_set<int32_t> SUPPORTED_FORMATS = {
     OHOS::GRAPHIC_PIXEL_FMT_BGRA_8888, // BGRA
@@ -82,7 +83,7 @@ DetailEnhancerImageFwk::DetailEnhancerImageFwk(int type)
 
 DetailEnhancerImageFwk::~DetailEnhancerImageFwk()
 {
-    algorithms_.clear();
+    Clear();
     Extension::ExtensionManager::GetInstance().DecreaseInstance();
 }
 
@@ -105,7 +106,15 @@ std::shared_ptr<DetailEnhancerBase> DetailEnhancerImageFwk::GetAlgorithm(int lev
     if (createdImpl != algorithms_.end()) [[likely]] {
         return createdImpl->second;
     }
-    algorithms_[level] = CreateAlgorithm(level);
+    auto algo = CreateAlgorithm(level);
+    if (algo.get() == nullptr) {
+        return nullptr;
+    }
+    VPE_LOGD("level:%d enable:%d", level, enableProtection_);
+    auto ret = algo->EnableProtection(enableProtection_);
+    CHECK_AND_RETURN_RET_LOG(ret == VPE_ALGO_ERR_OK, nullptr,
+        "Failed to EnableProtection(%{public}d) for level:%{pubcli}d ret:%{pubcli}d", enableProtection_, level, ret);
+    algorithms_[level] = algo;
     return algorithms_[level];
 }
 
@@ -114,6 +123,7 @@ std::shared_ptr<DetailEnhancerBase> DetailEnhancerImageFwk::CreateAlgorithm(int 
     auto& manager = Extension::ExtensionManager::GetInstance();
     VPE_SYNC_TRACE;
     std::shared_ptr<DetailEnhancerBase> algoImpl = manager.CreateDetailEnhancer(level);
+    VPE_LOGE("level:%{public}d", level);
     if (algoImpl == nullptr) {
         VPE_LOGE("Extension create failed, get a empty impl, level: %{public}d", level);
         return nullptr;
@@ -132,6 +142,7 @@ VPEAlgoErrCode DetailEnhancerImageFwk::SetParameter(const DetailEnhancerParamete
     std::lock_guard<std::mutex> lock(lock_);
     parameter_ = parameter;
     parameterUpdated = true;
+    hasParameter_ = true;
     VPE_LOGI("DetailEnhancerImageFwk SetParameter Succeed");
     return VPE_ALGO_ERR_OK;
 }
@@ -176,40 +187,51 @@ int DetailEnhancerImageFwk::EvaluateTargetLevel(const sptr<SurfaceBuffer>& input
 }
 
 VPEAlgoErrCode DetailEnhancerImageFwk::ProcessVideo(const sptr<SurfaceBuffer>& input,
-    const sptr<SurfaceBuffer>& output, bool flag)
+    const sptr<SurfaceBuffer>& output)
 {
     auto algoImpl = GetAlgorithm(DETAIL_ENH_LEVEL_VIDEO);
     if (algoImpl == nullptr) {
         VPE_LOGE("Get Algorithm impl for video failed!");
         return VPE_ALGO_ERR_UNKNOWN;
     }
-    if (parameterUpdated.load() && (algoImpl->SetParameter(parameter_, type_, flag) !=  VPE_ALGO_ERR_OK)) {
+    if (parameterUpdated.load() && (algoImpl->SetParameter(parameter_) !=  VPE_ALGO_ERR_OK)) {
         VPE_LOGE("set parameter failed!");
         return VPE_ALGO_ERR_UNKNOWN;
     } else {
         parameterUpdated = false;
     }
-    if (algoImpl->Process(input, output) != VPE_ALGO_ERR_OK) {
+    UpdateLastAlgorithm(algoImpl);
+    if (ProcessAlgorithm(algoImpl, input, output) != VPE_ALGO_ERR_OK) {
         VPE_LOGE("process video failed");
         return VPE_ALGO_ERR_UNKNOWN;
     }
     return VPE_ALGO_ERR_OK;
 }
 
-VPEAlgoErrCode DetailEnhancerImageFwk::Process(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output,
-    bool flag)
+VPEAlgoErrCode DetailEnhancerImageFwk::Process(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output)
 {
-    CHECK_AND_RETURN_RET_LOG(IsValidProcessedObject(input, output), VPE_ALGO_ERR_INVALID_VAL,
-        "Invalid processd object");
-    VPE_SYNC_TRACE;
-    if (parameter_.forceEve) {
-        auto algoImpl = GetAlgorithm(DETAIL_ENH_LEVEL_HIGH);
-        CHECK_AND_RETURN_RET_LOG(algoImpl != nullptr && algoImpl->SetParameter(parameter_, type_, flag) ==
-            VPE_ALGO_ERR_OK, VPE_ALGO_ERR_UNKNOWN, "set parameter failed!");
-        return algoImpl->Process(input, output);
+    auto err = DoProcess(input, output);
+    if (err != VPE_ALGO_ERR_OK) {
+        std::lock_guard<std::mutex> lock(restoreLock_);
+        if (!needRestore_) {
+            return err;
+        }
+        VPE_LOGD("Clear status to restore algorithms.");
+        Clear();
+        needRestore_ = false;
+        VPE_LOGD("Try to process again.");
+        err = DoProcess(input, output);
+        VPE_LOGD("process return %{public}d", err);
     }
+    return err;
+}
+
+VPEAlgoErrCode DetailEnhancerImageFwk::DoProcess(const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output)
+{
+    CHECK_AND_RETURN_RET_LOG(IsValidProcessedObject(input, output), VPE_ALGO_ERR_INVALID_VAL, "Invalid input!");
+    VPE_SYNC_TRACE;
     if (type_ == VIDEO) {
-        return ProcessVideo(input, output, flag);
+        return ProcessVideo(input, output);
     }
     float widthRatio = static_cast<float>(output->GetWidth()) / static_cast<float>(input->GetWidth());
     float heightRatio = static_cast<float>(output->GetHeight()) / static_cast<float>(input->GetHeight());
@@ -229,11 +251,12 @@ VPEAlgoErrCode DetailEnhancerImageFwk::Process(const sptr<SurfaceBuffer>& input,
         }
         parameter_.level = static_cast<DetailEnhancerLevel>((level == DETAIL_ENH_LEVEL_HIGH_AISR) ?
             DETAIL_ENH_LEVEL_HIGH : level); // map level
-        if (algoImpl->SetParameter(parameter_, type_, flag) !=  VPE_ALGO_ERR_OK) {
+        if (algoImpl->SetParameter(parameter_) !=  VPE_ALGO_ERR_OK) {
             VPE_LOGE("set parameter failed!");
             return VPE_ALGO_ERR_UNKNOWN;
         }
-        if (algoImpl->Process(input, output) == VPE_ALGO_ERR_OK) {
+        UpdateLastAlgorithm(algoImpl);
+        if (ProcessAlgorithm(algoImpl, input, output) == VPE_ALGO_ERR_OK) {
             processSuccessfully = true;
             break;
         } else if (level == DETAIL_ENH_LEVEL_HIGH_AISR) {
@@ -246,6 +269,63 @@ VPEAlgoErrCode DetailEnhancerImageFwk::Process(const sptr<SurfaceBuffer>& input,
         }
     }
     return processSuccessfully ? VPE_ALGO_ERR_OK : VPE_ALGO_ERR_INVALID_VAL;
+}
+
+VPEAlgoErrCode DetailEnhancerImageFwk::EnableProtection(bool enable)
+{
+    std::lock_guard<std::mutex> lock(lock_);
+    VPEAlgoErrCode ret = VPE_ALGO_ERR_OK;
+    for (auto& [level, algo] : algorithms_) {
+        if (algo == nullptr) {
+            VPE_LOGW("Algorithm for level:%{pubcli}d is null!", level);
+            continue;
+        }
+        VPE_LOGD("level:%d enable:%d", level, enable);
+        ret = algo->EnableProtection(enable);
+        if (ret != VPE_ALGO_ERR_OK) {
+            VPE_LOGW("Failed to EnableProtection(%{public}d) for level:%{pubcli}d ret:%{pubcli}d", enable, level, ret);
+        }
+    }
+    enableProtection_ = enable;
+    return ret;
+}
+
+VPEAlgoErrCode DetailEnhancerImageFwk::ResetProtectionStatus()
+{
+    std::lock_guard<std::mutex> lock(lock_);
+    if (lastAlgorithm_ == nullptr) {
+        return VPE_ALGO_ERR_OK;
+    }
+    return lastAlgorithm_->ResetProtectionStatus();
+}
+
+void DetailEnhancerImageFwk::UpdateLastAlgorithm(const std::shared_ptr<DetailEnhancerBase>& algorithm)
+{
+    std::lock_guard<std::mutex> lock(lock_);
+    lastAlgorithm_ = algorithm;
+}
+
+void DetailEnhancerImageFwk::Clear()
+{
+    std::lock_guard<std::mutex> lock(lock_);
+    lastAlgorithm_ = nullptr;
+    algorithms_.clear();
+    if (hasParameter_) {
+        parameterUpdated = true;
+    }
+}
+
+VPEAlgoErrCode DetailEnhancerImageFwk::ProcessAlgorithm(const std::shared_ptr<DetailEnhancerBase>& algo,
+    const sptr<SurfaceBuffer>& input, const sptr<SurfaceBuffer>& output)
+{
+    CHECK_AND_RETURN_RET_LOG(algo != nullptr, VPE_ALGO_ERR_INVALID_VAL, "Invalid input: algorithm is null!");
+    auto err = algo->Process(input, output);
+    if (static_cast<VPEAlgoErrExCode>(err) == VPE_ALGO_ERR_INVALID_CLIENT_ID) {
+        VPE_LOGD("needRestore_ = true");
+        std::lock_guard<std::mutex> lock(restoreLock_);
+        needRestore_ = true;
+    }
+    return err;
 }
 
 int32_t DetailEnhancerCreate(int32_t* instance)

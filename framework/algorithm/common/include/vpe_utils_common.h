@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,10 +13,11 @@
  * limitations under the License.
  */
 
-#ifndef IMAGE_PROCESSING_UTILS_IMPL_H
-#define IMAGE_PROCESSING_UTILS_IMPL_H
+#ifndef VIDEO_PROCESSING_ENGINE_UTILS_H
+#define VIDEO_PROCESSING_ENGINE_UTILS_H
 
-#include "pixelmap_native_impl.h"
+#include "algorithm_errors.h"
+#include "pixel_map.h"
 #include "surface_buffer.h"
 
 namespace OHOS {
@@ -39,9 +40,10 @@ public:
         std::shared_ptr<OHOS::Media::PixelMap>& pixelmap);
     static bool CopyNV12PixelmapToSurfaceBuffer(const std::shared_ptr<OHOS::Media::PixelMap>& pixelmap,
         sptr<SurfaceBuffer>& buffer);
+    static VPEAlgoErrCode LoadModel(int modelKey, sptr<SurfaceBuffer>& modelBuffer);
 };
 } // namespace VideoProcessingEngine
 } // namespace Media
 } // namespace OHOS
- 
-#endif // IMAGE_PROCESSING_UTILS_IMPL_H
+
+#endif // VIDEO_PROCESSING_ENGINE_UTILS_H
