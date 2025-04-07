@@ -30,6 +30,7 @@ declare_args() {
   aihdr_enhancer_video_unit_test = true
   service_unit_test = true
   aihdr_enhancer_unit_test = true
+  contrast_enhancer_unit_test = true
 }
 
 if (defined(global_parts_info) &&
@@ -50,6 +51,7 @@ if (defined(global_parts_info) &&
   aihdr_enhancer_video_unit_test = false
   aihdr_enhancer_unit_test = false
   service_unit_test = false
+  contrast_enhancer_unit_test = false
 }
 
 group("demo_test") {
