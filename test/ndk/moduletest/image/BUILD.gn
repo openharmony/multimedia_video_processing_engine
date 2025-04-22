@@ -1,0 +1,74 @@
+# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/test.gni")
+import("//build/ohos.gni")
+import("//foundation/multimedia/video_processing_engine/config.gni")
+image_moduletest_native_include_dirs = [
+  "$CAPI_DIR",
+  "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/test/moduletest/common",
+]
+
+image_moduletest_cflags = [
+  "-std=c++17",
+  "-fno-rtti",
+  "-fno-exceptions",
+  "-Wall",
+  "-fno-common",
+  "-fstack-protector-strong",
+  "-Wshadow",
+  "-FPIC",
+  "-FS",
+  "-O2",
+  "-D_FORTIFY_SOURCE=2",
+  "-fvisibility=hidden",
+  "-Wformat=2",
+  "-Wdate-time",
+  "-Werror",
+  "-Wextra",
+  "-Wimplicit-fallthrough",
+  "-Wsign-compare",
+  "-Wunused-parameter",
+]
+
+##################################################################################################################
+ohos_unittest("vpe_image_native_module_test") {
+  module_out_path = "video_processing_engine/moduletest"
+  include_dirs = image_moduletest_native_include_dirs
+  include_dirs += ["../common/"]
+  cflags = image_moduletest_cflags
+
+  sources = [
+    "api_test.cpp",
+    "capability_test.cpp"
+  ]
+
+  deps = [
+    "$FRAMEWORK_DIR:image_processing",
+  ]
+
+  external_deps = [
+    "c_utils:utils",
+    "graphic_2d:libgraphic_utils",
+    "graphic_2d:librender_service_client",
+    "graphic_2d:libnative_color_space_manager",
+    "graphic_surface:surface",
+    "hilog:libhilog",
+    "image_framework:pixelmap",
+    "image_framework:image",
+    "ipc:ipc_core",
+  ]
+
+  resource_config_file =
+      "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/test/ndk/moduletest/resources/ohos_test.xml"
+}
