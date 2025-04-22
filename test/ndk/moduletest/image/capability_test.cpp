@@ -250,7 +250,8 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0010, TestSize.Level0)
                                         DISPLAY_P3,
                                         PIXEL_FORMAT_RGBA_8888};
     if (g_suppported) {
-        ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo, &destinationGainmapInfo));
+        ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo,
+            &destinationImageInfo, &destinationGainmapInfo));
     }
 }
 /**
@@ -270,7 +271,8 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0020, TestSize.Level1)
                                         DISPLAY_SRGB,
                                         PIXEL_FORMAT_RGBA_8888};
     if (g_suppported) {
-        ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo, &destinationGainmapInfo));
+        ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo,
+            &destinationImageInfo, &destinationGainmapInfo));
     }
 }
 /**
@@ -290,7 +292,8 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0030, TestSize.Level2)
                                         DISPLAY_P3,
                                         PIXEL_FORMAT_RGBA_8888};
     if (g_suppported) {
-        ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo, &destinationGainmapInfo));
+        ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo,
+            &destinationImageInfo, &destinationGainmapInfo));
     }
 }
 
@@ -311,7 +314,8 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0040, TestSize.Level2)
                                         DISPLAY_SRGB,
                                         PIXEL_FORMAT_RGBA_8888};
     if (g_suppported) {
-        ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo, &destinationGainmapInfo));
+        ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo,
+            &destinationImageInfo, &destinationGainmapInfo));
     }
 }
 
@@ -332,7 +336,8 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0050, TestSize.Level2)
                                         DISPLAY_P3,
                                         PIXEL_FORMAT_RGBA_8888};
     if (g_suppported) {
-        ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo, &destinationGainmapInfo));
+        ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo,
+            &destinationImageInfo, &destinationGainmapInfo));
     }
 }
 
@@ -353,7 +358,8 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0060, TestSize.Level2)
                                         DISPLAY_SRGB,
                                         PIXEL_FORMAT_RGBA_8888};
     if (g_suppported) {
-        ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo, &destinationGainmapInfo));
+        ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo,
+            &destinationImageInfo, &destinationGainmapInfo));
     }
 }
 
@@ -374,7 +380,8 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0070, TestSize.Level0)
                                         DISPLAY_P3,
                                         PIXEL_FORMAT_RGBA_8888};
     if (g_suppported) {
-        ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo, &destinationGainmapInfo));
+        ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo,
+            &destinationImageInfo, &destinationGainmapInfo));
     }
 }
 
@@ -395,7 +402,8 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0080, TestSize.Level1)
                                         DISPLAY_SRGB,
                                         PIXEL_FORMAT_RGBA_8888};
     if (g_suppported) {
-        ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo, &destinationGainmapInfo));
+        ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo,
+            &destinationImageInfo, &destinationGainmapInfo));
     }
 }
 
