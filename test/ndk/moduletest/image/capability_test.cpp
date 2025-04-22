@@ -416,7 +416,8 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0090, TestSize.Level2)
                                         DISPLAY_P3,
                                         PIXEL_FORMAT_RGBA_8888};
     if (g_suppported) {
-        ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, &destinationImageInfo, &destinationGainmapInfo));
+        ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo,
+            &destinationImageInfo, &destinationGainmapInfo));
     }
 }
 
@@ -459,7 +460,7 @@ HWTEST_F(VpeVideoCapTest, COLORSPACE_DECOMPOSE_0110, TestSize.Level2)
                                                             DISPLAY_P3,
                                                             PIXEL_FORMAT_RGBA_8888};
     if (g_suppported) {
-        ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo, 
+        ASSERT_TRUE(OH_ImageProcessing_IsDecompositionSupported(&sourceImageInfo,
             &destinationImageInfo, &destinationGainmapInfo));
     }
 }

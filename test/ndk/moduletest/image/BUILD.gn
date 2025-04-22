@@ -64,8 +64,8 @@ ohos_unittest("vpe_image_native_module_test") {
     "graphic_2d:libnative_color_space_manager",
     "graphic_surface:surface",
     "hilog:libhilog",
-    "image_framework:pixelmap",
     "image_framework:image",
+    "image_framework:pixelmap",
     "ipc:ipc_core",
   ]
 
