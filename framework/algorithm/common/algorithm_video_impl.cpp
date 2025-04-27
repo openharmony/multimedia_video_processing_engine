@@ -81,7 +81,7 @@ VPEAlgoErrCode VpeVideoImpl::SetOutputSurface(const sptr<Surface>& surface)
     std::lock_guard<std::mutex> producerLock(producerLock_);
     if (producer_ != nullptr) {
         if (producer_->GetUniqueId() == surface->GetUniqueId()) {
-            VPE_LOGD("Oops! The same surface(%{public}llu)!", surface->GetUniqueId());
+            VPE_LOGD("Oops! The same surface(%" PRIu64 ")", surface->GetUniqueId());
             return VPE_ALGO_ERR_OK;
         }
         producer_->UnRegisterReleaseListener();
@@ -90,12 +90,12 @@ VPEAlgoErrCode VpeVideoImpl::SetOutputSurface(const sptr<Surface>& surface)
     surface->UnRegisterReleaseListener();
     GSError err = surface->RegisterReleaseListener([this](sptr<SurfaceBuffer>&) { return OnProducerBufferReleased(); });
     CHECK_AND_RETURN_RET_LOG(err == GSERROR_OK, VPE_ALGO_ERR_UNKNOWN, "RegisterReleaseListener failed!");
-    VPE_LOGI("Set output(%{public}llu) buffer queue size to %{public}u", surface->GetUniqueId(), BUFFER_QUEUE_SIZE);
+    VPE_LOGI("Set output(%" PRIu64 ") buffer queue size to %{public}u", surface->GetUniqueId(), BUFFER_QUEUE_SIZE);
     surface->SetQueueSize(BUFFER_QUEUE_SIZE);
     surface->Connect();
     surface->CleanCache();
     CHECK_AND_RETURN_RET_LOG(AttachAndRefreshProducerBuffers(surface), VPE_ALGO_ERR_UNKNOWN,
-        "Failed to attach buffers to new output surface(%{public}llu)!", surface->GetUniqueId());;
+        "Failed to attach buffers to new output surface(%" PRIu64 ")!", surface->GetUniqueId());;
     if (state_.load() != VPEState::IDLE) {
         cvTrigger_.notify_one();
     }
@@ -602,7 +602,7 @@ VPEAlgoErrCode VpeVideoImpl::RenderOutputBuffer(uint32_t index, int64_t renderTi
             std::lock_guard<std::mutex> producerLock(producerLock_);
             CHECK_AND_RETURN_RET_LOG(producer_ != nullptr, VPE_ALGO_ERR_INVALID_OPERATION, "Output surface is null!");
             auto ret = producer_->FlushBuffer(bufferInfo.buffer, -1, flushcfg);
-            VPE_LOGD("producer_(%{public}llu)->FlushBuffer({ %{public}s })=%{public}s flushBQ=%{public}zu",
+            VPE_LOGD("producer_(%" PRIu64 ")->FlushBuffer({ %{public}s })=%{public}s flushBQ=%{public}zu",
                 producer_->GetUniqueId(), ToString(bufferInfo.buffer).c_str(), AlgorithmUtils::ToString(ret).c_str(),
                 flushBufferQueue_.size() + 1);
             if (ret != GSERROR_OK) {
@@ -658,7 +658,7 @@ bool VpeVideoImpl::RequestBuffer(SurfaceBufferInfo& bufferInfo, GSError& errorCo
     CHECK_AND_RETURN_RET_LOG(hasConsumer_.load(), false, "Input surface is null!");
     errorCode = producer_->RequestBuffer(bufferInfo.buffer, bufferInfo.fence, requestCfg_);
     if (errorCode != GSERROR_OK || bufferInfo.buffer == nullptr) {
-        VPE_EX_LOGW(logInfos, "Failed to producer_(%{public}llu)->RequestBuffer(requestCfg={ %{public}s }), "
+        VPE_EX_LOGW(logInfos, "Failed to producer_(%" PRIu64 ")->RequestBuffer(requestCfg={ %{public}s }), "
             "ret:%{public}s", producer_->GetUniqueId(),
             ToString(requestCfg_).c_str(), AlgorithmUtils::ToString(errorCode).c_str());
         return false;
@@ -666,7 +666,7 @@ bool VpeVideoImpl::RequestBuffer(SurfaceBufferInfo& bufferInfo, GSError& errorCo
     producerBufferQueue_.push(bufferInfo);
     AddBufferToCache(bufferInfo);
     if (!isEnable_.load()) {
-        VPE_EX_LOGD(logInfos, "producer_(%{public}llu)->RequestBuffer({ %{public}s }) and try to release.",
+        VPE_EX_LOGD(logInfos, "producer_(%" PRIu64 ")->RequestBuffer({ %{public}s }) and try to release.",
             producer_->GetUniqueId(), ToString(bufferInfo.buffer).c_str());
         auto it = attachBufferIDs_.find(bufferInfo.buffer->GetSeqNum());
         if (it != attachBufferIDs_.end()) {
@@ -680,7 +680,7 @@ bool VpeVideoImpl::RequestBuffer(SurfaceBufferInfo& bufferInfo, GSError& errorCo
                 }, ADD_VPE_LOG_INFO(logInfos));
         }
     } else {
-        VPE_EX_LOGD(logInfos, "producer_(%{public}llu)->RequestBuffer({ %{public}s })", producer_->GetUniqueId(),
+        VPE_EX_LOGD(logInfos, "producer_(%" PRIu64 ")->RequestBuffer({ %{public}s })", producer_->GetUniqueId(),
             ToString(bufferInfo.buffer).c_str());
         if (attachBufferQueue_.empty()) {
             return true;
@@ -723,9 +723,9 @@ bool VpeVideoImpl::AttachAndRefreshProducerBuffers(const sptr<Surface>& producer
     for (auto& [index, bufferInfo] : producerBufferCache_) {
         auto errorCode = producer->AttachBufferToQueue(bufferInfo.buffer);
         CHECK_AND_RETURN_RET_LOG(errorCode == GSERROR_OK, false,
-            "Failed to producer(%{public}llu)->AttachBufferToQueue({ %{public}s })=%{public}s", producer->GetUniqueId(),
+            "Failed to producer(%" PRIu64 ")->AttachBufferToQueue({ %{public}s })=%{public}s", producer->GetUniqueId(),
             ToString(bufferInfo.buffer).c_str(), AlgorithmUtils::ToString(errorCode).c_str());
-        VPE_LOGD("producer(%{public}llu)->AttachBufferToQueue({ %{public}s })", producer->GetUniqueId(),
+        VPE_LOGD("producer(%" PRIu64 ")->AttachBufferToQueue({ %{public}s })", producer->GetUniqueId(),
             ToString(bufferInfo.buffer).c_str());
     }
     std::set<uint32_t> producerBufferIDs{};
@@ -917,7 +917,7 @@ void VpeVideoImpl::BypassBuffer(SurfaceBufferInfo& srcBufferInfo, SurfaceBufferI
         ret1 = producer_->DetachBufferFromQueue(dstBufferInfo.buffer);
         ret2 = producer_->AttachBufferToQueue(srcBufferInfo.buffer);
         SetRequestCfgLocked(srcBufferInfo.buffer);
-        VPE_LOGD("producer_(%{public}llu)->DetachBufferFromQueue({ %{public}s })=%{public}s, "
+        VPE_LOGD("producer_(%" PRIu64 ")->DetachBufferFromQueue({ %{public}s })=%{public}s, "
             "AttachBufferToQueue({ %{public}s })=%{public}s requestCfg:{ %{public}s } ", producer_->GetUniqueId(),
             ToString(dstBufferInfo.buffer).c_str(), AlgorithmUtils::ToString(ret1).c_str(),
             ToString(srcBufferInfo.buffer).c_str(), AlgorithmUtils::ToString(ret2).c_str(),
