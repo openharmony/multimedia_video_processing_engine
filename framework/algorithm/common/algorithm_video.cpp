@@ -53,7 +53,7 @@ std::shared_ptr<VpeVideo> VpeVideo::Create(uint32_t type)
     return it->second();
 }
 
-std::shared_ptr<VpeVideo> VpeVideo::IsSupported(uint32_t type, const Format& parameter)
+bool VpeVideo::IsSupported(uint32_t type, const Format& parameter)
 {
     auto it = g_isSupporteds.find(type);
     if (it == g_isSupporteds.end()) {
