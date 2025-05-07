@@ -56,6 +56,7 @@ enum VpeVideoType : uint32_t {
      * @version 5.1
      */
     VIDEO_TYPE_DETAIL_ENHANCER = 0x4,
+    VIDEO_TYPE_AIHDR_ENHANCER = 0x8,
 };
 
 /**
