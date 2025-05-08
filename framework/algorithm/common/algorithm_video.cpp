@@ -35,6 +35,12 @@ std::unordered_map<uint32_t, std::function<std::shared_ptr<VpeVideo>(void)>> g_c
     { VIDEO_TYPE_DETAIL_ENHANCER, &DetailEnhancerVideoFwk::Create },
     // Feature altorithm header creator end
 };
+
+std::unordered_map<uint32_t, std::function<bool(const OHOS::Media::Format& parameter)>> g_isSupporteds = {
+    // NOTE: Add feature altorithm IsSupported here
+    // Feature altorithm header isSupported begin
+    // Feature altorithm header isSupported end
+};
 }
 
 std::shared_ptr<VpeVideo> VpeVideo::Create(uint32_t type)
@@ -45,6 +51,16 @@ std::shared_ptr<VpeVideo> VpeVideo::Create(uint32_t type)
         return nullptr;
     }
     return it->second();
+}
+
+bool VpeVideo::IsSupported(uint32_t type, const Format& parameter)
+{
+    auto it = g_isSupporteds.find(type);
+    if (it == g_isSupporteds.end()) {
+        VPE_LOGE("Unsupported type: 0x%{public}x", type);
+        return false;
+    }
+    return it->second(parameter);
 }
 
 VPEAlgoErrCode VpeVideo::RegisterCallback([[maybe_unused]] const std::shared_ptr<VpeVideoCallback>& callback)

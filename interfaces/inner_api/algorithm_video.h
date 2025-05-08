@@ -41,6 +41,16 @@ public:
     static std::shared_ptr<VpeVideo> Create(uint32_t type);
 
     /**
+     * @brief Query whether the feature altorithm is supported.
+     * @param type Use VIDEO_TYPE_XXX to specify the processing type. For details, see {@link VpeVideoType}.
+     * @param parameter The parameter of video processing.
+     * @return true if the feature altorithm is supported. false If the feature altorithm is unsupported.
+     * @since 5.1
+     * @version 5.1
+     */
+    static bool IsSupported(uint32_t type, const Format& parameter);
+
+    /**
      * @brief Register callback object.
      * @param callback Callback object to be registered. For details, see {@link VpeVideoCallback}.
      * @return If successful, returns {@link VPE_ALGO_ERR_OK}. On error, retuns an error code.
