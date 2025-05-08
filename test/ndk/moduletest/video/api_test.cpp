@@ -111,6 +111,12 @@ static void OnNewOutputBufferCallback(OH_VideoProcessing* videoProcessor, uint32
     cout << "OnNewOutputBufferCallback" << endl;
 }
 
+#ifdef ENABLE_ALL_PROCESS
+static bool g_suppported = true;
+#else
+static bool g_suppported = false;
+#endif
+
 /**
  * @tc.number    : VPE_VIDEO_API_TEST_0010
  * @tc.name      : first call OH_VideoProcessing_InitializeEnvironment
@@ -193,7 +199,7 @@ HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0070, TestSize.Level0)
 {
     OH_VideoProcessing_InitializeEnvironment();
     bool ret = OH_VideoProcessing_IsColorSpaceConversionSupported(&SRC_INFO, &DST_INFO);
-    if (!access("/system/lib64/", 0)) {
+    if (g_suppported) {
         ASSERT_TRUE(ret);
     } else {
         ASSERT_FALSE(ret);
@@ -221,7 +227,7 @@ HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0090, TestSize.Level0)
 {
     OH_VideoProcessing_InitializeEnvironment();
     bool ret = OH_VideoProcessing_IsMetadataGenerationSupported(&SRC_INFO);
-    if (!access("/system/lib64/", 0)) {
+    if (g_suppported) {
         ASSERT_TRUE(ret);
     } else {
         ASSERT_FALSE(ret);
@@ -280,7 +286,7 @@ HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0130, TestSize.Level0)
     OH_VideoProcessing* videoProcessor = nullptr;
     VideoProcessing_ErrorCode ret = OH_VideoProcessing_Create(&videoProcessor,
         VIDEO_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/", 0)) {
+    if (g_suppported) {
         ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
         OH_VideoProcessing_Destroy(videoProcessor);
     } else {
@@ -311,7 +317,7 @@ HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0150, TestSize.Level0)
     OH_VideoProcessing* videoProcessor = nullptr;
     VideoProcessing_ErrorCode ret = OH_VideoProcessing_Create(&videoProcessor,
         VIDEO_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/", 0)) {
+    if (g_suppported) {
         ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
         ret = OH_VideoProcessing_Destroy(videoProcessor);
         ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
@@ -359,7 +365,7 @@ HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0180, TestSize.Level0)
     OH_VideoProcessing* videoProcessor = nullptr;
     VideoProcessing_ErrorCode ret = OH_VideoProcessing_Create(&videoProcessor,
         VIDEO_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/", 0)) {
+    if (g_suppported) {
         ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
         ret = OH_VideoProcessing_RegisterCallback(videoProcessor, nullptr, nullptr);
         ASSERT_EQ(ret, VIDEO_PROCESSING_ERROR_INVALID_PARAMETER);
@@ -380,7 +386,7 @@ HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0190, TestSize.Level0)
     OH_VideoProcessing* videoProcessor = nullptr;
     VideoProcessing_ErrorCode ret = OH_VideoProcessing_Create(&videoProcessor,
         VIDEO_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/", 0)) {
+    if (g_suppported) {
         ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
         VideoProcessing_Callback* callback = nullptr;
         ret = OH_VideoProcessingCallback_Create(&callback);
@@ -407,7 +413,7 @@ HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0200, TestSize.Level0)
     OH_VideoProcessing* videoProcessor = nullptr;
     VideoProcessing_ErrorCode ret = OH_VideoProcessing_Create(&videoProcessor,
         VIDEO_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/", 0)) {
+    if (g_suppported) {
         ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
         VideoProcessing_Callback* callback = nullptr;
         ret = OH_VideoProcessingCallback_Create(&callback);
@@ -432,7 +438,7 @@ HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0210, TestSize.Level0)
     OH_VideoProcessing* videoProcessor = nullptr;
     VideoProcessing_ErrorCode ret = OH_VideoProcessing_Create(&videoProcessor,
         VIDEO_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/", 0)) {
+    if (g_suppported) {
         ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
         VideoProcessing_Callback* callback = nullptr;
         ret = OH_VideoProcessingCallback_Create(&callback);
@@ -493,7 +499,7 @@ HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0240, TestSize.Level0)
     OH_VideoProcessing* videoProcessor = nullptr;
     VideoProcessing_ErrorCode ret = OH_VideoProcessing_Create(&videoProcessor,
         VIDEO_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/", 0)) {
+    if (g_suppported) {
         ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
         ret = OH_VideoProcessing_SetSurface(videoProcessor, nullptr);
         ASSERT_EQ(ret, VIDEO_PROCESSING_ERROR_INVALID_PARAMETER);
@@ -514,7 +520,7 @@ HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0250, TestSize.Level0)
     OH_VideoProcessing* videoProcessor = nullptr;
     VideoProcessing_ErrorCode ret = OH_VideoProcessing_Create(&videoProcessor,
         VIDEO_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/", 0)) {
+    if (g_suppported) {
         ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
         sptr<Surface> cs = Surface::CreateSurfaceAsConsumer();
         sptr<IBufferConsumerListener> listener = new TestConsumerListener(
@@ -577,7 +583,7 @@ HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0280, TestSize.Level0)
     OH_VideoProcessing* videoProcessor = nullptr;
     VideoProcessing_ErrorCode ret = OH_VideoProcessing_Create(&videoProcessor,
         VIDEO_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/", 0)) {
+    if (g_suppported) {
         ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
         ret = OH_VideoProcessing_GetSurface(videoProcessor, nullptr);
         ASSERT_EQ(ret, VIDEO_PROCESSING_ERROR_INVALID_PARAMETER);
@@ -598,7 +604,7 @@ HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0290, TestSize.Level0)
     OH_VideoProcessing* videoProcessor = nullptr;
     VideoProcessing_ErrorCode ret = OH_VideoProcessing_Create(&videoProcessor,
         VIDEO_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/", 0)) {
+    if (g_suppported) {
         ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
         sptr<Surface> cs = Surface::CreateSurfaceAsConsumer();
         sptr<IBufferConsumerListener> listener = new TestConsumerListener(
@@ -640,7 +646,7 @@ HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0310, TestSize.Level0)
     OH_VideoProcessing* videoProcessor = nullptr;
     VideoProcessing_ErrorCode ret = OH_VideoProcessing_Create(&videoProcessor,
         VIDEO_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/", 0)) {
+    if (g_suppported) {
         ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
         ret = OH_VideoProcessing_Start(videoProcessor);
         ASSERT_EQ(ret, VIDEO_PROCESSING_ERROR_OPERATION_NOT_PERMITTED);
@@ -661,7 +667,7 @@ HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0320, TestSize.Level0)
     OH_VideoProcessing* videoProcessor = nullptr;
     VideoProcessing_ErrorCode ret = OH_VideoProcessing_Create(&videoProcessor,
         VIDEO_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/", 0)) {
+    if (g_suppported) {
         ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
         sptr<Surface> cs = Surface::CreateSurfaceAsConsumer();
         sptr<IBufferConsumerListener> listener = new TestConsumerListener(
@@ -705,7 +711,7 @@ HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0340, TestSize.Level0)
     OH_VideoProcessing* videoProcessor = nullptr;
     VideoProcessing_ErrorCode ret = OH_VideoProcessing_Create(&videoProcessor,
         VIDEO_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/", 0)) {
+    if (g_suppported) {
         ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
         ret = OH_VideoProcessing_Stop(videoProcessor);
         ASSERT_EQ(ret, VIDEO_PROCESSING_ERROR_OPERATION_NOT_PERMITTED);
@@ -726,7 +732,7 @@ HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0350, TestSize.Level0)
     OH_VideoProcessing* videoProcessor = nullptr;
     VideoProcessing_ErrorCode ret = OH_VideoProcessing_Create(&videoProcessor,
         VIDEO_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/", 0)) {
+    if (g_suppported) {
         ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
         sptr<Surface> cs = Surface::CreateSurfaceAsConsumer();
         sptr<IBufferConsumerListener> listener = new TestConsumerListener(
@@ -775,7 +781,7 @@ HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0370, TestSize.Level0)
     OH_VideoProcessing* videoProcessor = nullptr;
     VideoProcessing_ErrorCode ret = OH_VideoProcessing_Create(&videoProcessor,
         VIDEO_PROCESSING_TYPE_METADATA_GENERATION);
-    if (!access("/system/lib64/", 0)) {
+    if (g_suppported) {
         ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
         ret = OH_VideoProcessing_RenderOutputBuffer(videoProcessor, INT_MAX);
         ASSERT_EQ(ret, VIDEO_PROCESSING_ERROR_OPERATION_NOT_PERMITTED);
@@ -1013,7 +1019,7 @@ HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0530, TestSize.Level0)
 }
 
 /**
- * @tc.number    : VPE_VIDEO_API_TEST_05400
+ * @tc.number    : VPE_VIDEO_API_TEST_0540
  * @tc.name      : call OH_VideoProcessing_Create
  * @tc.desc      : function test
  */
@@ -1023,11 +1029,116 @@ HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0540, TestSize.Level0)
     OH_VideoProcessing* videoProcessor = nullptr;
     VideoProcessing_ErrorCode ret = OH_VideoProcessing_Create(&videoProcessor,
         VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION);
-    if (!access("/system/lib64/", 0)) {
+    if (g_suppported) {
         ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
         OH_VideoProcessing_Destroy(videoProcessor);
     } else {
         ASSERT_NE(ret, VIDEO_PROCESSING_SUCCESS);
     }
+}
+
+/**
+ * @tc.number    : VPE_VIDEO_API_TEST_0550
+ * @tc.name      : call OH_VideoProcessing_IsColorSpaceConversionSupported HLG FULL to BT709 Limit NV12
+ * @tc.desc      : function test
+ */
+HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0550, TestSize.Level0)
+{
+    OH_VideoProcessing_InitializeEnvironment();
+    VideoProcessing_ColorSpaceInfo fullInfo = {OH_VIDEO_HDR_VIVID,
+        OH_COLORSPACE_BT2020_HLG_FULL,
+        NATIVEBUFFER_PIXEL_FMT_YCBCR_P010};
+    VideoProcessing_ColorSpaceInfo dstInfo = {OH_VIDEO_NONE,
+            OH_COLORSPACE_BT709_LIMIT,
+            NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP};
+    bool ret = OH_VideoProcessing_IsColorSpaceConversionSupported(&fullInfo, &dstInfo);
+    if (g_suppported) {
+        ASSERT_TRUE(ret);
+    } else {
+        ASSERT_FALSE(ret);
+    }
+}
+
+/**
+ * @tc.number    : VPE_VIDEO_API_TEST_0560
+ * @tc.name      : call OH_VideoProcessing_IsColorSpaceConversionSupported HLG FULL to BT709 Limit NV21
+ * @tc.desc      : function test
+ */
+HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0560, TestSize.Level0)
+{
+    OH_VideoProcessing_InitializeEnvironment();
+    VideoProcessing_ColorSpaceInfo fullInfo = {OH_VIDEO_HDR_VIVID,
+        OH_COLORSPACE_BT2020_HLG_FULL,
+        NATIVEBUFFER_PIXEL_FMT_YCBCR_P010};
+    VideoProcessing_ColorSpaceInfo dstInfo = {OH_VIDEO_NONE,
+            OH_COLORSPACE_BT709_LIMIT,
+            NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP};
+    bool ret = OH_VideoProcessing_IsColorSpaceConversionSupported(&fullInfo, &dstInfo);
+    if (g_suppported) {
+        ASSERT_TRUE(ret);
+    } else {
+        ASSERT_FALSE(ret);
+    }
+}
+
+/**
+ * @tc.number    : VPE_VIDEO_API_TEST_0570
+ * @tc.name      : call OH_VideoProcessing_IsColorSpaceConversionSupported HLG FULL to BT709 Limit NV12
+ * @tc.desc      : function test
+ */
+HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0570, TestSize.Level0)
+{
+    OH_VideoProcessing_InitializeEnvironment();
+    VideoProcessing_ColorSpaceInfo fullInfo = {OH_VIDEO_HDR_VIVID,
+        OH_COLORSPACE_BT2020_HLG_FULL,
+        NATIVEBUFFER_PIXEL_FMT_YCRCB_P010};
+    VideoProcessing_ColorSpaceInfo dstInfo = {OH_VIDEO_NONE,
+            OH_COLORSPACE_BT709_LIMIT,
+            NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP};
+    bool ret = OH_VideoProcessing_IsColorSpaceConversionSupported(&fullInfo, &dstInfo);
+    if (g_suppported) {
+        ASSERT_TRUE(ret);
+    } else {
+        ASSERT_FALSE(ret);
+    }
+}
+
+/**
+ * @tc.number    : VPE_VIDEO_API_TEST_0580
+ * @tc.name      : call OH_VideoProcessing_IsColorSpaceConversionSupported HLG FULL to BT709 Limit NV21
+ * @tc.desc      : function test
+ */
+HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0580, TestSize.Level0)
+{
+    OH_VideoProcessing_InitializeEnvironment();
+    VideoProcessing_ColorSpaceInfo fullInfo = {OH_VIDEO_HDR_VIVID,
+        OH_COLORSPACE_BT2020_HLG_FULL,
+        NATIVEBUFFER_PIXEL_FMT_YCRCB_P010};
+    VideoProcessing_ColorSpaceInfo dstInfo = {OH_VIDEO_NONE,
+            OH_COLORSPACE_BT709_LIMIT,
+            NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP};
+    bool ret = OH_VideoProcessing_IsColorSpaceConversionSupported(&fullInfo, &dstInfo);
+    if (g_suppported) {
+        ASSERT_TRUE(ret);
+    } else {
+        ASSERT_FALSE(ret);
+    }
+}
+/**
+ * @tc.number    : VPE_VIDEO_API_TEST_0590
+ * @tc.name      : call OH_VideoProcessing_IsColorSpaceConversionSupported HLG FULL to BT709 Limit NV21
+ * @tc.desc      : function test
+ */
+HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0590, TestSize.Level0)
+{
+    OH_VideoProcessing_InitializeEnvironment();
+    VideoProcessing_ColorSpaceInfo fullInfo = {OH_VIDEO_HDR_HLG,
+        OH_COLORSPACE_BT2020_HLG_FULL,
+        NATIVEBUFFER_PIXEL_FMT_YCRCB_P010};
+    VideoProcessing_ColorSpaceInfo dstInfo = {OH_VIDEO_NONE,
+            OH_COLORSPACE_BT709_LIMIT,
+            NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP};
+    bool ret = OH_VideoProcessing_IsColorSpaceConversionSupported(&fullInfo, &dstInfo);
+    ASSERT_FALSE(ret);
 }
 }
