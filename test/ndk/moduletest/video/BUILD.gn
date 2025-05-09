@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -12,15 +12,11 @@
 # limitations under the License.
 
 import("//build/test.gni")
-import("//foundation/multimedia/media_foundation/config.gni")
+import("//foundation/multimedia/video_processing_engine/config.gni")
 
 video_moduletest_native_include_dirs = [
-  "$vpe_interface_capi_dir",
-  "$vpe_capi_root_dir/test/moduletest/common",
-  "$vpe_capi_root_dir/../../../graphic/graphic_2d/interfaces/inner_api",
-  "$vpe_capi_root_dir/../../../window/window_manager/interfaces/innerkits",
-  "$vpe_capi_root_dir/../../av_codec/interfaces/kits/c",
-  "$vpe_capi_root_dir/../interface/kits/c",
+  "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/test/ndk/moduletest/common",
+  "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/interface/kits/c",
 ]
 
 video_moduletest_cflags = [
@@ -47,24 +43,20 @@ video_moduletest_cflags = [
 
 ##################################################################################################################
 ohos_unittest("vpe_video_native_module_test") {
-  module_out_path = "media_foundation/moduletest"
+  module_out_path = "video_processing_engine/moduletest"
   include_dirs = video_moduletest_native_include_dirs
   include_dirs += [ "./" ]
   cflags = video_moduletest_cflags
 
   sources = [
     "api_test.cpp",
-    "capability_test.cpp",
     "func_test.cpp",
     "reli_test.cpp",
     "video_sample.cpp",
   ]
 
   deps = [
-    "$vpe_capi_root_dir/framework:video_processing",
-    "$vpe_capi_root_dir/../../av_codec/interfaces/inner_api/native:av_codec_client",
-    "$vpe_capi_root_dir/../../av_codec/interfaces/kits/c:capi_packages",
-    "$vpe_capi_root_dir/../../av_codec/services/services:av_codec_service",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/framework:video_processing",
   ]
 
   external_deps = [
@@ -74,8 +66,9 @@ ohos_unittest("vpe_video_native_module_test") {
     "graphic_surface:surface",
     "hilog:libhilog",
     "ipc:ipc_core",
-    "media_foundation:media_foundation",
     "media_foundation:native_media_core",
     "window_manager:libwm",
+    "json:nlohmann_json_static",
   ]
+  resource_config_file = "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/test/ndk/moduletest/resources/ohos_test.xml"
 }
