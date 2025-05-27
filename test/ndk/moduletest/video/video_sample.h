@@ -28,12 +28,12 @@
 #include "openssl/crypto.h"
 #include "openssl/sha.h"
 
-#define CHECK_AND_RETURN_RET(cond, ret, msg)                    \
-    if (1) {                                                    \
-        if (!(cond)) {                                          \
-            std::cout << msg << " ErrCode:" << ret <<std:: endl;\
-            return ret;                                         \
-        }                                                       \
+#define CHECK_AND_RETURN_RET(cond, ret, msg)                       \
+    if (1) {                                                       \
+        if (!(cond)) {                                             \
+            std::cout << (msg) << " ErrCode:" << ret <<std:: endl; \
+            return ret;                                            \
+        }                                                          \
     } else void (0)
 
 typedef struct VideoProcessParam {

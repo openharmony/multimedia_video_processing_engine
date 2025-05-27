@@ -62,7 +62,7 @@ vector<uint8_t> VideoSample::LoadHashFile()
 void VideoSample::ShowHashValue(uint8_t source[])
 {
     for (int32_t i = 0; i < SHA512_DIGEST_LENGTH; i++) {
-        cout << std::hex << std::setfill('0') << std::setw(2) << int(source[i]);
+        cout << std::hex << std::setfill('0') << std::setw(sizeof(uint16_t)) << int(source[i]);
         if (i != SHA512_DIGEST_LENGTH - 1) {
             cout << ",";
         }
@@ -102,7 +102,7 @@ void VideoSample::ProcessOutputData(SurfaceBuffer *buffer)
         cropSize = picWidth * picHeight * FOUR;
     } else if (param_.outFmt == NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP ||
         param_.outFmt == NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP) {
-        cropSize = picWidth * picHeight * THREE >> 1;
+        cropSize = (picWidth * picHeight * THREE) >> 1;
     }
     uint8_t *cropBuffer = new uint8_t[cropSize];
     if (param_.outFmt == NATIVEBUFFER_PIXEL_FMT_RGBA_1010102 ||
@@ -113,7 +113,7 @@ void VideoSample::ProcessOutputData(SurfaceBuffer *buffer)
         memcpy_s(cropBuffer, cropSize, bufferAddr, picWidth * picHeight * THREE);
     } else if (param_.outFmt == NATIVEBUFFER_PIXEL_FMT_YCBCR_420_SP ||
         param_.outFmt == NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP) {
-        memcpy_s(cropBuffer, cropSize, bufferAddr, picWidth * picHeight * THREE >> 1);
+        memcpy_s(cropBuffer, cropSize, bufferAddr, (picWidth * picHeight * THREE) >> 1);
     }
     outFile->write(reinterpret_cast<char *>(cropBuffer), cropSize);
     outFile->close();

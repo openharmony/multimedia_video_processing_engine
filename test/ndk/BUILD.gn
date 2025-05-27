@@ -17,14 +17,11 @@ group("vpe_module_test") {
   testonly = true
   deps = []
   if (!use_libfuzzer) {
+    if (defined(global_parts_info) &&
+      defined(global_parts_info.multimedia_video_processing_engine_ext)) {
+      defines += ["ENABLE_ALL_PROCESS"]
+    }
     deps += [ "moduletest/video:vpe_video_native_module_test" ]
-    deps += [ "nativedemo:vpe_video_nativedemo" ]
+    deps += [ "moduletest/image:vpe_image_native_module_test" ]
   }
-}
-
-group("vpe_fuzz_test") {
-  testonly = true
-  deps = []
-
-  deps += [ "fuzztest/videometadata_fuzzer:VideoMetadataFuzzTest" ]
 }

@@ -136,7 +136,6 @@ HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0030, TestSize.Level0)
  */
 HWTEST_F(VpeVideoFuncTest, VPE_VIDEO_FUNC_TEST_0040, TestSize.Level0)
 {
-
     std::unique_ptr<VideoSample> sample = std::make_unique<VideoSample>();
     sample->inputFilePath = "/data/test/media/vivid_pq_nv21.yuv";
     sample->inputMetaPath = "/data/test/media/vivid_pq.bin";
