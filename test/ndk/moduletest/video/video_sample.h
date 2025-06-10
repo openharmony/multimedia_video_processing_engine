@@ -28,10 +28,10 @@
 #include "openssl/crypto.h"
 #include "openssl/sha.h"
 
-int32_t check_return(bool cond, uint32_t ret, const char *msg)
+int32_t CheckReturn(bool cond, uint32_t ret, const char *msg)
 {
     if (!cond) {
-        std::cout << msg << " ErrCode:" << ret <<std:: endl;
+        std::cout << msg << " ErrCode:" << ret << std:: endl;
         return ret;
     }
     return 0;
