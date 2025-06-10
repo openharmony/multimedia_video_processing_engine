@@ -28,13 +28,14 @@
 #include "openssl/crypto.h"
 #include "openssl/sha.h"
 
-#define CHECK_AND_RETURN_RET(cond, ret, msg)                       \
-    if (1) {                                                       \
-        if (!(cond)) {                                             \
-            std::cout << (msg) << " ErrCode:" << ret <<std:: endl; \
-            return ret;                                            \
-        }                                                          \
-    } else void (0)
+int32_t check_return(bool cond, uint32_t ret, const char *msg)
+{
+    if (!cond) {
+        std::cout << msg << " ErrCode:" << ret <<std:: endl;
+        return ret;
+    }
+    return 0;
+}
 
 typedef struct VideoProcessParam {
     OH_NativeBuffer_Format inFmt;
