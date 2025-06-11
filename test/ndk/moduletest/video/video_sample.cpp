@@ -215,11 +215,11 @@ int32_t VideoSample::InitVideoSample(const int32_t type, int32_t width, int32_t 
     height_ = height;
     isRunning = true;
     param_ = param;
-    int32_t ret = OH_VideoProcessing_Create(&videoProcessor, type);
     if (type == VIDEO_PROCESSING_TYPE_METADATA_GENERATION)
         isMetadataGen = true;
-    if (check_return(ret == VIDEO_PROCESSING_SUCCESS, ret, "OH_VideoProcessing_Create failed"))
-        return ret;
+    if (OH_VideoProcessing_Create(&videoProcessor, type) != VIDEO_PROCESSING_SUCCESS) {
+        return -1;
+    }
     cs = Surface::CreateSurfaceAsConsumer();
     sptr<IBufferConsumerListener> listener = new VPEConsumerListener(cs, this);
     cs->RegisterConsumerListener(listener);
@@ -229,11 +229,11 @@ int32_t VideoSample::InitVideoSample(const int32_t type, int32_t width, int32_t 
     (void)OH_NativeWindow_NativeWindowHandleOpt(outWindow, SET_FORMAT, param_.outFmt);
     if (!isMetadataGen) {
         (void)OH_NativeWindow_NativeWindowHandleOpt(outWindow, SET_FORMAT, param_.outFmt);
-        ret = OH_NativeWindow_SetColorSpace(outWindow, param_.outColorSpace);
+        OH_NativeWindow_SetColorSpace(outWindow, param_.outColorSpace);
     }
     if (isHDRVividOut) {
         uint8_t val = OH_VIDEO_HDR_VIVID;
-        ret = OH_NativeWindow_SetMetadataValue(outWindow, OH_HDR_METADATA_TYPE, sizeof(uint8_t), &val);
+        int32_t ret = OH_NativeWindow_SetMetadataValue(outWindow, OH_HDR_METADATA_TYPE, sizeof(uint8_t), &val);
         if (ret != 0) {
             cout << "set metadata failed" << endl;
         }
@@ -242,22 +242,22 @@ int32_t VideoSample::InitVideoSample(const int32_t type, int32_t width, int32_t 
         uint8_t outMeta = OH_VIDEO_HDR_HLG;
         OH_NativeWindow_SetMetadataValue(outWindow, OH_HDR_METADATA_TYPE, sizeof(uint8_t), &outMeta);
     }
-    ret = OH_VideoProcessing_SetSurface(videoProcessor, outWindow);
-    if (check_return(ret == VIDEO_PROCESSING_SUCCESS, ret, "OH_VideoProcessing_SetSurface failed."))
-        return ret;
-    ret = OH_VideoProcessing_GetSurface(videoProcessor, &inWindow);
-    if (check_return(ret == VIDEO_PROCESSING_SUCCESS, ret, "OH_VideoProcessing_GetSurface failed."))
-        return ret;
+    if (OH_VideoProcessing_SetSurface(videoProcessor, outWindow) != VIDEO_PROCESSING_SUCCESS) {
+        return -1;
+    }
+    if (OH_VideoProcessing_GetSurface(videoProcessor, &inWindow) != VIDEO_PROCESSING_SUCCESS) {
+        return -1;
+    }
     SetInputWindowParam();
-    ret = OH_VideoProcessingCallback_Create(&callback);
-    if (check_return(ret == VIDEO_PROCESSING_SUCCESS, ret, "OH_VideoProcessingCallback_Create failed."))
-        return ret;
+    if (OH_VideoProcessingCallback_Create(&callback) != VIDEO_PROCESSING_SUCCESS) {
+        return -1;
+    }
     OH_VideoProcessingCallback_BindOnError(callback, OnError);
     OH_VideoProcessingCallback_BindOnState(callback, OnState);
     OH_VideoProcessingCallback_BindOnNewOutputBuffer(callback, OnNewOutputBuffer);
-    ret = OH_VideoProcessing_RegisterCallback(videoProcessor, callback, this);
-    if (check_return(ret == VIDEO_PROCESSING_SUCCESS, ret, "OH_VideoProcessing_RegisterCallback failed."))
-        return ret;
+    if (OH_VideoProcessing_RegisterCallback(videoProcessor, callback, this) != VIDEO_PROCESSING_SUCCESS){
+        return -1;
+    }
     return VIDEO_PROCESSING_SUCCESS;
 }
 
@@ -322,31 +322,32 @@ void VideoSample::GetMetadata(OH_NativeBuffer *buffer)
 int32_t VideoSample::InputFunc()
 {
     inFile = std::make_unique<std::ifstream>(inputFilePath);
-    if (check_return(inFile->is_open(), -1, "open input file failed"))
-        return ret;
+    if (!inFile->is_open()) {
+        return 1;
+    }
     int fenceFd = -1;
     OHNativeWindowBuffer *ohNativeWindowBuffer;
     if (isHDRVivid) {
-        int32_t ret = OH_NativeWindow_SetMetadataValue(inWindow, OH_HDR_DYNAMIC_METADATA, metadataSize, metaData);
-        if (check_return(ret == 0, ret, "set metadata value failed"))
-            return ret;
+        if (OH_NativeWindow_SetMetadataValue(inWindow, OH_HDR_DYNAMIC_METADATA, metadataSize, metaData) != 0) {
+            return -1;
+        }
     }
-    int32_t err = OH_NativeWindow_NativeWindowRequestBuffer(inWindow, &ohNativeWindowBuffer, &fenceFd);
-    if (check_return(err == 0, err, "OH_NativeWindow_NativeWindowRequestBuffer failed"))
-        return ret;
+    if (OH_NativeWindow_NativeWindowRequestBuffer(inWindow, &ohNativeWindowBuffer, &fenceFd) != 0) {
+        return -1;
+    }
     if (fenceFd > 0) {
         close(fenceFd);
     }
     OH_NativeBuffer *nativeBuffer = nullptr;
-    err = OH_NativeBuffer_FromNativeWindowBuffer(ohNativeWindowBuffer, &nativeBuffer);
-    if (check_return(err == 0, err, "OH_NativeBuffer_FromNativeWindowBuffer failed."))
-        return ret;
+    if (OH_NativeBuffer_FromNativeWindowBuffer(ohNativeWindowBuffer, &nativeBuffer) != 0) {
+        return -1;
+    }
     void *virAddr = nullptr;
     OH_NativeBuffer_Config config;
     OH_NativeBuffer_GetConfig(nativeBuffer, &config);
-    err = OH_NativeBuffer_Map(nativeBuffer, &virAddr);
-    if (check_return(err == 0, err, "OH_NativeBuffer_Map failed."))
-        return ret;
+    if (OH_NativeBuffer_Map(nativeBuffer, &virAddr) != 0) {
+        return -1;
+    }
     if (param_.inFmt == NATIVEBUFFER_PIXEL_FMT_YCBCR_P010 ||
         param_.inFmt == NATIVEBUFFER_PIXEL_FMT_YCRCB_P010) {
         ReadOneFrameP010(reinterpret_cast<uint8_t *>(virAddr), config);
@@ -358,13 +359,13 @@ int32_t VideoSample::InputFunc()
         ReadOneFrameYUV420SP(reinterpret_cast<uint8_t *>(virAddr), config);
     }
     NativeWindowHandleOpt(inWindow, SET_UI_TIMESTAMP, GetSystemTimeUs());
-    err = OH_NativeBuffer_Unmap(nativeBuffer);
-    if (check_return(err == 0, err, "OH_NativeBuffer_Unmap failed."))
-        return ret;
-    err = OH_NativeWindow_NativeWindowFlushBuffer(inWindow, ohNativeWindowBuffer, -1, region);
+    if (OH_NativeBuffer_Unmap(nativeBuffer) != 0) {
+        return -1;
+    }
+    if (OH_NativeWindow_NativeWindowFlushBuffer(inWindow, ohNativeWindowBuffer, -1, region) != 0) {
+        return -1;
+    }
     inCount++;
-    if (check_return(err == 0, err, "OH_NativeWindow_NativeWindowFlushBuffer failed."))
-        return ret;
     inputFuncFinished = true;
     inFile->close();
     return 0;
@@ -402,9 +403,8 @@ void VideoSample::OutputThread()
 
 int32_t VideoSample::StartProcess()
 {
-    int32_t ret = OH_VideoProcessing_Start(videoProcessor);
-    if (check_return(ret == VIDEO_PROCESSING_SUCCESS, ret, "OH_VideoProcessing_Start failed.")) {
-        return ret;
+    if (OH_VideoProcessing_Start(videoProcessor) != VIDEO_PROCESSING_SUCCESS) {
+        return -1;
     }
     inputLoop_ = make_unique<thread>(&VideoSample::InputFunc, this);
     outputLoop_ = make_unique<thread>(&VideoSample::OutputThread, this);
@@ -415,9 +415,8 @@ int32_t VideoSample::WaitAndStopSample()
 {
     inputLoop_->join();
     outputLoop_->join();
-    int32_t ret = OH_VideoProcessing_Stop(videoProcessor);
-    if (check_return(ret == VIDEO_PROCESSING_SUCCESS, ret, "OH_VideoProcessing_Stop failed.")) {
-        return ret;
+    if (OH_VideoProcessing_Stop(videoProcessor) != VIDEO_PROCESSING_SUCCESS) {
+        return -1;
     }
     return 0;
 }
