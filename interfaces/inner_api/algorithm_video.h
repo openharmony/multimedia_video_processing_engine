@@ -55,8 +55,7 @@ public:
      * @param type Use VIDEO_TYPE_XXX to specify the processing type. For details, see {@link VpeVideoType}.
      * @param parameter The parameter of video processing.
      * @return true if the product is supported. false If the product is unsupported.
-     * @since 5.1
-     * @version 5.1
+     * @since 6.0
      */
     static bool IsSupported(void);
 
