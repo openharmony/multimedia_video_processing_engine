@@ -250,9 +250,7 @@ int32_t VideoSample::InitVideoSample(const int32_t type, int32_t width, int32_t 
         return -1;
     }
     SetInputWindowParam();
-    if (OH_VideoProcessingCallback_Create(&callback) != VIDEO_PROCESSING_SUCCESS) {
-        return -1;
-    }
+    OH_VideoProcessingCallback_Create(&callback);
     OH_VideoProcessingCallback_BindOnError(callback, OnError);
     OH_VideoProcessingCallback_BindOnState(callback, OnState);
     OH_VideoProcessingCallback_BindOnNewOutputBuffer(callback, OnNewOutputBuffer);
