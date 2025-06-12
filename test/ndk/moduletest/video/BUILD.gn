@@ -69,6 +69,7 @@ ohos_unittest("vpe_video_native_module_test") {
     "media_foundation:native_media_core",
     "window_manager:libwm",
     "json:nlohmann_json_static",
+    "openssl:libcrypto_shared"
   ]
   resource_config_file = "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/test/ndk/moduletest/resources/ohos_test.xml"
 }
