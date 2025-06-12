@@ -240,6 +240,18 @@ public:
      */
     static constexpr std::string_view DETAIL_ENHANCER_AUTO_DOWNSHIFT{"AutoDownshift"};
 
+    /**
+     * @brief The key is used to identifies surface nodeId
+     * enhancement or not. Default value is true.
+     *
+     * Use {@link VpeVideo::SetParameter} and {@link Format::SetLongValue} to set whether automatic downshift or not.
+     * Use {@link VpeVideo::GetParameter} and {@link Format::GetLongValue} to get whether automatic downshift or not.
+     *
+     * @since 5.1
+     * @version 5.1
+     */
+    static constexpr std::string_view DETAIL_ENHANCER_NODE_ID{"NodeId"};
+
 private:
     ParameterKey() = delete;
     ~ParameterKey() = delete;

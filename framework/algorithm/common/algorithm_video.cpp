@@ -63,6 +63,11 @@ bool VpeVideo::IsSupported(uint32_t type, const Format& parameter)
     return it->second(parameter);
 }
 
+bool DetailEnhancerVideoFwk::IsSupported(void)
+{
+    return true;
+}
+
 VPEAlgoErrCode VpeVideo::RegisterCallback([[maybe_unused]] const std::shared_ptr<VpeVideoCallback>& callback)
 {
     return VPE_ALGO_ERR_OK;
