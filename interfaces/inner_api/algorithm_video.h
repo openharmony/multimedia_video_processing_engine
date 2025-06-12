@@ -52,8 +52,6 @@ public:
 
     /**
      * @brief Query whether the product is supported.
-     * @param type Use VIDEO_TYPE_XXX to specify the processing type. For details, see {@link VpeVideoType}.
-     * @param parameter The parameter of video processing.
      * @return true if the product is supported. false If the product is unsupported.
      * @since 6.0
      */
