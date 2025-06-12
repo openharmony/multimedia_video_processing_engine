@@ -51,6 +51,13 @@ public:
     static bool IsSupported(uint32_t type, const Format& parameter);
 
     /**
+     * @brief Query whether the product is supported.
+     * @return true if the product is supported. false If the product is unsupported.
+     * @since 6.0
+     */
+    static bool IsSupported(void);
+
+    /**
      * @brief Register callback object.
      * @param callback Callback object to be registered. For details, see {@link VpeVideoCallback}.
      * @return If successful, returns {@link VPE_ALGO_ERR_OK}. On error, retuns an error code.

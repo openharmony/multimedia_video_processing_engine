@@ -240,6 +240,16 @@ public:
      */
     static constexpr std::string_view DETAIL_ENHANCER_AUTO_DOWNSHIFT{"AutoDownshift"};
 
+    /**
+     * @brief The key is used to identifies surface nodeId
+     *
+     * Use {@link VpeVideo::SetParameter} and {@link Format::SetLongValue} to set the client surface nodeId.
+     * Use {@link VpeVideo::GetParameter} and {@link Format::GetLongValue} to get the client surface nodeId.
+     *
+     * @since 6.0
+     */
+    static constexpr std::string_view DETAIL_ENHANCER_NODE_ID{"NodeId"};
+
 private:
     ParameterKey() = delete;
     ~ParameterKey() = delete;
