@@ -215,8 +215,9 @@ int32_t VideoSample::InitVideoSample(const int32_t type, int32_t width, int32_t 
     height_ = height;
     isRunning = true;
     param_ = param;
-    if (type == VIDEO_PROCESSING_TYPE_METADATA_GENERATION)
+    if (type == VIDEO_PROCESSING_TYPE_METADATA_GENERATION) {
         isMetadataGen = true;
+    }
     if (OH_VideoProcessing_Create(&videoProcessor, type) != VIDEO_PROCESSING_SUCCESS) {
         return -1;
     }
@@ -255,7 +256,7 @@ int32_t VideoSample::InitVideoSample(const int32_t type, int32_t width, int32_t 
     OH_VideoProcessingCallback_BindOnError(callback, OnError);
     OH_VideoProcessingCallback_BindOnState(callback, OnState);
     OH_VideoProcessingCallback_BindOnNewOutputBuffer(callback, OnNewOutputBuffer);
-    if (OH_VideoProcessing_RegisterCallback(videoProcessor, callback, this) != VIDEO_PROCESSING_SUCCESS){
+    if (OH_VideoProcessing_RegisterCallback(videoProcessor, callback, this) != VIDEO_PROCESSING_SUCCESS) {
         return -1;
     }
     return VIDEO_PROCESSING_SUCCESS;
