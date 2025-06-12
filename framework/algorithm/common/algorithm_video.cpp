@@ -63,7 +63,7 @@ bool VpeVideo::IsSupported(uint32_t type, const Format& parameter)
     return it->second(parameter);
 }
 
-bool DetailEnhancerVideoFwk::IsSupported(void)
+bool VpeVideo::IsSupported(void)
 {
     return true;
 }
