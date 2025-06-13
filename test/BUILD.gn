@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Huawei Device Co., Ltd.
+# Copyright (c) 2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -54,6 +54,7 @@ declare_args() {
     contrast_enhancer_unit_test = false
     services_fuzzer_test = false
   }
+  vpe_support_ndk_module_test = true
 }
 
 group("demo_test") {
@@ -120,6 +121,11 @@ group("module_test") {
       "moduletest/colorspace_converter_video:colorspace_converter_video_module_test",
       "moduletest/metadata_generator:metadata_generator_module_test",
       "moduletest/metadata_generator_video:metadata_generator_video_module_test",
+    ]
+  }
+  if (vpe_support_ndk_module_test) {
+    deps += [
+      "ndk:vpe_module_test",
     ]
   }
 }

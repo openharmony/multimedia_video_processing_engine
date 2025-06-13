@@ -98,14 +98,14 @@ int32_t NativeBuffer_MetadataType[] = {
     OH_VIDEO_HDR_HLG,
     OH_VIDEO_HDR_HDR10,
     OH_VIDEO_HDR_VIVID,
-    OH_VIDEO_HDR_NONE
+    OH_VIDEO_NONE
 };
 
 std::unordered_map<int32_t, std::string> metadataString = {
     {OH_VIDEO_HDR_HLG, "HDR_HLG"},
     {OH_VIDEO_HDR_HDR10, "HDR_HDR10"},
     {OH_VIDEO_HDR_VIVID, "HDR_VIVID"},
-    {OH_VIDEO_HDR_NONE, "NONE"}
+    {OH_VIDEO_NONE, "NONE"}
 };
 
 std::unordered_map<int32_t, std::string> formatString = {
