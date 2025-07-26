@@ -15,7 +15,7 @@
 import("//build/config/features.gni")
 import("//build/test.gni")
 import("//foundation/multimedia/video_processing_engine/config.gni")
-module_output_path = "video_processing_engine/fuzztest"
+module_output_path = "video_processing_engine/video_processing_engine"
 
 ##############################fuzztest##########################################
 ohos_fuzztest("ServicesFuzzTest") {
