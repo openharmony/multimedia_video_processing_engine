@@ -686,6 +686,7 @@ void ColorSpaceConverterVideoImpl::DoTask()
         if (inputBuffer->bufferFlag == CSCV_BUFFER_FLAG_EOS) {
             {
                 std::unique_lock<std::mutex> lockOnBq(renderQueMutex_);
+                outputBuffer->bufferFlag = CSCV_BUFFER_FLAG_EOS;
                 renderBufferAvilMap_.emplace(outputBuffer->memory->GetSeqNum(), outputBuffer);
             }
 
@@ -727,6 +728,11 @@ int32_t ColorSpaceConverterVideoImpl::ReleaseOutputBuffer(uint32_t index, bool r
     renderBufferAvilMap_.erase(search);
     lockRenderQue.unlock();
 
+    CHECK_AND_RETURN_RET_LOG(buffer, VPE_ALGO_ERR_INVALID_VAL, "Buffer is nullptr");
+    if (buffer->bufferFlag == CSCV_BUFFER_FLAG_EOS) {
+        return VPE_ALGO_ERR_OK;
+    }
+
     if (render) {
         flushCfg_.timestamp = buffer->timestamp;
         flushCfg_.damage.w = buffer->memory->GetWidth();
@@ -761,6 +767,7 @@ int32_t ColorSpaceConverterVideoImpl::NotifyEos()
     std::shared_ptr<SurfaceBufferWrapper> buf = std::make_shared<SurfaceBufferWrapper>();
     buf->bufferFlag = CSCV_BUFFER_FLAG_EOS;
     inputBufferAvilQue_.push(buf);
+    VPE_LOGI("Push EOS frame");
 
     cvTaskStart_.notify_all();
 
