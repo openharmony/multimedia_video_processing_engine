@@ -65,11 +65,11 @@ private:
     };
     void InitBuffers();
     bool WaitProcessing();
-    bool AcquireInputOutputBuffers(
-        std::shared_ptr<SurfaceBufferWrapper> &inputBuffer, std::shared_ptr<SurfaceBufferWrapper> &outputBuffer);
+    bool AcquireInputBuffers(std::shared_ptr<SurfaceBufferWrapper> &inputBuffer);
     void DoTask();
     void OnTriggered();
-    void Process(std::shared_ptr<SurfaceBufferWrapper> inputBuffer, std::shared_ptr<SurfaceBufferWrapper> outputBuffer);
+    void CheckRequestCfg(sptr<SurfaceBuffer> inputBuffer);
+    void Process(std::shared_ptr<SurfaceBufferWrapper> inputBuffer);
     int32_t AttachToNewSurface(sptr<Surface> newSurface);
     int32_t SetOutputSurfaceConfig(sptr<Surface> surface);
     int32_t SetOutputSurfaceRunning(sptr<Surface> newSurface);
@@ -103,11 +103,13 @@ private:
     std::mutex renderQueMutex_;  // outputsruface buffer
     std::mutex surfaceChangeMutex_;
     std::mutex surfaceChangeMutex2_;
+    std::mutex outputQueMutex_;
     sptr<Surface> inputSurface_{nullptr};
     sptr<Surface> outputSurface_{nullptr};
-    static constexpr size_t MAX_BUFFER_CNT{5};
-    uint32_t outBufferCnt_{MAX_BUFFER_CNT};
-    uint32_t inBufferCnt_{MAX_BUFFER_CNT};
+    static constexpr size_t MAX_INPUT_BUFFER_CNT{5};
+    static constexpr size_t MAX_OUTPUT_BUFFER_CNT{12};
+    uint32_t outBufferCnt_{MAX_OUTPUT_BUFFER_CNT};
+    uint32_t inBufferCnt_{MAX_INPUT_BUFFER_CNT};
     static constexpr size_t MAX_SURFACE_SEQUENCE{std::numeric_limits<uint32_t>::max()};
     uint32_t lastSurfaceSequence_{MAX_SURFACE_SEQUENCE};
     BufferRequestConfig requestCfg_{};
