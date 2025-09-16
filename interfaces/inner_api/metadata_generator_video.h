@@ -133,6 +133,10 @@ public:
     virtual int32_t ReleaseOutputBuffer(uint32_t index, bool render) = 0;
 
     virtual int32_t Flush() = 0;
+
+    virtual VPEAlgoErrCode SetParameter(const MetadataGeneratorParameter& parameter) = 0;
+
+    virtual VPEAlgoErrCode GetParameter(MetadataGeneratorParameter& parameter) = 0;
 };
 using ArgumentType = void;
 } // namespace VideoProcessingEngine

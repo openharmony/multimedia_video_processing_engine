@@ -34,6 +34,7 @@ const int32_t VIDEO_PROCESSING_TYPE_DETAIL_ENHANCER = 0x4;
 // Video processing parameter keys:
 // Detail enhancement:
 const char* VIDEO_DETAIL_ENHANCER_PARAMETER_KEY_QUALITY_LEVEL = "QualityLevel";
+const char* VIDEO_METADATA_GENERATOR_STYLE_CONTROL = "StyleControl";
 
 namespace {
 // Call video processing interface

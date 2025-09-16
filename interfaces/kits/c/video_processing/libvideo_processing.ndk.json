@@ -94,5 +94,10 @@
         "first_introduced": "12",
         "name": "VIDEO_DETAIL_ENHANCER_PARAMETER_KEY_QUALITY_LEVEL",
         "type": "variable"
+    },
+    {
+        "first_introduced": "21",
+        "name": "VIDEO_METADATA_GENERATOR_STYLE_CONTROL",
+        "type": "variable"
     }
 ]

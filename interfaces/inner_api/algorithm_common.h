@@ -118,6 +118,11 @@ enum class MetadataGeneratorAlgoType {
     META_GEN_ALGO_TYPE_VIDEO  // video
 };
 
+enum class VideoMetadataGeneratorStyle {
+    META_GEN_BRIGHT_STYLE = 0,
+    META_GEN_CONTRAST_STYLE = 1
+};
+
 struct ColorSpaceConverterParameter {
     RenderIntent renderIntent; // 渲染意图
     std::optional<double> sdrUIBrightnessRatio {
@@ -145,6 +150,7 @@ struct MetadataGeneratorParameter {
     MetadataGeneratorAlgoType algoType = MetadataGeneratorAlgoType::META_GEN_ALGO_TYPE_IMAGE;
     bool isOldHdrVivid = false;
     float avgGainmapGray = 0.0;
+    VideoMetadataGeneratorStyle styleType = VideoMetadataGeneratorStyle::META_GEN_BRIGHT_STYLE;
 };
 
 uint32_t GetColorSpaceType(const CM_ColorSpaceInfo &colorSpaceInfo);

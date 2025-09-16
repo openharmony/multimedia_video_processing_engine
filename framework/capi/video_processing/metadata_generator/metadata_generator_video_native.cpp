@@ -20,6 +20,12 @@
 
 using namespace OHOS;
 using namespace OHOS::Media::VideoProcessingEngine;
+namespace {
+const std::unordered_map<int, int> styleMap = {
+    {VIDEO_METADATA_GENERATOR_BRIGHT_MODE,         META_GEN_BRIGHT_STYLE},
+    {VIDEO_METADATA_GENERATOR_CONTRAST_MODE,       META_GEN_CONTRAST_STYLE},
+};
+}
 
 VideoProcessing_ErrorCode MetadataGeneratorVideoNative::InitializeInner()
 {
@@ -83,12 +89,36 @@ sptr<Surface> MetadataGeneratorVideoNative::GetSurface()
 
 VideoProcessing_ErrorCode MetadataGeneratorVideoNative::SetParameter(const OHOS::Media::Format& parameter)
 {
-    return VIDEO_PROCESSING_ERROR_OPERATION_NOT_PERMITTED;
+    std::lock_guard<std::mutex> lock(lock_);
+    CHECK_AND_RETURN_RET_LOG(isInitialized_.load(), VIDEO_PROCESSING_ERROR_INITIALIZE_FAILED,
+        "Initialization failed!");
+
+    int style;
+    CHECK_AND_RETURN_RET_LOG(parameter.GetIntValue(VIDEO_METADATA_GENERATOR_STYLE_CONTROL, style),
+        VIDEO_PROCESSING_ERROR_INVALID_PARAMETER, "No metadata generator style!");
+    int styleType = CApiStyleToInner(style);
+    CHECK_AND_RETURN_RET_LOG(styleType != -1, VIDEO_PROCESSING_ERROR_INVALID_PARAMETER,
+        "Metadata generator style is invalid!");
+    MetadataGeneratorParameter param{};
+    param.styleType = static_cast<VideoMetadataGeneratorStyle>(styleType);
+    auto result = VideoProcessingUtils::InnerErrorToCAPI(metadataGenerator_->SetParameter(param));
+    return result;
 }
 
 VideoProcessing_ErrorCode MetadataGeneratorVideoNative::GetParameter(OHOS::Media::Format& parameter)
 {
-    return VIDEO_PROCESSING_ERROR_OPERATION_NOT_PERMITTED;
+    std::lock_guard<std::mutex> lock(lock_);
+    CHECK_AND_RETURN_RET_LOG(isInitialized_.load(), VIDEO_PROCESSING_ERROR_INITIALIZE_FAILED,
+        "Initialization failed!");
+
+    MetadataGeneratorParameter param{};
+    auto result = VideoProcessingUtils::InnerErrorToCAPI(metadataGenerator_->GetParameter(param));
+    if (result == VIDEO_PROCESSING_SUCCESS) {
+        int styleType = static_cast<int>(param.styleType);
+        CHECK_AND_RETURN_RET_LOG(parameter.PutIntValue(VIDEO_METADATA_GENERATOR_STYLE_CONTROL, styleType),
+            VIDEO_PROCESSING_ERROR_PROCESS_FAILED, "Get parameter failed!");
+    }
+    return result;
 }
 
 VideoProcessing_ErrorCode MetadataGeneratorVideoNative::OnStart()
@@ -136,6 +166,16 @@ MetadataGeneratorVideoNative::NativeCallback::NativeCallback(
     const std::shared_ptr<MetadataGeneratorVideoNative>& owner)
     : owner_(owner)
 {
+}
+
+int MetadataGeneratorVideoNative::CApiStyleToInner(int Style) const
+{
+    auto it = styleMap.find(Style);
+    if (it == styleMap.end()) {
+        VPE_LOGE("Invalid input style:%{public}d", Style);
+        return -1;
+    }
+    return it->second;
 }
 
 void MetadataGeneratorVideoNative::NativeCallback::OnError(int32_t errorCode)

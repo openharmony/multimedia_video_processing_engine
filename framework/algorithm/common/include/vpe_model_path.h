@@ -82,6 +82,7 @@ enum VpeModelKey {
     VIDEO_AIHDR_ALGO_CONFIG,
     VIDEO_AIHDR_MODEL,
     IMAGE_SR_10bit_CONVERT_KERNEL,
+    VIDEO_META_GEN_AI_SDR,
     VPE_MODEL_KEY_NUM,
 };
 
@@ -147,6 +148,7 @@ const std::array<std::string, VPE_MODEL_KEY_NUM> VPE_MODEL_PATHS = {
     "/sys_prod/etc/VideoProcessingEngine/video_aihdr_algo_config.xml",
     "/sys_prod/etc/VideoProcessingEngine/GTM_AIHDR.omc",
     "/sys_prod/etc/VideoProcessingEngine/10bitAisr.bin",
+    "/sys_prod/etc/VideoProcessingEngine/aimdg.om",
 };
 } // namespace VideoProcessingEngine
 } // namespace Media

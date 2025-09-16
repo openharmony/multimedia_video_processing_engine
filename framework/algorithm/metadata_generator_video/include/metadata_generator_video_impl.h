@@ -49,6 +49,8 @@ public:
     int32_t NotifyEos() override;
     int32_t ReleaseOutputBuffer(uint32_t index, bool render) override;
     int32_t Flush() override;
+    VPEAlgoErrCode SetParameter(const MetadataGeneratorParameter& parameter) override;
+    VPEAlgoErrCode GetParameter(MetadataGeneratorParameter& parameter) override;
 
     GSError OnConsumerBufferAvailable();
     GSError OnProducerBufferReleased();
@@ -80,6 +82,7 @@ private:
     std::mutex mutex_;
     bool getUsage_{false};
     std::atomic<bool> initBuffer_{false};
+    std::atomic<VideoMetadataGeneratorStyle> style_{VideoMetadataGeneratorStyle::META_GEN_BRIGHT_STYLE};
 
     // task相关
     std::mutex mtxTaskDone_;
