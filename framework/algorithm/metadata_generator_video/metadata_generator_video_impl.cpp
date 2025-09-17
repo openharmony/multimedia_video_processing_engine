@@ -376,15 +376,15 @@ void MetadataGeneratorVideoImpl::CheckRequestCfg(sptr<SurfaceBuffer> inputBuffer
 {
     if (requestCfg_.width != inputBuffer->GetWidth() || requestCfg_.height != inputBuffer->GetHeight() ||
         requestCfg_.format != inputBuffer->GetFormat() || requestCfg_.usage != inputBuffer->GetUsage()) {
-            requestCfg_.width = inputBuffer->GetWidth();
-            requestCfg_.height = inputBuffer->GetHeight();
-            requestCfg_.format = inputBuffer->GetFormat();
-            requestCfg_.usage = inputBuffer->GetUsage();
-            outputSurface_->CleanCache(true);
-            outputSurface_->SetDefaultUsage(requestCfg_.usage);
-            std::lock_guard<std::mutex> lock(outputQueMutex_);
-            outputBufferAvilQueBak_.clear();
-        }
+        requestCfg_.width = inputBuffer->GetWidth();
+        requestCfg_.height = inputBuffer->GetHeight();
+        requestCfg_.format = inputBuffer->GetFormat();
+        requestCfg_.usage = inputBuffer->GetUsage();
+        outputSurface_->CleanCache(true);
+        outputSurface_->SetDefaultUsage(requestCfg_.usage);
+        std::lock_guard<std::mutex> lock(outputQueMutex_);
+        outputBufferAvilQueBak_.clear();
+    }
 }
 
 void MetadataGeneratorVideoImpl::Process(std::shared_ptr<SurfaceBufferWrapper> inputBuffer)
@@ -612,7 +612,7 @@ GSError MetadataGeneratorVideoImpl::OnConsumerBufferAvailable()
     constexpr uint32_t waitForEver = -1; // wait fence -1
     if (buffer->fence != nullptr) {
         (void)buffer->fence->Wait(waitForEver);
-        buffer->memory->InvalidCache();
+        buffer->memory->InvalidateCache();
     }
     inputBufferAvilQue_.push(buffer);
 
