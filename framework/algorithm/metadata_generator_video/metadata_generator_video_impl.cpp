@@ -376,13 +376,13 @@ void MetadataGeneratorVideoImpl::CheckRequestCfg(sptr<SurfaceBuffer> inputBuffer
 {
     if (requestCfg_.width != inputBuffer->GetWidth() || requestCfg_.height != inputBuffer->GetHeight() ||
         requestCfg_.format != inputBuffer->GetFormat() || requestCfg_.usage != inputBuffer->GetUsage()) {
-            requestCfg_.width != inputBuffer->GetWidth();
-            requestCfg_.height != inputBuffer->GetHeight();
-            requestCfg_.format != inputBuffer->GetFormat();
-            requestCfg_.usage != inputBuffer->GetUsage();
+            requestCfg_.width = inputBuffer->GetWidth();
+            requestCfg_.height = inputBuffer->GetHeight();
+            requestCfg_.format = inputBuffer->GetFormat();
+            requestCfg_.usage = inputBuffer->GetUsage();
             outputSurface_->CleanCache(true);
             outputSurface_->SetDefaultUsage(requestCfg_.usage);
-            std::lock_guard<std::mutex> lock(outputBufferAvilQue_);
+            std::lock_guard<std::mutex> lock(outputBufferQueMutex_);
             outputBufferAvilQueBak_.clear();
         }
 }
@@ -398,7 +398,7 @@ void MetadataGeneratorVideoImpl::Process(std::shared_ptr<SurfaceBufferWrapper> i
     if (it == outputBufferAvilQueBak_.end()) {
         ret = outputSurface_->AttachBufferToQueue(surfaceInputBuffer);
         CHECK_AND_RETURN_LOG(ret == GSERROR_OK, "AttachBufferToQueue failed %{public}d", ret);
-        outputBufferAvilQue_.emplace(surfaceInputBuffer->GetSeqNum(), inputBuffer);
+        outputBufferAvilQueBak_.emplace(surfaceInputBuffer->GetSeqNum(), inputBuffer);
     }
     outputLock.unlock();
     {
@@ -465,7 +465,7 @@ void MetadataGeneratorVideoImpl::DoTask()
         }
         isProcessing_.store(true);
 
-        if (!AcquireInputOutputBuffers(inputBuffer)) {
+        if (!AcquireInputBuffers(inputBuffer)) {
             break;
         }
         if (inputBuffer->bufferFlag == MDG_BUFFER_FLAG_EOS) {
