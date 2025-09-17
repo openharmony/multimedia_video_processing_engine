@@ -382,7 +382,7 @@ void MetadataGeneratorVideoImpl::CheckRequestCfg(sptr<SurfaceBuffer> inputBuffer
             requestCfg_.usage = inputBuffer->GetUsage();
             outputSurface_->CleanCache(true);
             outputSurface_->SetDefaultUsage(requestCfg_.usage);
-            std::lock_guard<std::mutex> lock(outputBufferQueMutex_);
+            std::lock_guard<std::mutex> lock(outputQueMutex_);
             outputBufferAvilQueBak_.clear();
         }
 }
@@ -414,7 +414,7 @@ void MetadataGeneratorVideoImpl::Process(std::shared_ptr<SurfaceBufferWrapper> i
         renderBufferAvilMap_.emplace(surfaceInputBuffer->GetSeqNum(), inputBuffer);
         lockOnBq.unlock();
         if (cb_) {
-            cb_->OnOutputBufferAvailable(surfaceInputBuffer->GetSeqNum(), inputBuffer->bufferFlag)
+            cb_->OnOutputBufferAvailable(surfaceInputBuffer->GetSeqNum(), inputBuffer->bufferFlag);
         }
     }
 }
@@ -622,7 +622,7 @@ GSError MetadataGeneratorVideoImpl::OnConsumerBufferAvailable()
         requestCfg_.width = buffer->memory->GetWidth();
         requestCfg_.height = buffer->memory->GetHeight();
         requestCfg_.format = buffer->memory->GetFormat();
-        outputSurface_->SetDefaultUsage(requestCfg_.usage)
+        outputSurface_->SetDefaultUsage(requestCfg_.usage);
         initBuffer_.store(true);
     }
 
