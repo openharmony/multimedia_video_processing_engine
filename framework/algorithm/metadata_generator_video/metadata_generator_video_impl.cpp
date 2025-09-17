@@ -578,8 +578,8 @@ GSError MetadataGeneratorVideoImpl::OnProducerBufferReleased()
             inputSurface_->ReleaseBuffer(buf->memory, -1);
         } else {
             std::lock_guard<std::mutex> lock(outputQueMutex_);
-            auto it = outputBufferAvilQueBak_.find(buf->memory->GetSeqNum());
-            if (it == outputBufferAvilQueBak_.end()) {
+            auto it2 = outputBufferAvilQueBak_.find(buf->memory->GetSeqNum());
+            if (it2 == outputBufferAvilQueBak_.end()) {
                 outputSurface_->DetachBufferFromQueue(buf->memory);
             }
         }
