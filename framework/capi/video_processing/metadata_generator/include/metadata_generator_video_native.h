@@ -63,6 +63,7 @@ private:
 
         const std::shared_ptr<MetadataGeneratorVideoNative> owner_{};
     };
+    int CApiStyleToInner(int Style) const;
 
     mutable std::mutex lock_{};
     // Guarded by lock_ begin

@@ -23,6 +23,11 @@ enum MdgBufferFlag : uint32_t {
     MDG_BUFFER_FLAG_EOS = 1 << 0,
 };
 
+enum VIDEO_META_GEN_STYLE {
+    META_GEN_BRIGHT_STYLE = 0,
+    META_GEN_CONTRAST_STYLE = 1,
+};
+
 class __attribute__((visibility("default"))) MetadataGeneratorVideoCallback {
 public:
     virtual ~MetadataGeneratorVideoCallback() = default;

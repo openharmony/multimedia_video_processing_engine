@@ -114,6 +114,21 @@ extern const int32_t VIDEO_PROCESSING_TYPE_DETAIL_ENHANCER;
 extern const char* VIDEO_DETAIL_ENHANCER_PARAMETER_KEY_QUALITY_LEVEL;
 
 /**
+ * @brief The key is used to specify the style control for video metadata generator.
+ *
+ * See {@link VideoMetadataGeneratorStyleControl} for its values.
+ * Use {@link OH_AVFormat_SetIntValue} to set the mode value into AVFormat parameter.
+ * Use {@link OH_VideoProcessing_SetParameter} to set parameter into video processing instance.
+ * Use {@link OH_VideoProcessing_GetParameter} to get the current mode.
+ *
+ * @see OH_AVFormat_SetIntValue
+ * @see OH_VideoProcessing_SetParameter
+ * @see OH_VideoProcessing_GetParameter
+ * @since 21
+ */
+extern const char* VIDEO_METADATA_GENERATOR_STYLE_CONTROL;
+
+/**
  * @brief Video color space information structure of querying if video color space conversion is supported.
  *
  * @see OH_VideoProcessing_IsColorSpaceConversionSupported
@@ -147,6 +162,23 @@ typedef enum VideoDetailEnhancer_QualityLevel {
     /** A high level of detail enhancement quality but with a relatively slow speed */
     VIDEO_DETAIL_ENHANCER_QUALITY_LEVEL_HIGH,
 } VideoDetailEnhancer_QualityLevel;
+
+/**
+ * @brief The style control is used for video metadata generator.
+ *
+ * It is the value of the key parameter {@link VIDEO_METADATA_GENERATOR_STYLE_CONTROL}.
+ *
+ * @see OH_AVFormat_SetIntValue
+ * @see OH_VideoProcessing_SetParameter
+ * @see OH_VideoProcessing_GetParameter
+ * @since 21
+ */
+typedef enum VideoMetadataGeneratorStyleControl {
+    /** Style Control into bright mode */
+    VIDEO_METADATA_GENERATOR_BRIGHT_MODE = 0,
+    /** Style Control into contrast mode */
+    VIDEO_METADATA_GENERATOR_CONTRAST_MODE = 1
+} VideoMetadataGeneratorStyleControl;
 
 /**
  * @brief Video processing error code.

@@ -74,7 +74,8 @@ public:
 
     void SetMeatadata(sptr<SurfaceBuffer> &buffer, uint32_t value);
     void SetMeatadata(sptr<SurfaceBuffer> &buffer, CM_ColorSpaceInfo &colorspaceInfo);
-    VideoProcessing_ErrorCode Process();
+    VideoProcessing_ErrorCode ProcessContrastStyle();
+    VideoProcessing_ErrorCode ProcessBrightStyle();
 };
 
 void OnError(OH_VideoProcessing *handle, VideoProcessing_ErrorCode errorCode, void* userData)
@@ -119,7 +120,7 @@ void MetadataGeneratorVideoNdkImplUnitTest::SetMeatadata(sptr<SurfaceBuffer> &bu
     }
 }
 
-VideoProcessing_ErrorCode MetadataGeneratorVideoNdkImplUnitTest::Process()
+VideoProcessing_ErrorCode MetadataGeneratorVideoNdkImplUnitTest::ProcessContrastStyle()
 {
     VideoProcessing_ErrorCode ret = VIDEO_PROCESSING_SUCCESS;
     sptr<SurfaceBuffer> buffer;
@@ -135,6 +136,62 @@ VideoProcessing_ErrorCode MetadataGeneratorVideoNdkImplUnitTest::Process()
     OH_VideoProcessing* instance2 = nullptr;
     ret = OH_VideoProcessing_Create(&instance, createType);
     ret = OH_VideoProcessing_Create(&instance2, createType);
+    OH_AVFormat* paramSetted = OH_AVFormat_Create();
+    OH_AVFormat_SetIntValue(paramSetted, VIDEO_METADATA_GENERATOR_STYLE_CONTROL,
+        VIDEO_METADATA_GENERATOR_CONTRAST_MODE);
+    ret = OH_VideoProcessing_SetParameter(instance, paramSetted);
+    VideoProcessing_Callback* callback = nullptr;
+    ret = OH_VideoProcessingCallback_Create(&callback);
+    ret = OH_VideoProcessingCallback_BindOnError(callback, OnError);
+    ret = OH_VideoProcessingCallback_BindOnState(callback, OnState);
+    ret = OH_VideoProcessingCallback_BindOnNewOutputBuffer(callback, OnNewOutputBuffer);
+    OHNativeWindow* window = nullptr;
+    OHNativeWindow* window2 = nullptr;
+    ret = OH_VideoProcessing_GetSurface(instance, &window);
+    ret = OH_VideoProcessing_GetSurface(instance2, &window2);
+    auto userData = VIDEO_PROCESSING_STATE_STOPPED;
+    ret = OH_VideoProcessing_RegisterCallback(instance, callback, &userData);
+    ret = OH_VideoProcessing_SetSurface(instance, window2);
+    ret = OH_VideoProcessing_Start(instance);
+    if (ret != VIDEO_PROCESSING_SUCCESS) {
+        return ret;
+    }
+    int videoSurfaceBuffNum = 1;
+    int sleepTime = 2;
+    for (int i = 0; i < videoSurfaceBuffNum; i++) {
+        window->surface->RequestBuffer(buffer, fence_, requestCfg_);
+        SetMeatadata(buffer, inColspcInfo);
+        SetMeatadata(buffer, (uint32_t)inMetaType_);
+        window->surface->FlushBuffer(buffer, fence_, flushCfg_);
+        OH_VideoProcessing_SetSurface(instance, window2);
+        sleep(sleepTime);
+    }
+    OH_VideoProcessing_Destroy(instance);
+    OH_VideoProcessing_Destroy(instance2);
+    OH_VideoProcessing_DeinitializeEnvironment();
+    return ret;
+}
+
+VideoProcessing_ErrorCode MetadataGeneratorVideoNdkImplUnitTest::ProcessBrightStyle()
+{
+    VideoProcessing_ErrorCode ret = VIDEO_PROCESSING_SUCCESS;
+    sptr<SurfaceBuffer> buffer;
+    CM_ColorSpaceInfo inColspcInfo = {
+        static_cast<CM_ColorPrimaries>((inColspc_ & COLORPRIMARIES_MASK) >> COLORPRIMARIES_OFFSET),
+        static_cast<CM_TransFunc>((inColspc_ & TRANSFUNC_MASK) >> TRANSFUNC_OFFSET),
+        static_cast<CM_Matrix>((inColspc_ & MATRIX_MASK) >> MATRIX_OFFSET),
+        static_cast<CM_Range>((inColspc_ & RANGE_MASK) >> RANGE_OFFSET)
+    };
+    ret = OH_VideoProcessing_InitializeEnvironment();
+    int createType = 0x2;
+    OH_VideoProcessing* instance = nullptr;
+    OH_VideoProcessing* instance2 = nullptr;
+    ret = OH_VideoProcessing_Create(&instance, createType);
+    ret = OH_VideoProcessing_Create(&instance2, createType);
+    OH_AVFormat* paramSetted = OH_AVFormat_Create();
+    OH_AVFormat_SetIntValue(paramSetted, VIDEO_METADATA_GENERATOR_STYLE_CONTROL,
+        VIDEO_METADATA_GENERATOR_BRIGHT_MODE);
+    ret = OH_VideoProcessing_SetParameter(instance, paramSetted);
     VideoProcessing_Callback* callback = nullptr;
     ret = OH_VideoProcessingCallback_Create(&callback);
     ret = OH_VideoProcessingCallback_BindOnError(callback, OnError);
@@ -233,9 +290,9 @@ HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, testVideoProcess_testFun, TestSi
     EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
     OH_AVFormat* parameter = OH_AVFormat_Create();
     ret = OH_VideoProcessing_SetParameter(instance, parameter);
-    EXPECT_EQ(ret, VIDEO_PROCESSING_ERROR_OPERATION_NOT_PERMITTED);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_ERROR_INVALID_PARAMETER);
     ret = OH_VideoProcessing_GetParameter(instance, parameter);
-    EXPECT_EQ(ret, VIDEO_PROCESSING_ERROR_OPERATION_NOT_PERMITTED);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
     ret = OH_VideoProcessing_SetSurface(instance, window2);
     EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
     for (int i = 0; i < 2; i++) {
@@ -255,7 +312,286 @@ HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, testVideoProcess_testFun, TestSi
     EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
 }
 
-HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, testVideoProcess_metadataGen, TestSize.Level1)
+// set parameter but param not value
+HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, set_parameter_01, TestSize.Level1)
+{
+    VideoProcessing_ErrorCode ret = OH_VideoProcessing_InitializeEnvironment();
+    int createType = 0x2;
+    OH_VideoProcessing* instance = nullptr;
+    ret = OH_VideoProcessing_Create(&instance, createType);
+    OH_AVFormat* parameter = OH_AVFormat_Create();
+    ret = OH_VideoProcessing_SetParameter(instance, parameter);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_ERROR_INVALID_PARAMETER);
+    OH_VideoProcessing_Destroy(instance);
+    OH_VideoProcessing_DeinitializeEnvironment();
+}
+
+// Set param nullptr
+HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, set_parameter_02, TestSize.Level1)
+{
+    VideoProcessing_ErrorCode ret = OH_VideoProcessing_InitializeEnvironment();
+    int createType = 0x2;
+    OH_VideoProcessing* instance = nullptr;
+    ret = OH_VideoProcessing_Create(&instance, createType);
+    OH_AVFormat* parameter = nullptr;
+    ret = OH_VideoProcessing_SetParameter(instance, parameter);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_ERROR_INVALID_PARAMETER);
+    OH_VideoProcessing_Destroy(instance);
+    OH_VideoProcessing_DeinitializeEnvironment();
+}
+
+// set normal
+HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, set_parameter_03, TestSize.Level1)
+{
+    VideoProcessing_ErrorCode ret = OH_VideoProcessing_InitializeEnvironment();
+    int createType = 0x2;
+    OH_VideoProcessing* instance = nullptr;
+    ret = OH_VideoProcessing_Create(&instance, createType);
+    OH_AVFormat* parameter = OH_AVFormat_Create();
+    OH_AVFormat_SetIntValue(parameter, VIDEO_METADATA_GENERATOR_STYLE_CONTROL,
+        VIDEO_METADATA_GENERATOR_BRIGHT_MODE);
+    ret = OH_VideoProcessing_SetParameter(instance, parameter);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
+    OH_VideoProcessing_Destroy(instance);
+    OH_VideoProcessing_DeinitializeEnvironment();
+}
+
+// set normal
+HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, set_parameter_04, TestSize.Level1)
+{
+    VideoProcessing_ErrorCode ret = OH_VideoProcessing_InitializeEnvironment();
+    int createType = 0x2;
+    OH_VideoProcessing* instance = nullptr;
+    ret = OH_VideoProcessing_Create(&instance, createType);
+    OH_AVFormat* parameter = OH_AVFormat_Create();
+    OH_AVFormat_SetIntValue(parameter, VIDEO_METADATA_GENERATOR_STYLE_CONTROL,
+        VIDEO_METADATA_GENERATOR_CONTRAST_MODE);
+    ret = OH_VideoProcessing_SetParameter(instance, parameter);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
+    OH_VideoProcessing_Destroy(instance);
+    OH_VideoProcessing_DeinitializeEnvironment();
+}
+
+// set invalid value
+HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, set_parameter_05, TestSize.Level1)
+{
+    VideoProcessing_ErrorCode ret = OH_VideoProcessing_InitializeEnvironment();
+    int createType = 0x2;
+    OH_VideoProcessing* instance = nullptr;
+    ret = OH_VideoProcessing_Create(&instance, createType);
+    OH_AVFormat* parameter = OH_AVFormat_Create();
+    OH_AVFormat_SetIntValue(parameter, VIDEO_METADATA_GENERATOR_STYLE_CONTROL, -1);
+    ret = OH_VideoProcessing_SetParameter(instance, parameter);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_ERROR_INVALID_PARAMETER);
+    OH_VideoProcessing_Destroy(instance);
+    OH_VideoProcessing_DeinitializeEnvironment();
+}
+
+// set invalid value
+HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, set_parameter_06, TestSize.Level1)
+{
+    VideoProcessing_ErrorCode ret = OH_VideoProcessing_InitializeEnvironment();
+    int createType = 0x2;
+    OH_VideoProcessing* instance = nullptr;
+    ret = OH_VideoProcessing_Create(&instance, createType);
+    OH_AVFormat* parameter = OH_AVFormat_Create();
+    OH_AVFormat_SetIntValue(parameter, VIDEO_METADATA_GENERATOR_STYLE_CONTROL, 2);
+    ret = OH_VideoProcessing_SetParameter(instance, parameter);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_ERROR_INVALID_PARAMETER);
+    OH_VideoProcessing_Destroy(instance);
+    OH_VideoProcessing_DeinitializeEnvironment();
+}
+
+// set normal
+HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, set_parameter_07, TestSize.Level1)
+{
+    VideoProcessing_ErrorCode ret = OH_VideoProcessing_InitializeEnvironment();
+    int createType = 0x2;
+    OH_VideoProcessing* instance = nullptr;
+    ret = OH_VideoProcessing_Create(&instance, createType);
+    OH_AVFormat* parameter = OH_AVFormat_Create();
+    OH_AVFormat* parameterGetted = OH_AVFormat_Create();
+    OH_AVFormat_SetIntValue(parameter, VIDEO_METADATA_GENERATOR_STYLE_CONTROL,
+        VIDEO_METADATA_GENERATOR_BRIGHT_MODE);
+    ret = OH_VideoProcessing_SetParameter(instance, parameter);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
+    OH_VideoProcessing_GetParameter(instance, parameterGetted);
+    int32_t mode = -1;
+    OH_AVFormat_GetIntValue(parameterGetted, VIDEO_METADATA_GENERATOR_STYLE_CONTROL, &mode);
+    EXPECT_EQ(mode, VIDEO_METADATA_GENERATOR_BRIGHT_MODE);
+    OH_VideoProcessing_Destroy(instance);
+    OH_VideoProcessing_DeinitializeEnvironment();
+}
+
+// set normal
+HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, set_parameter_08, TestSize.Level1)
+{
+    VideoProcessing_ErrorCode ret = OH_VideoProcessing_InitializeEnvironment();
+    int createType = 0x2;
+    OH_VideoProcessing* instance = nullptr;
+    ret = OH_VideoProcessing_Create(&instance, createType);
+    OH_AVFormat* parameter = OH_AVFormat_Create();
+    OH_AVFormat* parameterGetted = OH_AVFormat_Create();
+    OH_AVFormat_SetIntValue(parameter, VIDEO_METADATA_GENERATOR_STYLE_CONTROL,
+        VIDEO_METADATA_GENERATOR_CONTRAST_MODE);
+    ret = OH_VideoProcessing_SetParameter(instance, parameter);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
+    OH_VideoProcessing_GetParameter(instance, parameterGetted);
+    int32_t mode = -1;
+    OH_AVFormat_GetIntValue(parameterGetted, VIDEO_METADATA_GENERATOR_STYLE_CONTROL, &mode);
+    EXPECT_EQ(mode, VIDEO_METADATA_GENERATOR_CONTRAST_MODE);
+    OH_VideoProcessing_Destroy(instance);
+    OH_VideoProcessing_DeinitializeEnvironment();
+}
+
+// set invalid value
+HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, set_parameter_09, TestSize.Level1)
+{
+    VideoProcessing_ErrorCode ret = OH_VideoProcessing_InitializeEnvironment();
+    int createType = 0x2;
+    OH_VideoProcessing* instance = nullptr;
+    ret = OH_VideoProcessing_Create(&instance, createType);
+    OH_AVFormat* parameter = OH_AVFormat_Create();
+    OH_AVFormat* parameterGetted = OH_AVFormat_Create();
+    OH_AVFormat_SetIntValue(parameter, VIDEO_METADATA_GENERATOR_STYLE_CONTROL, -1);
+    ret = OH_VideoProcessing_SetParameter(instance, parameter);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_ERROR_INVALID_PARAMETER);
+    OH_VideoProcessing_GetParameter(instance, parameterGetted);
+    int32_t mode = -1;
+    OH_AVFormat_GetIntValue(parameterGetted, VIDEO_METADATA_GENERATOR_STYLE_CONTROL, &mode);
+    EXPECT_EQ(mode, VIDEO_METADATA_GENERATOR_BRIGHT_MODE);
+    OH_VideoProcessing_Destroy(instance);
+    OH_VideoProcessing_DeinitializeEnvironment();
+}
+
+// get parameter but param not null
+HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, get_parameter_01, TestSize.Level1)
+{
+    VideoProcessing_ErrorCode ret = OH_VideoProcessing_InitializeEnvironment();
+    int createType = 0x2;
+    OH_VideoProcessing* instance = nullptr;
+    ret = OH_VideoProcessing_Create(&instance, createType);
+    OH_AVFormat* parameter = OH_AVFormat_Create();
+    ret = OH_VideoProcessing_GetParameter(instance, parameter);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
+    OH_VideoProcessing_Destroy(instance);
+    OH_VideoProcessing_DeinitializeEnvironment();
+}
+
+// get parameter normal
+HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, get_parameter_02, TestSize.Level1)
+{
+    VideoProcessing_ErrorCode ret = OH_VideoProcessing_InitializeEnvironment();
+    int createType = 0x2;
+    OH_VideoProcessing* instance = nullptr;
+    ret = OH_VideoProcessing_Create(&instance, createType);
+    OH_AVFormat* parameter = nullptr;
+    ret = OH_VideoProcessing_GetParameter(instance, parameter);
+    EXPECT_NE(ret, VIDEO_PROCESSING_SUCCESS);
+    OH_VideoProcessing_Destroy(instance);
+    OH_VideoProcessing_DeinitializeEnvironment();
+}
+
+// get parameter normal after set
+HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, get_parameter_03, TestSize.Level1)
+{
+    VideoProcessing_ErrorCode ret = OH_VideoProcessing_InitializeEnvironment();
+    int createType = 0x2;
+    OH_VideoProcessing* instance = nullptr;
+    ret = OH_VideoProcessing_Create(&instance, createType);
+    OH_AVFormat* parameterSetted = OH_AVFormat_Create();
+    OH_AVFormat* parameterGetted = OH_AVFormat_Create();
+    OH_AVFormat_SetIntValue(parameterSetted, VIDEO_METADATA_GENERATOR_STYLE_CONTROL,
+        VIDEO_METADATA_GENERATOR_BRIGHT_MODE);
+    ret = OH_VideoProcessing_SetParameter(instance, parameterSetted);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
+    ret = OH_VideoProcessing_GetParameter(instance, parameterGetted);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
+    OH_VideoProcessing_Destroy(instance);
+    OH_VideoProcessing_DeinitializeEnvironment();
+}
+
+// get parameter normal after set
+HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, get_parameter_04, TestSize.Level1)
+{
+    VideoProcessing_ErrorCode ret = OH_VideoProcessing_InitializeEnvironment();
+    int createType = 0x2;
+    OH_VideoProcessing* instance = nullptr;
+    ret = OH_VideoProcessing_Create(&instance, createType);
+    OH_AVFormat* parameterSetted = OH_AVFormat_Create();
+    OH_AVFormat* parameterGetted = OH_AVFormat_Create();
+    OH_AVFormat_SetIntValue(parameterSetted, VIDEO_METADATA_GENERATOR_STYLE_CONTROL,
+        VIDEO_METADATA_GENERATOR_CONTRAST_MODE);
+    ret = OH_VideoProcessing_SetParameter(instance, parameterSetted);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
+    ret = OH_VideoProcessing_GetParameter(instance, parameterGetted);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
+    OH_VideoProcessing_Destroy(instance);
+    OH_VideoProcessing_DeinitializeEnvironment();
+}
+
+// get default parameter
+HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, get_parameter_05, TestSize.Level1)
+{
+    VideoProcessing_ErrorCode ret = OH_VideoProcessing_InitializeEnvironment();
+    int createType = 0x2;
+    OH_VideoProcessing* instance = nullptr;
+    ret = OH_VideoProcessing_Create(&instance, createType);
+    OH_AVFormat* parameter = OH_AVFormat_Create();
+    ret = OH_VideoProcessing_GetParameter(instance, parameter);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
+    int32_t mode = -1;
+    OH_AVFormat_GetIntValue(parameter, VIDEO_METADATA_GENERATOR_STYLE_CONTROL, &mode);
+    EXPECT_EQ(mode, VIDEO_METADATA_GENERATOR_BRIGHT_MODE);
+    OH_VideoProcessing_Destroy(instance);
+    OH_VideoProcessing_DeinitializeEnvironment();
+}
+
+// get parameter normal after set
+HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, get_parameter_06, TestSize.Level1)
+{
+    VideoProcessing_ErrorCode ret = OH_VideoProcessing_InitializeEnvironment();
+    int createType = 0x2;
+    OH_VideoProcessing* instance = nullptr;
+    ret = OH_VideoProcessing_Create(&instance, createType);
+    OH_AVFormat* parameterSetted = OH_AVFormat_Create();
+    OH_AVFormat* parameterGetted = OH_AVFormat_Create();
+    OH_AVFormat_SetIntValue(parameterSetted, VIDEO_METADATA_GENERATOR_STYLE_CONTROL,
+        VIDEO_METADATA_GENERATOR_BRIGHT_MODE);
+    ret = OH_VideoProcessing_SetParameter(instance, parameterSetted);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
+    ret = OH_VideoProcessing_GetParameter(instance, parameterGetted);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
+    int32_t mode = -1;
+    OH_AVFormat_GetIntValue(parameterGetted, VIDEO_METADATA_GENERATOR_STYLE_CONTROL, &mode);
+    EXPECT_EQ(mode, VIDEO_METADATA_GENERATOR_BRIGHT_MODE);
+    OH_VideoProcessing_Destroy(instance);
+    OH_VideoProcessing_DeinitializeEnvironment();
+}
+
+// get parameter normal after set
+HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, get_parameter_07, TestSize.Level1)
+{
+    VideoProcessing_ErrorCode ret = OH_VideoProcessing_InitializeEnvironment();
+    int createType = 0x2;
+    OH_VideoProcessing* instance = nullptr;
+    ret = OH_VideoProcessing_Create(&instance, createType);
+    OH_AVFormat* parameterSetted = OH_AVFormat_Create();
+    OH_AVFormat* parameterGetted = OH_AVFormat_Create();
+    OH_AVFormat_SetIntValue(parameterSetted, VIDEO_METADATA_GENERATOR_STYLE_CONTROL,
+        VIDEO_METADATA_GENERATOR_CONTRAST_MODE);
+    ret = OH_VideoProcessing_SetParameter(instance, parameterSetted);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
+    ret = OH_VideoProcessing_GetParameter(instance, parameterGetted);
+    EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
+    int32_t mode = -1;
+    OH_AVFormat_GetIntValue(parameterGetted, VIDEO_METADATA_GENERATOR_STYLE_CONTROL, &mode);
+    EXPECT_EQ(mode, VIDEO_METADATA_GENERATOR_CONTRAST_MODE);
+    OH_VideoProcessing_Destroy(instance);
+    OH_VideoProcessing_DeinitializeEnvironment();
+}
+
+HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, testVideoProcess_metadataGen_01, TestSize.Level1)
 {
     const int formatListNum = 3;
     int formatListHDR[formatListNum] = {GRAPHIC_PIXEL_FMT_YCBCR_P010, GRAPHIC_PIXEL_FMT_YCRCB_P010,
@@ -276,7 +612,34 @@ HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, testVideoProcess_metadataGen, Te
         for (int i = 0; i < formatListNum; i++) {
             surfacePixelFmt_ = static_cast<GraphicPixelFormat>(formatListHDR[i]);
             requestCfg_.format = surfacePixelFmt_;
-            VideoProcessing_ErrorCode ret = Process();
+            VideoProcessing_ErrorCode ret = ProcessContrastStyle();
+            EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
+        }
+    }
+}
+
+HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, testVideoProcess_metadataGen_02, TestSize.Level1)
+{
+    const int formatListNum = 3;
+    int formatListHDR[formatListNum] = {GRAPHIC_PIXEL_FMT_YCBCR_P010, GRAPHIC_PIXEL_FMT_YCRCB_P010,
+        GRAPHIC_PIXEL_FMT_RGBA_1010102};
+    const int colorMetaMetaListNum = 4;
+    const int colorMetaParaNum = 2;
+    const int colorMetaParaInMetaNum = 0;
+    const int colorMetaParaInColorNum = 1;
+    int colorMetaList[colorMetaMetaListNum][colorMetaParaNum] = {
+        {CM_VIDEO_HDR10, CM_BT2020_PQ_LIMIT},
+        {CM_VIDEO_HDR_VIVID, CM_BT2020_PQ_LIMIT},
+        {CM_VIDEO_HLG, CM_BT2020_HLG_LIMIT},
+        {CM_VIDEO_HDR_VIVID, CM_BT2020_HLG_LIMIT}
+    };
+    for (int n = 0; n < colorMetaMetaListNum; n++) {
+        inMetaType_ = static_cast<CM_HDR_Metadata_Type>(colorMetaList[n][colorMetaParaInMetaNum]);
+        inColspc_ = static_cast<CM_ColorSpaceType>(colorMetaList[n][colorMetaParaInColorNum]);
+        for (int i = 0; i < formatListNum; i++) {
+            surfacePixelFmt_ = static_cast<GraphicPixelFormat>(formatListHDR[i]);
+            requestCfg_.format = surfacePixelFmt_;
+            VideoProcessing_ErrorCode ret = ProcessBrightStyle();
             EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
         }
     }
