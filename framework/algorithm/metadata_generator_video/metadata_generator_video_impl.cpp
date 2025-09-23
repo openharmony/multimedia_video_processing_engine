@@ -465,7 +465,7 @@ void MetadataGeneratorVideoImpl::DoTask()
         }
         isProcessing_.store(true);
 
-        if (!AcquireInputBuffers(inputBuffer)) {
+        if (!AcquireInputBuffers(inputBuffer) || inputBuffer->memory == nullptr) {
             break;
         }
         if (inputBuffer->bufferFlag == MDG_BUFFER_FLAG_EOS) {
