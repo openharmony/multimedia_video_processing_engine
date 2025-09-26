@@ -122,9 +122,6 @@ int32_t MetadataGeneratorVideoImpl::AttachToNewSurface(sptr<Surface> newSurface)
 int32_t MetadataGeneratorVideoImpl::GetReleaseOutBuffer()
 {
     std::lock_guard<std::mutex> mapLock(renderQueMutex_);
-    for (RenderBufferAvilMapType::iterator it = renderBufferMapBak_.begin(); it != renderBufferMapBak_.end(); ++it) {
-        outputBufferAvilQue_.push(it->second);
-    }
     renderBufferMapBak_.clear();
     return VPE_ALGO_ERR_OK;
 }
@@ -145,6 +142,7 @@ int32_t MetadataGeneratorVideoImpl::SetOutputSurfaceConfig(sptr<Surface> surface
 
 int32_t MetadataGeneratorVideoImpl::SetOutputSurfaceRunning(sptr<Surface> newSurface)
 {
+    std::lock_guard<std::mutex> outputLock(outputQueMutex_);
     std::lock_guard<std::mutex> lockSurface(surfaceChangeMutex_);
     std::lock_guard<std::mutex> lockSurface2(surfaceChangeMutex2_);
     uint64_t oldId = outputSurface_->GetUniqueId();
@@ -164,6 +162,7 @@ int32_t MetadataGeneratorVideoImpl::SetOutputSurfaceRunning(sptr<Surface> newSur
     newSurface->SetQueueSize(outBufferCnt_);
     newSurface->Connect();
     newSurface->CleanCache();
+    newSurface->SetDefaultUsage(outputSurface_->GetDefaultUsage());
     GetReleaseOutBuffer();
     int32_t ret = AttachToNewSurface(newSurface);
     if (ret != VPE_ALGO_ERR_OK) {
@@ -221,8 +220,6 @@ sptr<Surface> MetadataGeneratorVideoImpl::CreateInputSurface()
     sptr<IBufferProducer> producer = inputSurface_->GetProducer();
     sptr<Surface> producerSurface = Surface::CreateSurfaceAsProducer(producer);
     CHECK_AND_RETURN_RET_LOG(producerSurface != nullptr, nullptr, "CreateSurfaceAsProducer fail");
-    producerSurface->SetDefaultUsage(BUFFER_USAGE_CPU_READ | BUFFER_USAGE_CPU_WRITE | BUFFER_USAGE_HW_RENDER |
-        BUFFER_USAGE_MEM_DMA);
     inputSurface_->SetQueueSize(inBufferCnt_);
     state_ = VPEAlgoState::CONFIGURING;
 
@@ -294,16 +291,7 @@ void MetadataGeneratorVideoImpl::InitBuffers()
     flushCfg_.damage.y = 0;
     flushCfg_.damage.w = requestCfg_.width;
     flushCfg_.damage.h = requestCfg_.height;
-    for (uint32_t i = 0; i < outBufferCnt_; ++i) {
-        std::shared_ptr<SurfaceBufferWrapper> buffer = std::make_shared<SurfaceBufferWrapper>();
-        GSError err = outputSurface_->RequestBuffer(buffer->memory, buffer->fence, requestCfg_);
-        if (err != GSERROR_OK || buffer->memory == nullptr) {
-            VPE_LOGW("RequestBuffer %{public}u failed, GSError=%{public}d", i, err);
-            continue;
-        }
-        outputBufferAvilQue_.push(buffer);
-        outputBufferAvilQueBak_.insert(std::make_pair(buffer->memory->GetSeqNum(), buffer));
-    }
+    outputSurface_->CleanCache(true);
 }
 
 int32_t MetadataGeneratorVideoImpl::Start()
@@ -405,53 +393,55 @@ int32_t MetadataGeneratorVideoImpl::Flush()
     }
 
     std::lock_guard<std::mutex> mapLock(renderQueMutex_);
-    for (auto &[id, buffer] : renderBufferAvilMap_) {
-        VPE_LOGD("Reclaim buffer %{public}" PRIu64, id);
-        outputBufferAvilQue_.push(buffer);
-    }
     renderBufferAvilMap_.clear();
     state_ = VPEAlgoState::FLUSHED;
     return VPE_ALGO_ERR_OK;
 }
 
-void MetadataGeneratorVideoImpl::Process(std::shared_ptr<SurfaceBufferWrapper> inputBuffer,
-    std::shared_ptr<SurfaceBufferWrapper> outputBuffer)
+void MetadataGeneratorVideoImpl::CheckRequestCfg(sptr<SurfaceBuffer> inputBuffer)
+{
+    if (requestCfg_.width != inputBuffer->GetWidth() || requestCfg_.height != inputBuffer->GetHeight() ||
+        requestCfg_.format != inputBuffer->GetFormat() || requestCfg_.usage != inputBuffer->GetUsage()) {
+        requestCfg_.width = inputBuffer->GetWidth();
+        requestCfg_.height = inputBuffer->GetHeight();
+        requestCfg_.format = inputBuffer->GetFormat();
+        requestCfg_.usage = inputBuffer->GetUsage();
+        outputSurface_->CleanCache(true);
+        outputSurface_->SetDefaultUsage(requestCfg_.usage);
+        std::lock_guard<std::mutex> lock(outputQueMutex_);
+        outputBufferAvilQueBak_.clear();
+    }
+}
+
+void MetadataGeneratorVideoImpl::Process(std::shared_ptr<SurfaceBufferWrapper> inputBuffer)
 {
     VPETrace videoTrace("MetadataGeneratorVideoImpl::Process");
     int32_t ret = VPE_ALGO_ERR_EXTENSION_PROCESS_FAILED;
-    outputBuffer->timestamp = inputBuffer->timestamp;
     sptr<SurfaceBuffer> surfaceInputBuffer = inputBuffer->memory;
-    sptr<SurfaceBuffer> surfaceOutputBuffer = outputBuffer->memory;
-    surfaceInputBuffer->InvalidateCache();
-    bool copyRet = AlgorithmUtils::CopySurfaceBufferToSurfaceBuffer(surfaceInputBuffer, surfaceOutputBuffer);
-    if (!copyRet) {
-        requestCfg_.width = surfaceInputBuffer->GetWidth();
-        requestCfg_.height = surfaceInputBuffer->GetHeight();
-        requestCfg_.format = surfaceInputBuffer->GetFormat();
-        surfaceOutputBuffer->EraseMetadataKey(ATTRKEY_COLORSPACE_INFO);
-        surfaceOutputBuffer->EraseMetadataKey(ATTRKEY_HDR_METADATA_TYPE);
-        if (surfaceOutputBuffer->Alloc(requestCfg_) == GSERROR_OK) {
-            copyRet = AlgorithmUtils::CopySurfaceBufferToSurfaceBuffer(surfaceInputBuffer, surfaceOutputBuffer);
-        }
+    CheckRequestCfg(surfaceInputBuffer);
+    std::unique_lock<std::mutex> outputLock(outputQueMutex_);
+    auto it = outputBufferAvilQueBak_.find(surfaceInputBuffer->GetSeqNum());
+    if (it == outputBufferAvilQueBak_.end()) {
+        ret = outputSurface_->AttachBufferToQueue(surfaceInputBuffer);
+        CHECK_AND_RETURN_LOG(ret == GSERROR_OK, "AttachBufferToQueue failed %{public}d", ret);
+        outputBufferAvilQueBak_.emplace(surfaceInputBuffer->GetSeqNum(), inputBuffer);
     }
-    if (copyRet) {
+    outputLock.unlock();
+    {
         VPETrace cscTrace("MetadataGeneratorVideoImpl::csc_->Process");
-        ret = csc_->Process(surfaceOutputBuffer);
+        ret = csc_->Process(surfaceInputBuffer);
     }
     if (ret != 0 && cb_) {
         cb_->OnError(ret);
+        inputSurface_->ReleaseBuffer(surfaceInputBuffer, -1);
     }
-    inputSurface_->ReleaseBuffer(surfaceInputBuffer, -1);
     if (!ret) {
         std::unique_lock<std::mutex> lockOnBq(renderQueMutex_);
-        renderBufferAvilMap_.emplace(outputBuffer->memory->GetSeqNum(), outputBuffer);
-    } else {
-        std::lock_guard<std::mutex> renderLock(renderQueMutex_);
-        outputBufferAvilQue_.push(outputBuffer);
-    }
-
-    if (!ret && cb_) {
-        cb_->OnOutputBufferAvailable(surfaceOutputBuffer->GetSeqNum(), outputBuffer->bufferFlag);
+        renderBufferAvilMap_.emplace(surfaceInputBuffer->GetSeqNum(), inputBuffer);
+        lockOnBq.unlock();
+        if (cb_) {
+            cb_->OnOutputBufferAvailable(surfaceInputBuffer->GetSeqNum(), inputBuffer->bufferFlag);
+        }
     }
 }
 
@@ -470,35 +460,30 @@ bool MetadataGeneratorVideoImpl::WaitProcessing()
                 InitBuffers();
                 initBuffer_.store(false);
             }
-            return ((inputBufferAvilQue_.size() > 0 && outputBufferAvilQue_.size() > 0) || !isRunning_.load());
+            return ((inputBufferAvilQue_.size() > 0) || !isRunning_.load());
         });
     }
 
     return true;
 }
 
-bool MetadataGeneratorVideoImpl::AcquireInputOutputBuffers(std::shared_ptr<SurfaceBufferWrapper>& inputBuffer,
-    std::shared_ptr<SurfaceBufferWrapper>& outputBuffer)
+bool MetadataGeneratorVideoImpl::AcquireInputBuffers(std::shared_ptr<SurfaceBufferWrapper>& inputBuffer)
 {
     std::lock_guard<std::mutex> lockOnBq(onBqMutex_);
-    std::lock_guard<std::mutex> mapLock(renderQueMutex_);
-    if (inputBufferAvilQue_.size() == 0 || outputBufferAvilQue_.size() == 0) {
+    if (inputBufferAvilQue_.size() == 0) {
         if (state_ == VPEAlgoState::STOPPED) {
             cb_->OnState(static_cast<int32_t>(state_.load()));
         }
         return false;
     }
     inputBuffer = inputBufferAvilQue_.front();
-    outputBuffer = outputBufferAvilQue_.front();
     inputBufferAvilQue_.pop();
-    outputBufferAvilQue_.pop();
-    return inputBuffer && outputBuffer;
+    return inputBuffer != nullptr;
 }
 
 void MetadataGeneratorVideoImpl::DoTask()
 {
     std::shared_ptr<SurfaceBufferWrapper> inputBuffer = nullptr;
-    std::shared_ptr<SurfaceBufferWrapper> outputBuffer = nullptr;
     while (true) {
         std::lock_guard<std::mutex> lockTask(mtxTaskDone_);
         if (!isRunning_.load()) {
@@ -506,20 +491,27 @@ void MetadataGeneratorVideoImpl::DoTask()
         }
         isProcessing_.store(true);
 
-        if (!AcquireInputOutputBuffers(inputBuffer, outputBuffer)) {
+        if (!AcquireInputBuffers(inputBuffer) || inputBuffer->memory == nullptr) {
             break;
         }
         if (inputBuffer->bufferFlag == MDG_BUFFER_FLAG_EOS) {
+            std::unique_lock<std::mutex> outputLock(outputQueMutex_);
+            auto it = outputBufferAvilQueBak_.find(inputBuffer->memory->GetSeqNum());
+            if (it == outputBufferAvilQueBak_.end()) {
+                int32_t ret = outputSurface_->AttachBufferToQueue(inputBuffer->memory);
+                CHECK_AND_RETURN_LOG(ret == GSERROR_OK, "AttachBufferToQueue failed %{public}d", ret);
+            }
+            outputLock.unlock();
             {
                 std::unique_lock<std::mutex> lockOnBq(renderQueMutex_);
-                renderBufferAvilMap_.emplace(outputBuffer->memory->GetSeqNum(), outputBuffer);
+                renderBufferAvilMap_.emplace(inputBuffer->memory->GetSeqNum(), inputBuffer);
             }
             if (cb_) {
-                cb_->OnOutputBufferAvailable(outputBuffer->memory->GetSeqNum(), MDG_BUFFER_FLAG_EOS);
+                cb_->OnOutputBufferAvailable(inputBuffer->memory->GetSeqNum(), MDG_BUFFER_FLAG_EOS);
             }
             break;
         }
-        Process(inputBuffer, outputBuffer);
+        Process(inputBuffer);
     }
     isProcessing_.store(false);
     cvTaskDone_.notify_all();
@@ -565,8 +557,7 @@ int32_t MetadataGeneratorVideoImpl::ReleaseOutputBuffer(uint32_t index, bool ren
         std::lock_guard<std::mutex> renderLock(renderQueMutex_);
         renderBufferMapBak_.emplace(buffer->memory->GetSeqNum(), buffer);
     } else {
-        std::lock_guard<std::mutex> renderLock(renderQueMutex_);
-        outputBufferAvilQue_.push(buffer);
+        inputSurface_->ReleaseBuffer(buffer->memory, -1);
     }
     return VPE_ALGO_ERR_OK;
 }
@@ -606,15 +597,16 @@ GSError MetadataGeneratorVideoImpl::OnProducerBufferReleased()
         lockSurface.unlock();
         outputBufferAvilQue_.push(buf);
         auto bufSeqNum = buf->memory->GetSeqNum();
-        lastSurfaceSequence_ = bufSeqNum;
-        renderBufferMapBak_.erase(bufSeqNum);
-        auto it = outputBufferAvilQueBak_.find(bufSeqNum);
-        if (it == outputBufferAvilQueBak_.end()) {
-            outputBufferAvilQueBak_.insert(std::make_pair(bufSeqNum, buf));
-            auto firstSeqNum = renderBufferMapBak_.begin();
-            if (firstSeqNum != renderBufferMapBak_.end()) {
-                outputBufferAvilQueBak_.erase(firstSeqNum->first);
-                renderBufferMapBak_.erase(firstSeqNum->first);
+        auto it = renderBufferMapBak_.find(bufSeqNum);
+        if (it != renderBufferMapBak_.end()) {
+            lastSurfaceSequence_ = bufSeqNum;
+            renderBufferMapBak_.erase(bufSeqNum);
+            inputSurface_->ReleaseBuffer(buf->memory, -1);
+        } else {
+            std::lock_guard<std::mutex> lock(outputQueMutex_);
+            auto it2 = outputBufferAvilQueBak_.find(buf->memory->GetSeqNum());
+            if (it2 == outputBufferAvilQueBak_.end()) {
+                outputSurface_->DetachBufferFromQueue(buf->memory);
             }
         }
     }
@@ -646,15 +638,17 @@ GSError MetadataGeneratorVideoImpl::OnConsumerBufferAvailable()
     constexpr uint32_t waitForEver = -1; // wait fence -1
     if (buffer->fence != nullptr) {
         (void)buffer->fence->Wait(waitForEver);
+        buffer->memory->InvalidateCache();
     }
     inputBufferAvilQue_.push(buffer);
 
     if (!getUsage_) {
-        requestCfg_.usage = (buffer->memory->GetUsage() | requestCfg_.usage);
+        requestCfg_.usage = buffer->memory->GetUsage();
         getUsage_ = true;
         requestCfg_.width = buffer->memory->GetWidth();
         requestCfg_.height = buffer->memory->GetHeight();
         requestCfg_.format = buffer->memory->GetFormat();
+        outputSurface_->SetDefaultUsage(requestCfg_.usage);
         initBuffer_.store(true);
     }
 
