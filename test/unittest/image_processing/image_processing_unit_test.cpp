@@ -20,6 +20,7 @@
 #include "native_avformat.h"
 #include "pixelmap_native.h"
 #include "image_processing_factory.h"
+#include "metadata_generator.h"
 
 using namespace std;
 using namespace testing::ext;
@@ -364,6 +365,59 @@ HWTEST_F(ImageProcessingUnitTest, process_10, TestSize.Level1)
     EXPECT_EQ(ret, IMAGE_PROCESSING_SUCCESS);
     OH_ImageProcessing_DeinitializeEnvironment();
 }
+
+HWTEST_F(ImageProcessingUnitTest, apitest_01, TestSize.Level1)
+{
+    int32_t instanceSrId = -1;
+    int32_t* tmp = &instanceSrId;
+    auto ret = MetadataGeneratorCreate(tmp);
+    EXPECT_EQ(ret, VPE_ALGO_ERR_OK);
+    EXPECT_NE(instanceSrId, (int32_t)(-1));
+    auto input = CreateSurfaceBuffer(GRAPHIC_PIXEL_FMT_RGBA_1010102, 1920, 1080);
+    EXPECT_NE(input, nullptr);
+    OHNativeWindowBuffer* srTmp = OH_NativeWindow_CreateNativeWindowBufferFromSurfaceBuffer(&input);
+    EXPECT_NE(srTmp, nullptr);
+    OH_NativeBuffer* inputImageNativeBuffer = nullptr;
+    OH_NativeBuffer_FromNativeWindowBuffer(srTmp, &inputImageNativeBuffer);
+    EXPECT_NE(inputImageNativeBuffer, nullptr);
+    uint8_t metadataType = CM_IMAGE_HDR_VIVID_DUAL;
+    OH_NativeBuffer_SetMetadataValue(inputImageNativeBuffer, OH_HDR_METADATA_TYPE, sizeof(uint8_t), &metadataType);
+    OH_NativeBuffer_ColorSpace colorSpace = OH_COLORSPACE_BT2020_HLG_LIMIT;
+    OH_NativeBuffer_SetColorSpace(inputImageNativeBuffer, colorSpace);
+    OHNativeWindowBuffer* srIn = OH_NativeWindow_CreateNativeWindowBufferFromNativeBuffer(inputImageNativeBuffer);
+    EXPECT_NE(srIn, nullptr);
+    ret = MetadataGeneratorProcessImage(instanceSrId, srIn);
+    EXPECT_EQ(ret, VPE_ALGO_ERR_OK);
+    ret = MetadataGeneratorDestroy(tmp);
+    EXPECT_EQ(ret, VPE_ALGO_ERR_OK);
+}
+
+HWTEST_F(ImageProcessingUnitTest, apitest_02, TestSize.Level1)
+{
+    int32_t instanceSrId = -1;
+    int32_t* tmp = &instanceSrId;
+    auto ret = MetadataGeneratorCreate(tmp);
+    EXPECT_EQ(ret, VPE_ALGO_ERR_OK);
+    EXPECT_NE(instanceSrId, (int32_t)(-1));
+    auto input = CreateSurfaceBuffer(GRAPHIC_PIXEL_FMT_RGBA_1010102, 1920, 1080);
+    EXPECT_NE(input, nullptr);
+    OHNativeWindowBuffer* srTmp = OH_NativeWindow_CreateNativeWindowBufferFromSurfaceBuffer(&input);
+    EXPECT_NE(srTmp, nullptr);
+    OH_NativeBuffer* inputVideoNativeBuffer = nullptr;
+    OH_NativeBuffer_FromNativeWindowBuffer(srTmp, &inputVideoNativeBuffer);
+    EXPECT_NE(inputVideoNativeBuffer, nullptr);
+    uint8_t metadataType = OH_VIDEO_HDR_HLG;
+    OH_NativeBuffer_SetMetadataValue(inputVideoNativeBuffer, OH_HDR_METADATA_TYPE, sizeof(uint8_t), &metadataType);
+    OH_NativeBuffer_ColorSpace colorSpace = OH_COLORSPACE_BT2020_HLG_LIMIT;
+    OH_NativeBuffer_SetColorSpace(inputVideoNativeBuffer, colorSpace);
+    OHNativeWindowBuffer* srIn = OH_NativeWindow_CreateNativeWindowBufferFromNativeBuffer(inputVideoNativeBuffer);
+    EXPECT_NE(srIn, nullptr);
+    ret = MetadataGeneratorProcessVideo(instanceSrId, srIn);
+    EXPECT_EQ(ret, VPE_ALGO_ERR_OK);
+    ret = MetadataGeneratorDestroy(tmp);
+    EXPECT_EQ(ret, VPE_ALGO_ERR_OK);
+}
+
 } // namespace VideoProcessingEngine
 } // namespace Media
 } // namespace OHOS

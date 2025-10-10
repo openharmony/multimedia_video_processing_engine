@@ -150,7 +150,7 @@ struct MetadataGeneratorParameter {
     MetadataGeneratorAlgoType algoType = MetadataGeneratorAlgoType::META_GEN_ALGO_TYPE_IMAGE;
     bool isOldHdrVivid = false;
     float avgGainmapGray = 0.0;
-    VideoMetadataGeneratorStyle styleType = VideoMetadataGeneratorStyle::META_GEN_BRIGHT_STYLE;
+    VideoMetadataGeneratorStyle styleType = VideoMetadataGeneratorStyle::META_GEN_CONTRAST_STYLE;
 };
 
 uint32_t GetColorSpaceType(const CM_ColorSpaceInfo &colorSpaceInfo);
