@@ -96,7 +96,7 @@
         "type": "variable"
     },
     {
-        "first_introduced": "21",
+        "first_introduced": "22",
         "name": "VIDEO_METADATA_GENERATOR_STYLE_CONTROL",
         "type": "variable"
     }

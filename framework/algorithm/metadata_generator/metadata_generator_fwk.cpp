@@ -175,6 +175,36 @@ int32_t MetadataGeneratorProcessImage(int32_t instance, OHNativeWindowBuffer* in
     return ret;
 }
 
+int32_t MetadataGeneratorProcessVideo(int32_t instance, OHNativeWindowBuffer* inputImage)
+{
+    CHECK_AND_RETURN_RET_LOG((inputImage != nullptr), VPE_ALGO_ERR_INVALID_VAL,
+        "invalid parameters");
+    auto someInstance = Extension::ExtensionManager::GetInstance().GetInstance(instance);
+    CHECK_AND_RETURN_RET_LOG(someInstance != std::nullopt, VPE_ALGO_ERR_INVALID_VAL, "invalid instance");
+ 
+    VPEAlgoErrCode ret = VPE_ALGO_ERR_INVALID_VAL;
+    auto visitFunc = [inputImage, &ret](auto&& var) {
+        using VarType = std::decay_t<decltype(var)>;
+        if constexpr (std::is_same_v<VarType, std::shared_ptr<MetadataGenerator>>) {
+            OH_NativeBuffer* inputImageNativeBuffer = nullptr;
+            CHECK_AND_RETURN_LOG(
+                (OH_NativeBuffer_FromNativeWindowBuffer(inputImage, &inputImageNativeBuffer) == GSERROR_OK),
+                "invalid input image");
+            sptr<SurfaceBuffer> inputImageSurfaceBuffer(
+                SurfaceBuffer::NativeBufferToSurfaceBuffer(inputImageNativeBuffer));
+            MetadataGeneratorParameter param;
+            param.algoType = MetadataGeneratorAlgoType::META_GEN_ALGO_TYPE_VIDEO;
+            (void)var->SetParameter(param);
+            ret = var->Process(inputImageSurfaceBuffer);
+        } else {
+            VPE_LOGE("instance may be miss used");
+        }
+    };
+    std::visit(visitFunc, *someInstance);
+ 
+    return ret;
+}
+
 int32_t MetadataGeneratorDestroy(int32_t* instance)
 {
     CHECK_AND_RETURN_RET_LOG(instance != nullptr, VPE_ALGO_ERR_INVALID_VAL, "instance is null");

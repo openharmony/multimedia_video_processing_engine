@@ -71,6 +71,8 @@ extern "C" int32_t MetadataGeneratorCreate(int32_t* instance);
  
 extern "C" int32_t MetadataGeneratorProcessImage(int32_t instance, OHNativeWindowBuffer* inputImage);
 
+extern "C" int32_t MetadataGeneratorProcessVideo(int32_t instance, OHNativeWindowBuffer* inputImage);
+
 extern "C" int32_t MetadataGeneratorDestroy(int32_t* instance);
 
 } // namespace VideoProcessingEngine

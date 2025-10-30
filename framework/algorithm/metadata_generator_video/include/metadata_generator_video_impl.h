@@ -82,7 +82,7 @@ private:
     std::mutex mutex_;
     bool getUsage_{false};
     std::atomic<bool> initBuffer_{false};
-    std::atomic<VideoMetadataGeneratorStyle> style_{VideoMetadataGeneratorStyle::META_GEN_BRIGHT_STYLE};
+    std::atomic<VideoMetadataGeneratorStyle> style_{VideoMetadataGeneratorStyle::META_GEN_CONTRAST_STYLE};
 
     // task相关
     std::mutex mtxTaskDone_;
