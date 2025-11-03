@@ -63,6 +63,8 @@ protected:
     VpeVideoImpl& operator=(const VpeVideoImpl&) = delete;
     VpeVideoImpl(VpeVideoImpl&&) = delete;
     VpeVideoImpl& operator=(VpeVideoImpl&&) = delete;
+    std::string ToString(const sptr<SurfaceBuffer>& buffer, const std::string& tag = "") const;
+    std::string ToString(const BufferRequestConfig& requestCfg) const;
 
     // These funcions may be called by derived class as necessary.
     bool IsInitialized() const;
