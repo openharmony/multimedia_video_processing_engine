@@ -24,8 +24,8 @@ enum MdgBufferFlag : uint32_t {
 };
 
 enum VIDEO_META_GEN_STYLE {
-    META_GEN_BRIGHT_STYLE = 0,
-    META_GEN_CONTRAST_STYLE = 1,
+    META_GEN_CONTRAST_STYLE = 0,
+    META_GEN_BRIGHT_STYLE = 1,
 };
 
 class __attribute__((visibility("default"))) MetadataGeneratorVideoCallback {

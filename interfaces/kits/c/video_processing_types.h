@@ -171,10 +171,10 @@ typedef enum VideoDetailEnhancer_QualityLevel {
  * @since 22
  */
 typedef enum VideoMetadataGeneratorStyleControl {
-    /** Style Control into bright mode */
-    VIDEO_METADATA_GENERATOR_BRIGHT_MODE = 0,
     /** Style Control into contrast mode */
-    VIDEO_METADATA_GENERATOR_CONTRAST_MODE = 1
+    VIDEO_METADATA_GENERATOR_CONTRAST_MODE = 0,
+    /** Style Control into bright mode */
+    VIDEO_METADATA_GENERATOR_BRIGHT_MODE = 1
 } VideoMetadataGeneratorStyleControl;
 
 /**

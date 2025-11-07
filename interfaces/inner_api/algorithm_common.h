@@ -119,8 +119,8 @@ enum class MetadataGeneratorAlgoType {
 };
 
 enum class VideoMetadataGeneratorStyle {
-    META_GEN_BRIGHT_STYLE = 0,
-    META_GEN_CONTRAST_STYLE = 1
+    META_GEN_CONTRAST_STYLE = 0,
+    META_GEN_BRIGHT_STYLE = 1
 };
 
 struct ColorSpaceConverterParameter {
