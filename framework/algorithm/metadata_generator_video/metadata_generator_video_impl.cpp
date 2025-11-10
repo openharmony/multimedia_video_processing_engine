@@ -242,8 +242,8 @@ int32_t MetadataGeneratorVideoImpl::Configure()
 VPEAlgoErrCode MetadataGeneratorVideoImpl::SetParameter(const MetadataGeneratorParameter& parameter)
 {
     std::lock_guard<std::mutex> lock(mutex_);
-    CHECK_AND_RETURN_RET_LOG(parameter.styleType >= VideoMetadataGeneratorStyle::META_GEN_BRIGHT_STYLE &&
-        parameter.styleType <= VideoMetadataGeneratorStyle::META_GEN_CONTRAST_STYLE,
+    CHECK_AND_RETURN_RET_LOG(parameter.styleType >= VideoMetadataGeneratorStyle::META_GEN_CONTRAST_STYLE &&
+        parameter.styleType <= VideoMetadataGeneratorStyle::META_GEN_BRIGHT_STYLE,
         VPE_ALGO_ERR_INVALID_VAL, "Invalid metadata generator style");
     MetadataGeneratorParameter param;
     param.algoType = MetadataGeneratorAlgoType::META_GEN_ALGO_TYPE_VIDEO;
@@ -256,8 +256,8 @@ VPEAlgoErrCode MetadataGeneratorVideoImpl::SetParameter(const MetadataGeneratorP
 VPEAlgoErrCode MetadataGeneratorVideoImpl::GetParameter(MetadataGeneratorParameter& parameter)
 {
     std::lock_guard<std::mutex> lock(mutex_);
-    CHECK_AND_RETURN_RET_LOG(style_ >= VideoMetadataGeneratorStyle::META_GEN_BRIGHT_STYLE &&
-        style_ <= VideoMetadataGeneratorStyle::META_GEN_CONTRAST_STYLE,
+    CHECK_AND_RETURN_RET_LOG(style_ >= VideoMetadataGeneratorStyle::META_GEN_CONTRAST_STYLE &&
+        style_ <= VideoMetadataGeneratorStyle::META_GEN_BRIGHT_STYLE,
         VPE_ALGO_ERR_INVALID_VAL, "Invalid metadata generator style");
     parameter.algoType = MetadataGeneratorAlgoType::META_GEN_ALGO_TYPE_VIDEO;
     parameter.styleType = style_;

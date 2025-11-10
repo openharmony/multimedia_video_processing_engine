@@ -459,7 +459,7 @@ HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, set_parameter_09, TestSize.Level
     OH_VideoProcessing_GetParameter(instance, parameterGetted);
     int32_t mode = -1;
     OH_AVFormat_GetIntValue(parameterGetted, VIDEO_METADATA_GENERATOR_STYLE_CONTROL, &mode);
-    EXPECT_EQ(mode, VIDEO_METADATA_GENERATOR_BRIGHT_MODE);
+    EXPECT_EQ(mode, VIDEO_METADATA_GENERATOR_CONTRAST_MODE);
     OH_VideoProcessing_Destroy(instance);
     OH_VideoProcessing_DeinitializeEnvironment();
 }
@@ -542,7 +542,7 @@ HWTEST_F(MetadataGeneratorVideoNdkImplUnitTest, get_parameter_05, TestSize.Level
     EXPECT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
     int32_t mode = -1;
     OH_AVFormat_GetIntValue(parameter, VIDEO_METADATA_GENERATOR_STYLE_CONTROL, &mode);
-    EXPECT_EQ(mode, VIDEO_METADATA_GENERATOR_BRIGHT_MODE);
+    EXPECT_EQ(mode, VIDEO_METADATA_GENERATOR_CONTRAST_MODE);
     OH_VideoProcessing_Destroy(instance);
     OH_VideoProcessing_DeinitializeEnvironment();
 }

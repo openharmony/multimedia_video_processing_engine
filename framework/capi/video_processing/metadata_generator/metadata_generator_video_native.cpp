@@ -22,8 +22,8 @@ using namespace OHOS;
 using namespace OHOS::Media::VideoProcessingEngine;
 namespace {
 const std::unordered_map<int, int> styleMap = {
-    {VIDEO_METADATA_GENERATOR_BRIGHT_MODE,         META_GEN_BRIGHT_STYLE},
     {VIDEO_METADATA_GENERATOR_CONTRAST_MODE,       META_GEN_CONTRAST_STYLE},
+    {VIDEO_METADATA_GENERATOR_BRIGHT_MODE,         META_GEN_BRIGHT_STYLE},
 };
 }
 
