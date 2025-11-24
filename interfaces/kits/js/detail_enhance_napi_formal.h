@@ -92,7 +92,7 @@ private:
     static thread_local std::shared_ptr<ContrastEnhanceContext> contrastContext_;
     static thread_local std::shared_ptr<DetailEnhanceContext> detailContext_;
 
-    static bool PrepareNapiEnv(napi_env env, napi_callback_info info, NapiValues* nVal);
+    static bool PrepareNapiEnv(napi_env env, napi_callback_info info, NapiValues* nVal, napi_value* argValue);
     static bool ParseRect(napi_env env, napi_value nVal, OHOS::Rect& rect);
     static bool ParseSize(napi_env env, napi_value nVal);
     static std::shared_ptr<PixelMap> PrepareDstPixelMap(napi_env env, VpeNapi::DetailEnhanceContext* context);
