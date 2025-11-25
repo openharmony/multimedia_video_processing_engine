@@ -86,14 +86,15 @@ void VpeNapi::ThrowExceptionError(napi_env env, const int32_t errCode, const std
     napi_throw_error(env, errCodeStr.c_str(), errMsg.c_str());
 }
 
-bool VpeNapi::PrepareNapiEnv(napi_env env, napi_callback_info info, NapiValues* nVal)
+bool VpeNapi::PrepareNapiEnv(napi_env env, napi_callback_info info, NapiValues* nVal, napi_value* argValue)
 {
     CHECK_AND_RETURN_RET_LOG(nVal != nullptr, false, "nVal == nullptr");
+    CHECK_AND_RETURN_RET_LOG(argValue != nullptr, false, "argValue == nullptr");
     if (napi_get_undefined(env, &(nVal->result)) != napi_ok) {
         VPE_LOGE("Get undefined result failed");
         return false;
     }
-    nVal->status = napi_get_cb_info(env, info, &(nVal->argc), nVal->argv, &(nVal->thisVar), nullptr);
+    nVal->status = napi_get_cb_info(env, info, &(nVal->argc), argValue, &(nVal->thisVar), nullptr);
     if (nVal->status != napi_ok) {
         VPE_LOGE("fail to napi_get_cb_info");
         return false;
@@ -155,8 +156,7 @@ bool VpeNapi::ParseDetailEnhanceParameter(napi_env env, napi_callback_info info)
     NapiValues nVal;
     nVal.argc = NUM_4; // Use the maximum value to initialize argc before executing PrepareNapiEnv
     napi_value argValue[NUM_4] = {0};
-    nVal.argv = argValue;
-    CHECK_AND_RETURN_RET_LOG(PrepareNapiEnv(env, info, &nVal), false, "PrepareNapiEnv failed");
+    CHECK_AND_RETURN_RET_LOG(PrepareNapiEnv(env, info, &nVal, argValue), false, "PrepareNapiEnv failed");
     if (nVal.argc != NUM_2 && nVal.argc != NUM_3 && nVal.argc != NUM_4) {
         VPE_LOGE("Invalid args count %{public}zu", nVal.argc);
         return false;
@@ -169,28 +169,28 @@ bool VpeNapi::ParseDetailEnhanceParameter(napi_env env, napi_callback_info info)
     }
     CHECK_AND_RETURN_RET_LOG(detailContext_->inputPixelMap != nullptr, false, "inputPixelMap is nullptr!");
     if (nVal.argc == NUM_2) { // 2 parameter: pixelmap scaleRatio
-        CHECK_AND_RETURN_RET_LOG(ConfigResolutionBasedOnRatio(env, nVal.argv[NUM_1], detailContext_),
+        CHECK_AND_RETURN_RET_LOG(ConfigResolutionBasedOnRatio(env, argValue[NUM_1], detailContext_),
             false, "ConfigResolutionBasedOnRatio failed");
         detailContext_->qualityLevel = DETAIL_ENH_LEVEL_LOW; // default as low level
     }
     if (nVal.argc == NUM_3) { // 3 parameter: pixelmap scaleRatio level / pixelmap x y
         double valueToCheck = 0;
-        CHECK_AND_RETURN_RET_LOG(napi_get_value_double(env, nVal.argv[NUM_2], &valueToCheck) == napi_ok,
+        CHECK_AND_RETURN_RET_LOG(napi_get_value_double(env, argValue[NUM_2], &valueToCheck) == napi_ok,
             false, "failed to parse");
         if (valueToCheck >= 0 && valueToCheck <= 3) { // if valueToCheck in [0,3], valueToCheck should be level.
-            CHECK_AND_RETURN_RET_LOG(ConfigResolutionBasedOnRatio(env, nVal.argv[NUM_1], detailContext_), false,
+            CHECK_AND_RETURN_RET_LOG(ConfigResolutionBasedOnRatio(env, argValue[NUM_1], detailContext_), false,
                 "ConfigResolutionBasedOnRatio failed");
             detailContext_->qualityLevel = static_cast<int>(valueToCheck);
         } else {
-            CHECK_AND_RETURN_RET_LOG(ConfigResolution(env, nVal.argv[NUM_1], nVal.argv[NUM_2], detailContext_),
+            CHECK_AND_RETURN_RET_LOG(ConfigResolution(env, argValue[NUM_1], argValue[NUM_2], detailContext_),
                 false, "ConfigResolution failed");
             detailContext_->qualityLevel = DETAIL_ENH_LEVEL_LOW; // default as low level
         }
     }
     if (nVal.argc == NUM_4) { // 4 parameter: pixelmap x y level
-        CHECK_AND_RETURN_RET_LOG(ConfigResolution(env, nVal.argv[NUM_1], nVal.argv[NUM_2], detailContext_),
+        CHECK_AND_RETURN_RET_LOG(ConfigResolution(env, argValue[NUM_1], argValue[NUM_2], detailContext_),
             false, "ConfigResolution failed");
-        CHECK_AND_RETURN_RET_LOG(napi_get_value_int32(env, nVal.argv[NUM_3],
+        CHECK_AND_RETURN_RET_LOG(napi_get_value_int32(env, argValue[NUM_3],
             &(detailContext_->qualityLevel)) == napi_ok, false, "Arg 3 type mismatch");
     }
     return true;
@@ -679,8 +679,7 @@ bool VpeNapi::ParseDetailImageParameter(napi_env env, napi_callback_info info, N
     std::lock_guard<std::mutex> lock(g_contrastLock);
     nVal.argc = NUM_9;
     napi_value argValue[NUM_9] = {0};
-    nVal.argv = argValue;
-    if (!PrepareNapiEnv(env, info, &nVal)) {
+    if (!PrepareNapiEnv(env, info, &nVal, argValue)) {
         return false;
     }
     if (nVal.argc != NUM_9) {
@@ -692,20 +691,20 @@ bool VpeNapi::ParseDetailImageParameter(napi_env env, napi_callback_info info, N
         contrastContext_->inputPixelMap = PixelMapNapi::GetPixelMap(env, argValue[NUM_0]);
         CHECK_AND_RETURN_RET_LOG(contrastContext_->inputPixelMap != nullptr, false,
             "contrastContext_->srcPixelMap == nullptr, resuse history");
-        CHECK_AND_RETURN_RET_LOG(napi_get_value_int32(env, nVal.argv[NUM_1],
+        CHECK_AND_RETURN_RET_LOG(napi_get_value_int32(env, argValue[NUM_1],
             &(contrastContext_->pixelmapId)) == napi_ok, false, "Arg 1 type mismatch");
         CHECK_AND_RETURN_RET_LOG(ParseRect(env, argValue[NUM_2], contrastContext_->curPixelmapArea), false,
             "parse pixelmap area failed");
         CHECK_AND_RETURN_RET_LOG(ParseRect(env, argValue[NUM_3], contrastContext_->displayArea), false,
             "parse display area failed");
         CHECK_AND_RETURN_RET_LOG(ParseSize(env, argValue[NUM_4]), false, "parse resolution of original image failed");
-        CHECK_AND_RETURN_RET_LOG(napi_get_value_bool(env, nVal.argv[NUM_5],
+        CHECK_AND_RETURN_RET_LOG(napi_get_value_bool(env, argValue[NUM_5],
             &(contrastContext_->genFinalEffect)) == napi_ok, false, "Arg 5 type mismatch");
-        CHECK_AND_RETURN_RET_LOG(napi_get_value_double(env, nVal.argv[NUM_6],
+        CHECK_AND_RETURN_RET_LOG(napi_get_value_double(env, argValue[NUM_6],
             &(contrastContext_->maxRatio)) == napi_ok, false, "Arg 6 type mismatch");
-        CHECK_AND_RETURN_RET_LOG(napi_get_value_int32(env, nVal.argv[NUM_7],
+        CHECK_AND_RETURN_RET_LOG(napi_get_value_int32(env, argValue[NUM_7],
             &(contrastContext_->animationDuration)) == napi_ok, false, "Arg 7 type mismatch");
-        CHECK_AND_RETURN_RET_LOG(napi_get_value_double(env, nVal.argv[NUM_8],
+        CHECK_AND_RETURN_RET_LOG(napi_get_value_double(env, argValue[NUM_8],
             &(contrastContext_->curRatio)) == napi_ok, false, "Arg 8 type mismatch");
     }
     contrastContext_->fullRatio = std::min(
@@ -727,8 +726,7 @@ bool VpeNapi::ParseLCDParameter(napi_env env, napi_callback_info info, NapiValue
     std::lock_guard<std::mutex> lock(g_contrastLock);
     nVal.argc = NUM_3;
     napi_value argValue[NUM_3] = {0};
-    nVal.argv = argValue;
-    if (!PrepareNapiEnv(env, info, &nVal)) {
+    if (!PrepareNapiEnv(env, info, &nVal, argValue)) {
         return false;
     }
     if (nVal.argc != NUM_3) {
@@ -739,9 +737,9 @@ bool VpeNapi::ParseLCDParameter(napi_env env, napi_callback_info info, NapiValue
             false, "Arg 0 type is not pixelmap");
         contrastContext_->lcdPixelMap = PixelMapNapi::GetPixelMap(env, argValue[NUM_0]);
         CHECK_AND_RETURN_RET_LOG(contrastContext_->lcdPixelMap != nullptr, false, "pixelmap is nullptr");
-        CHECK_AND_RETURN_RET_LOG(napi_get_value_int32(env, nVal.argv[NUM_1],
+        CHECK_AND_RETURN_RET_LOG(napi_get_value_int32(env, argValue[NUM_1],
             &(contrastContext_->contentId)) == napi_ok, false, "Failed to parse lcd param. Arg 1 type mismatch");
-        CHECK_AND_RETURN_RET_LOG(napi_get_value_double(env, nVal.argv[NUM_2],
+        CHECK_AND_RETURN_RET_LOG(napi_get_value_double(env, argValue[NUM_2],
             &(contrastContext_->defaultRatio)) == napi_ok, false, "Failed to parse lcd param. Arg 2 type mismatch");
         CHECK_AND_RETURN_RET_LOG(contrastContext_->lcdPixelMap->GetWidth() > 0 &&
             contrastContext_->lcdPixelMap->GetHeight() > 0, false, "invalid resolution");
