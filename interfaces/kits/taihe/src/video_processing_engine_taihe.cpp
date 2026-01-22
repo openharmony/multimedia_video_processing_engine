@@ -98,7 +98,7 @@ std::shared_ptr<OHOS::Media::PixelMap> ImageProcessorImpl::EnhanceDetailImpl(
     return outputPixelMap;
 }
 
-std::shared_ptr<OHOS::Media::PixelMap ImageProcessorImpl::DetailEnhanceImpl(DetailEnhanceContext* context)
+std::shared_ptr<OHOS::Media::PixelMap> ImageProcessorImpl::DetailEnhanceImpl(DetailEnhanceContext* context)
 {
     return nullptr;
 }
