@@ -38,6 +38,55 @@ namespace ANI::Vpe {
 void InitializeEnvironment() {}
 void DeinitializeEnvironment() {}
 
+void ImageProcessorImpl::ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhanceContext>& detailContext,
+    taiheImage::weak::PixelMap sourceImage, int width, int height, optional_view<taiheVpe::QualityLevel> level)
+{
+    if (detailContext == nullptr) {
+        VPE_LOGE("detailContext == nullptr");
+        return;
+    }
+    ANI::Image:PixelMapImp* pixelMapImpl = reinterpret_cast<ANI::Image::PixelMapImpl*>(sourceImage->GetImplPtr());
+    detailContext->xArg = width;
+    detailContext->yArg = height;
+    if (level.has_value()) {
+        detailContext->qualityLevel = level.value();
+    }
+    detailContext->inputPixelMap = pixelMapImpl->GetNativePtr();
+}
+
+void ImageProcessorImpl::ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhanceContext>& detailContext,
+    taiheImage::weak::PixelMap sourceImage, double scale, optional_view<taiheVpe::QualityLevel> level)
+{
+    if (detailContext == nullptr) {
+        VPE_LOGE("detailContext == nullptr");
+        return;
+    }
+    ANI::Image:PixelMapImp* pixelMapImpl = reinterpret_cast<ANI::Image::PixelMapImpl*>(sourceImage->GetImplPtr());
+    detailContext->xArg = inputPixelMap->GetWidth() * scale;
+    detailContext->yArg = inputPixelMap->GetHeight() * scale;
+    if (level.has_value()) {
+        detailContext->qualityLevel = level.value();
+    }
+    detailContext->inputPixelMap = pixelMapImpl->GetNativePtr();
+}
+
+void ImageProcessorImpl::ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhanceContext>& detailContext,
+    taiheImage::weak::PixelMap sourceImage, double scale, optional_view<taiheVpe::QualityLevel> level)
+{
+    std::shared_ptr<OHOS::Media::PixelMap> outputPixelMap = DetailEnhanceImpl(detailContext.get());
+    detailContext->inputPixelMap = nullptr; // 解引用防止内存泄漏
+    if (outputPixelMap == nullptr) {
+        VPE_LOGE("DetailEnhanceImpl processed failed");
+        return nullptr;
+    }
+    return outputPixelMap;
+}
+
+std::shared_ptr<PixelMap> ImageProcessorImpl::DetailEnhanceImpl(DetailEnhanceContext* context)
+{
+    return nullptr;
+}
+
 taiheImage::PixelMap ImageProcessorImpl::EnhanceDetailWithRes(taiheImage::weak::PixelMap sourceImage, int width,
     int height, optional_view<taiheVpe::QualityLevel> level)
 {

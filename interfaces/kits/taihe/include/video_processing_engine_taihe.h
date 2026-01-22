@@ -47,6 +47,24 @@ public:
     taihe::PixelMap EnhanceDetailWithRes(taiheImage::weak::PixelMap sourceImage, double scale,
         optional_view<taiheVpe::QualityLevel> level);
 };
+
+private:
+    struct DetailEnhanceContext {
+        double xArg{};
+        double yArg{};
+        int32_t qualityLevel{};
+        std::shared_ptr<PixelMap> inputPixelMap;
+        std::shared_ptr<PixelMap> outputPixelMap;
+    }
+
+    void ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhanceContext>& detailContext,
+    taiheImage::weak::PixelMap sourceImage, int width, int height, optional_view<taiheVpe::QualityLevel> level);
+    void ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhanceContext>& detailContext,
+    taiheImage::weak::PixelMap sourceImage, double scale, optional_view<taiheVpe::QualityLevel> level);
+    void ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhanceContext>& detailContext,
+    taiheImage::weak::PixelMap sourceImage, double scale, optional_view<taiheVpe::QualityLevel> level);
+    std::shared_ptr<PixelMap> DetailEnhanceImpl(DetailEnhanceContext* context);
+    
 }
 
 #endif
