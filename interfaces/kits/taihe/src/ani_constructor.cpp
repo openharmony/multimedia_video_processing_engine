@@ -16,7 +16,7 @@
 #include "ohos.multimedia.videoProcessingEngine.ani.hpp"
 #if __has_include(<ani.h>)
 #include <ani.h>
-#elif __has__include(<ani/ani.h>)
+#elif __has_include(<ani/ani.h>)
 #include <ani/ani.h>
 #else
 #error "ani.h not found. Please ensure the Ani SDK is correctly installed."
@@ -28,10 +28,11 @@ ANI_EXPORT ani_status ANI_Constructor(ani_vm *vm, uint32_t *result)
     if (ANI_OK != vm->GetEnv(ANI_VERSION_1, &env)) {
         return ANI_ERROR;
     }
+    ani_status status = ANI_OK;
     if (ANI_OK != ohos::multimedia::videoProcessingEngine::ANIRegister(env)) {
         std::cerr << "Error from ohos::multimedia::videoProcessingEngine::ANIRegister" << std::endl;
-        return ANI_ERROR;
+        status = ANI_ERROR;
     }
     *result = ANI_VERSION_1;
-    return ANI_OK;
+    return status;
 }

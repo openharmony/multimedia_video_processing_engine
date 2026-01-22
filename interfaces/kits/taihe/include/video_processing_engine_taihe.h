@@ -27,7 +27,7 @@
 #include "taihe/runtime.hpp"
 #include "pixel_map_taihe.h"
 
-namespace ANI:Vpe {
+namespace ANI::Vpe {
 using namespace taihe;
 using namespace OHOS;
 using namespace OHOS::Media;
@@ -38,13 +38,13 @@ namespace taiheImage = ::ohos::multimedia::image::image;
 class ImageProcessorImpl {
 public:
     ImageProcessorImpl() = default;
-    taihe::PixelMap EnhanceDetailWithRes(taiheImage::weak::PixelMap sourceImage, int width, int height,
+    taiheImage::PixelMap EnhanceDetailWithRes(taiheImage::weak::PixelMap sourceImage, int width, int height,
         optional_view<taiheVpe::QualityLevel> level);
-    taihe::PixelMap EnhanceDetailWithRes(taiheImage::weak::PixelMap sourceImage, double scale,
+    taiheImage::PixelMap EnhanceDetailWithRatio(taiheImage::weak::PixelMap sourceImage, double scale,
         optional_view<taiheVpe::QualityLevel> level);
-    taihe::PixelMap EnhanceDetailWithRes(taiheImage::weak::PixelMap sourceImage, int width, int height,
+    taiheImage::PixelMap EnhanceDetailSyncWithRes(taiheImage::weak::PixelMap sourceImage, int width, int height,
         optional_view<taiheVpe::QualityLevel> level);
-    taihe::PixelMap EnhanceDetailWithRes(taiheImage::weak::PixelMap sourceImage, double scale,
+    taiheImage::PixelMap EnhanceDetailSyncWithRatio(taiheImage::weak::PixelMap sourceImage, double scale,
         optional_view<taiheVpe::QualityLevel> level);
 };
 
@@ -53,8 +53,8 @@ private:
         double xArg{};
         double yArg{};
         int32_t qualityLevel{};
-        std::shared_ptr<PixelMap> inputPixelMap;
-        std::shared_ptr<PixelMap> outputPixelMap;
+        std::shared_ptr<PixelMap> inputPixelMap{};
+        std::shared_ptr<PixelMap> outputPixelMap{};
     }
 
     void ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhanceContext>& detailContext,
@@ -64,7 +64,8 @@ private:
     void ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhanceContext>& detailContext,
     taiheImage::weak::PixelMap sourceImage, double scale, optional_view<taiheVpe::QualityLevel> level);
     std::shared_ptr<PixelMap> DetailEnhanceImpl(DetailEnhanceContext* context);
-    
+    std::shared_ptr<OHOS::Media::PixelMap> EnhanceDetailImpl(std::unique_ptr<DetailEnhanceContext>& detailContext);
+    std::shared_ptr<OHOS::Media::PixelMap DetailEnhanceImpl(DetailEnhanceContext* context);
 }
 
 #endif

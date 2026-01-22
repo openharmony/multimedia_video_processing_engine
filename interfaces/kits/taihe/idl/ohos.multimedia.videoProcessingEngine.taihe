@@ -30,13 +30,13 @@ enum QualityLevel : i32 {
 
 interface ImageProcessor {
 @overload("enhanceDetail")
-@promise EnhanceDetailWithRes(sourceImage: PixelMap, with: i32, height: i32, level: Optional<QualityLevel>): PixelMap;
+@promise EnhanceDetailWithRes(sourceImage: PixelMap, width: i32, height: i32, level: Optional<QualityLevel>): PixelMap;
 
 @overload("enhanceDetail")
 @promise EnhanceDetailWithRatio(sourceImage: PixelMap, scale: f64, level: Optional<QualityLevel>): PixelMap;
 
 @overload("enhanceDetailSync")
-EnhanceDetailSyncWithRes(sourceImage: PixelMap, with: i32, height: i32, level: Optional<QualityLevel>): PixelMap;
+EnhanceDetailSyncWithRes(sourceImage: PixelMap, width: i32, height: i32, level: Optional<QualityLevel>): PixelMap;
 
 @overload("enhanceDetailSync")
 EnhanceDetailSyncWithRatio(sourceImage: PixelMap, scale: f64, level: Optional<QualityLevel>): PixelMap;

@@ -24,7 +24,7 @@
 #include "image_napi_utils.h"
 #include "media_errors.h"
 #include "memory_manager.h"
-#include "nativ_avformat.h"
+#include "native_avformat.h"
 #include "pixelmap_native_impl.h"
 #include "pixelmap_native.h"
 #include "surface_buffer.h"
@@ -34,9 +34,20 @@
 #include "vpe_trace.h"
 #include "vpe_utils.h"
 
+using namespace OHOS::Media;
+using namespace VideoProcessingEngine;
+using namespace ANI;
+using namespace ANI::Vpe;
+
 namespace ANI::Vpe {
 void InitializeEnvironment() {}
 void DeinitializeEnvironment() {}
+
+taiheVpe::ImageProcessor create()
+{
+    return make_holder<ImageProcessorImpl, taiheVpe::ImageProcessor>();
+}
+} // namespace
 
 void ImageProcessorImpl::ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhanceContext>& detailContext,
     taiheImage::weak::PixelMap sourceImage, int width, int height, optional_view<taiheVpe::QualityLevel> level)
@@ -45,7 +56,7 @@ void ImageProcessorImpl::ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhan
         VPE_LOGE("detailContext == nullptr");
         return;
     }
-    ANI::Image:PixelMapImp* pixelMapImpl = reinterpret_cast<ANI::Image::PixelMapImpl*>(sourceImage->GetImplPtr());
+    ANI::Image::PixelMapImpl* pixelMapImpl = reinterpret_cast<ANI::Image::PixelMapImpl*>(sourceImage->GetImplPtr());
     detailContext->xArg = width;
     detailContext->yArg = height;
     if (level.has_value()) {
@@ -61,7 +72,8 @@ void ImageProcessorImpl::ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhan
         VPE_LOGE("detailContext == nullptr");
         return;
     }
-    ANI::Image:PixelMapImp* pixelMapImpl = reinterpret_cast<ANI::Image::PixelMapImpl*>(sourceImage->GetImplPtr());
+    ANI::Image::PixelMapImpl* pixelMapImpl = reinterpret_cast<ANI::Image::PixelMapImpl*>(sourceImage->GetImplPtr());
+    std::shared_ptr<Media::PixelMap> inputPixelMap = pixelMapImpl->GetNativePtr();
     detailContext->xArg = inputPixelMap->GetWidth() * scale;
     detailContext->yArg = inputPixelMap->GetHeight() * scale;
     if (level.has_value()) {
@@ -70,8 +82,8 @@ void ImageProcessorImpl::ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhan
     detailContext->inputPixelMap = pixelMapImpl->GetNativePtr();
 }
 
-void ImageProcessorImpl::ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhanceContext>& detailContext,
-    taiheImage::weak::PixelMap sourceImage, double scale, optional_view<taiheVpe::QualityLevel> level)
+std::shared_ptr<OHOS::Media::PixelMap> ImageProcessorImpl::EnhanceDetailImpl(
+    std::unique_ptr<DetailEnhanceContext>& detailContext)
 {
     std::shared_ptr<OHOS::Media::PixelMap> outputPixelMap = DetailEnhanceImpl(detailContext.get());
     detailContext->inputPixelMap = nullptr; // 解引用防止内存泄漏
@@ -82,7 +94,7 @@ void ImageProcessorImpl::ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhan
     return outputPixelMap;
 }
 
-std::shared_ptr<PixelMap> ImageProcessorImpl::DetailEnhanceImpl(DetailEnhanceContext* context)
+std::shared_ptr<OHOS::Media::PixelMap ImageProcessorImpl::DetailEnhanceImpl(DetailEnhanceContext* context)
 {
     return nullptr;
 }
@@ -94,7 +106,7 @@ taiheImage::PixelMap ImageProcessorImpl::EnhanceDetailWithRes(taiheImage::weak::
     std::lock_guard<std::mutext> lock(g_detailTaskLock);
     std::unique_ptr<DetailEnhanceContext> detailContext = std::make_unique<DetailEnhanceContext>();
     ParseDetailEnhanceParameter(detailContext, sourceImage, width, height, level);
-    return make_holder<ANI::Image::PixelMapImp, taiheImage::PixelMap>(EnhanceDetailImpl(detailContext));
+    return make_holder<ANI::Image::PixelMapImpl, taiheImage::PixelMap>(EnhanceDetailImpl(detailContext));
 }
 
 taiheImage::PixelMap ImageProcessorImpl::EnhanceDetailWithRatio(taiheImage::weak::PixelMap sourceImage, double scale,
@@ -103,8 +115,8 @@ taiheImage::PixelMap ImageProcessorImpl::EnhanceDetailWithRatio(taiheImage::weak
     VPETrace vpeTrace("VpeAni::DeatailEnhanceProcessRatio");
     std::lock_guard<std::mutext> lock(g_detailTaskLock);
     std::unique_ptr<DetailEnhanceContext> detailContext = std::make_unique<DetailEnhanceContext>();
-    ParseDetailEnhanceParameter(detailContext, sourceImage, width, height, level);
-    return make_holder<ANI::Image::PixelMapImp, taiheImage::PixelMap>(EnhanceDetailImpl(detailContext));
+    ParseDetailEnhanceParameter(detailContext, sourceImage, scale, level);
+    return make_holder<ANI::Image::PixelMapImpl, taiheImage::PixelMap>(EnhanceDetailImpl(detailContext));
 }
 
 taiheImage::PixelMap ImageProcessorImpl::EnhanceDetailSyncWithRes(taiheImage::weak::PixelMap sourceImage, int width,
@@ -114,7 +126,7 @@ taiheImage::PixelMap ImageProcessorImpl::EnhanceDetailSyncWithRes(taiheImage::we
     std::lock_guard<std::mutext> lock(g_detailTaskLock);
     std::unique_ptr<DetailEnhanceContext> detailContext = std::make_unique<DetailEnhanceContext>();
     ParseDetailEnhanceParameter(detailContext, sourceImage, width, height, level);
-    return make_holder<ANI::Image::PixelMapImp, taiheImage::PixelMap>(EnhanceDetailImpl(detailContext));
+    return make_holder<ANI::Image::PixelMapImpl, taiheImage::PixelMap>(EnhanceDetailImpl(detailContext));
 }
 
 taiheImage::PixelMap ImageProcessorImpl::EnhanceDetailSyncWithRatio(taiheImage::weak::PixelMap sourceImage,
@@ -123,8 +135,8 @@ taiheImage::PixelMap ImageProcessorImpl::EnhanceDetailSyncWithRatio(taiheImage::
     VPETrace vpeTrace("VpeAni::DeatailEnhanceProcessSyncRatio");
     std::lock_guard<std::mutext> lock(g_detailTaskLock);
     std::unique_ptr<DetailEnhanceContext> detailContext = std::make_unique<DetailEnhanceContext>();
-    ParseDetailEnhanceParameter(detailContext, sourceImage, width, height, level);
-    return make_holder<ANI::Image::PixelMapImp, taiheImage::PixelMap>(EnhanceDetailImpl(detailContext));
+    ParseDetailEnhanceParameter(detailContext, sourceImage, scale, level);
+    return make_holder<ANI::Image::PixelMapImpl, taiheImage::PixelMap>(EnhanceDetailImpl(detailContext));
 }
 
 // NOLINTBEGIN
@@ -132,4 +144,3 @@ TH_EXPORT_CPP_API_InitializeEnvironment(InitializeEnvironment);
 TH_EXPORT_CPP_API_DeinitializeEnvironment(DeinitializeEnvironment);
 TH_EXPORT_CPP_API_create(create);
 // NOLINTEND
-}
