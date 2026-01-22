@@ -34,14 +34,14 @@
 #include "vpe_trace.h"
 #include "vpe_utils.h"
 
+namespace {
+    static std::mutex g_detailTaskLock{std::mutex()};
+}
+
 using namespace OHOS::Media;
 using namespace VideoProcessingEngine;
 using namespace ANI;
 using namespace ANI::Vpe;
-
-namespace {
-    static std::mutex g_detailTaskLock{std::mutex()};
-}
 
 namespace ANI::Vpe {
 void InitializeEnvironment() {}

@@ -60,11 +60,8 @@ private:
     taiheImage::weak::PixelMap sourceImage, int width, int height, optional_view<taiheVpe::QualityLevel> level);
     void ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhanceContext>& detailContext,
     taiheImage::weak::PixelMap sourceImage, double scale, optional_view<taiheVpe::QualityLevel> level);
-    void ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhanceContext>& detailContext,
-    taiheImage::weak::PixelMap sourceImage, double scale, optional_view<taiheVpe::QualityLevel> level);
-    std::shared_ptr<PixelMap> DetailEnhanceImpl(DetailEnhanceContext* context);
     std::shared_ptr<OHOS::Media::PixelMap> EnhanceDetailImpl(std::unique_ptr<DetailEnhanceContext>& detailContext);
-    std::shared_ptr<OHOS::Media::PixelMap DetailEnhanceImpl(DetailEnhanceContext* context);
+    std::shared_ptr<OHOS::Media::PixelMap> DetailEnhanceImpl(DetailEnhanceContext* context);
 };
 }
 #endif
