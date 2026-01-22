@@ -46,7 +46,6 @@ public:
         optional_view<taiheVpe::QualityLevel> level);
     taiheImage::PixelMap EnhanceDetailSyncWithRatio(taiheImage::weak::PixelMap sourceImage, double scale,
         optional_view<taiheVpe::QualityLevel> level);
-};
 
 private:
     struct DetailEnhanceContext {
@@ -55,7 +54,7 @@ private:
         int32_t qualityLevel{};
         std::shared_ptr<PixelMap> inputPixelMap{};
         std::shared_ptr<PixelMap> outputPixelMap{};
-    }
+    };
 
     void ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhanceContext>& detailContext,
     taiheImage::weak::PixelMap sourceImage, int width, int height, optional_view<taiheVpe::QualityLevel> level);
@@ -66,6 +65,6 @@ private:
     std::shared_ptr<PixelMap> DetailEnhanceImpl(DetailEnhanceContext* context);
     std::shared_ptr<OHOS::Media::PixelMap> EnhanceDetailImpl(std::unique_ptr<DetailEnhanceContext>& detailContext);
     std::shared_ptr<OHOS::Media::PixelMap DetailEnhanceImpl(DetailEnhanceContext* context);
+};
 }
-
 #endif

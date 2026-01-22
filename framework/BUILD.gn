@@ -438,7 +438,7 @@ ohos_shared_library("video_processing") {
   subsystem_name = "multimedia"
   part_name = "video_processing_engine"
 }
-image.image
+
 ohos_shared_library("detailEnhancer") {
   sanitize = {
     cfi = true
@@ -465,7 +465,7 @@ ohos_shared_library("detailEnhancer") {
   ]
 
   cflags = VIDEO_PROCESSING_ENGINE_CFLAGS
-  external_image.imagedeps = [
+  external_deps = [
     "c_utils:utils",
     "graphic_surface:surface",
     "hilog:libhilog",
