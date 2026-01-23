@@ -34,9 +34,10 @@
 #include "vpe_utils.h"
 
 namespace {
-    static std::mutex g_detailTaskLock{std::mutex()};
+static std::mutex g_detailTaskLock{std::mutex()};
 }
 
+using namespace taihe;
 using namespace OHOS::Media;
 using namespace VideoProcessingEngine;
 using namespace ANI;
@@ -85,19 +86,20 @@ void ImageProcessorImpl::ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhan
     detailContext->inputPixelMap = pixelMapImpl->GetNativePtr();
 }
 
-std::shared_ptr<OHOS::Media::PixelMap> ImageProcessorImpl::EnhanceDetailImpl(
+std::shared_ptr<OHOS::Media::PixelMap> ImageProcessorImpl::EnhanceDetail(
     std::unique_ptr<DetailEnhanceContext>& detailContext)
 {
-    std::shared_ptr<OHOS::Media::PixelMap> outputPixelMap = DetailEnhanceImpl(detailContext.get());
-    detailContext->inputPixelMap = nullptr; // 解引用防止内存泄漏
+    std::shared_ptr<OHOS::Media::PixelMap> outputPixelMap = EnhanceDetailImpl(detailContext.get());
+    detailContext->inputPixelMap = nullptr; // Dereferencing prevents memory leaks 
     if (outputPixelMap == nullptr) {
-        VPE_LOGE("DetailEnhanceImpl processed failed");
+        VPE_LOGE("DetailEnhance processed failed");
         return nullptr;
     }
     return outputPixelMap;
 }
 
-std::shared_ptr<OHOS::Media::PixelMap> ImageProcessorImpl::DetailEnhanceImpl(DetailEnhanceContext* context)
+std::shared_ptr<OHOS::Media::PixelMap> ImageProcessorImpl::DEnhanceDetailImpl(
+    std::unique_ptr<DetailEnhanceContext>& detailContext)
 {
     return nullptr;
 }
@@ -106,20 +108,26 @@ taiheImage::PixelMap ImageProcessorImpl::EnhanceDetailWithRes(taiheImage::weak::
     int height, optional_view<taiheVpe::QualityLevel> level)
 {
     VPETrace vpeTrace("VpeAni::DeatailEnhanceProcessRes");
-    std::lock_guard<std::mutex> lock(g_detailTaskLock);
     std::unique_ptr<DetailEnhanceContext> detailContext = std::make_unique<DetailEnhanceContext>();
+    if (detailContext == nullptr) {
+        VPE_LOGE("invalid context");
+        return make_holder<ANI::Image::PixelMapImpl, taiheImage::PixelMap>();
+    }
     ParseDetailEnhanceParameter(detailContext, sourceImage, width, height, level);
-    return make_holder<ANI::Image::PixelMapImpl, taiheImage::PixelMap>(EnhanceDetailImpl(detailContext));
+    return make_holder<ANI::Image::PixelMapImpl, taiheImage::PixelMap>(EnhanceDetail(detailContext));
 }
 
 taiheImage::PixelMap ImageProcessorImpl::EnhanceDetailWithRatio(taiheImage::weak::PixelMap sourceImage, double scale,
     optional_view<taiheVpe::QualityLevel> level)
 {
     VPETrace vpeTrace("VpeAni::DeatailEnhanceProcessRatio");
-    std::lock_guard<std::mutex> lock(g_detailTaskLock);
     std::unique_ptr<DetailEnhanceContext> detailContext = std::make_unique<DetailEnhanceContext>();
+    if (detailContext == nullptr) {
+        VPE_LOGE("invalid context");
+        return make_holder<ANI::Image::PixelMapImpl, taiheImage::PixelMap>();
+    }
     ParseDetailEnhanceParameter(detailContext, sourceImage, scale, level);
-    return make_holder<ANI::Image::PixelMapImpl, taiheImage::PixelMap>(EnhanceDetailImpl(detailContext));
+    return make_holder<ANI::Image::PixelMapImpl, taiheImage::PixelMap>(EnhanceDetail(detailContext));
 }
 
 taiheImage::PixelMap ImageProcessorImpl::EnhanceDetailSyncWithRes(taiheImage::weak::PixelMap sourceImage, int width,
@@ -128,8 +136,12 @@ taiheImage::PixelMap ImageProcessorImpl::EnhanceDetailSyncWithRes(taiheImage::we
     VPETrace vpeTrace("VpeAni::DeatailEnhanceProcessSyncRes");
     std::lock_guard<std::mutex> lock(g_detailTaskLock);
     std::unique_ptr<DetailEnhanceContext> detailContext = std::make_unique<DetailEnhanceContext>();
+    if (detailContext == nullptr) {
+        VPE_LOGE("invalid context");
+        return make_holder<ANI::Image::PixelMapImpl, taiheImage::PixelMap>();
+    }
     ParseDetailEnhanceParameter(detailContext, sourceImage, width, height, level);
-    return make_holder<ANI::Image::PixelMapImpl, taiheImage::PixelMap>(EnhanceDetailImpl(detailContext));
+    return make_holder<ANI::Image::PixelMapImpl, taiheImage::PixelMap>(EnhanceDetail(detailContext));
 }
 
 taiheImage::PixelMap ImageProcessorImpl::EnhanceDetailSyncWithRatio(taiheImage::weak::PixelMap sourceImage,
@@ -138,8 +150,12 @@ taiheImage::PixelMap ImageProcessorImpl::EnhanceDetailSyncWithRatio(taiheImage::
     VPETrace vpeTrace("VpeAni::DeatailEnhanceProcessSyncRatio");
     std::lock_guard<std::mutex> lock(g_detailTaskLock);
     std::unique_ptr<DetailEnhanceContext> detailContext = std::make_unique<DetailEnhanceContext>();
+    if (detailContext == nullptr) {
+        VPE_LOGE("invalid context");
+        return make_holder<ANI::Image::PixelMapImpl, taiheImage::PixelMap>();
+    }
     ParseDetailEnhanceParameter(detailContext, sourceImage, scale, level);
-    return make_holder<ANI::Image::PixelMapImpl, taiheImage::PixelMap>(EnhanceDetailImpl(detailContext));
+    return make_holder<ANI::Image::PixelMapImpl, taiheImage::PixelMap>(EnhanceDetail(detailContext));
 }
 
 // NOLINTBEGIN
