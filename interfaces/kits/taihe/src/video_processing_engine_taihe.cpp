@@ -16,7 +16,6 @@
 #include "video_processing_engine_taihe.h"
 
 #include "detail_enhance_napi_formal.h"
-#include "detail_enhance_napi_utils.h"
 
 #include <algorithm>
 #include <unordered_set>

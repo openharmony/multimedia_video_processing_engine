@@ -91,7 +91,6 @@ taihe_shared_library("video_processing_engine_taihe") {
   sources = get_target_outputs(":run_taihe")
   sources += [
     "src/video_processing_engine_taihe.cpp",
-    "$CAPI_DIR/image_processing/detail_enhance_napi_utils.cpp",
   ]
 
   deps = [
