@@ -35,7 +35,7 @@ namespace taiheImage = ::ohos::multimedia::image::image;
 class ImageProcessorImpl {
 public:
     ImageProcessorImpl() = default;
-    ~PixelMapImpl() = default;
+    ~ImageProcessorImpl() = default;
     taiheImage::PixelMap EnhanceDetailWithRes(taiheImage::weak::PixelMap sourceImage, int width, int height,
         taihe::optional_view<taiheVpe::QualityLevel> level);
     taiheImage::PixelMap EnhanceDetailWithRatio(taiheImage::weak::PixelMap sourceImage, double scale,

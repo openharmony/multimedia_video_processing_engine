@@ -89,7 +89,7 @@ void ImageProcessorImpl::ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhan
 std::shared_ptr<OHOS::Media::PixelMap> ImageProcessorImpl::EnhanceDetail(
     std::unique_ptr<DetailEnhanceContext>& detailContext)
 {
-    std::shared_ptr<OHOS::Media::PixelMap> outputPixelMap = EnhanceDetailImpl(detailContext.get());
+    std::shared_ptr<OHOS::Media::PixelMap> outputPixelMap = EnhanceDetailImpl(detailContext);
     detailContext->inputPixelMap = nullptr; // Dereferencing prevents memory leaks 
     if (outputPixelMap == nullptr) {
         VPE_LOGE("DetailEnhance processed failed");
@@ -98,7 +98,7 @@ std::shared_ptr<OHOS::Media::PixelMap> ImageProcessorImpl::EnhanceDetail(
     return outputPixelMap;
 }
 
-std::shared_ptr<OHOS::Media::PixelMap> ImageProcessorImpl::DEnhanceDetailImpl(
+std::shared_ptr<OHOS::Media::PixelMap> ImageProcessorImpl::EnhanceDetailImpl(
     std::unique_ptr<DetailEnhanceContext>& detailContext)
 {
     return nullptr;
