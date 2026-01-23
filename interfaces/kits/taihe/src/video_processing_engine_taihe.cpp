@@ -90,7 +90,7 @@ std::shared_ptr<OHOS::Media::PixelMap> ImageProcessorImpl::EnhanceDetail(
     std::unique_ptr<DetailEnhanceContext>& detailContext)
 {
     std::shared_ptr<OHOS::Media::PixelMap> outputPixelMap = EnhanceDetailImpl(detailContext);
-    detailContext->inputPixelMap = nullptr; // Dereferencing prevents memory leaks 
+    detailContext->inputPixelMap = nullptr; // Dereferencing prevents memory leaks
     if (outputPixelMap == nullptr) {
         VPE_LOGE("DetailEnhance processed failed");
         return nullptr;
