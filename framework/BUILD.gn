@@ -457,7 +457,6 @@ ohos_shared_library("detailEnhancer") {
   ]
   sources = [
     "//foundation/multimedia/video_processing_engine/framework/capi/image_processing/detail_enhance_napi.cpp",
-    "//foundation/multimedia/image_framework/frameworks/innerkitsimpl/common/src/memory_manager.cpp",
   ]
 
   deps = [

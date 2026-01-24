@@ -35,6 +35,7 @@
         "media_foundation",
         "napi",
         "ipc",
+        "runtime_core",
         "safwk",
         "samgr",
         "eventhandler",
@@ -51,7 +52,9 @@
     "build": {
       "sub_component": [
         "//foundation/multimedia/video_processing_engine/framework:videoprocessingengine",
-        "//foundation/multimedia/video_processing_engine/services:video_processing_service_group"
+        "//foundation/multimedia/video_processing_engine/services:video_processing_service_group",
+        "//foundation/multimedia/video_processing_engine/interfaces/kits/taihe:video_processing_engine_taihe_gen_only",
+        "//foundation/multimedia/video_processing_engine/interfaces/kits/taihe:video_processing_engine_taihe_group"
       ],
       "inner_kits": [
         {

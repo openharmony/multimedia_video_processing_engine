@@ -1,0 +1,48 @@
+/*
+ * Copyright (C) 2026 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@!namespace("@ohos.multimedia.videoProcessingEngine", "videoProcessingEngine")
+@!sts_export_default
+@!sts_inject("""
+static { loadLibraryWithPermissionCheck("video_processing_engine_taihe_core.z", "@ohos.multimedia.videoProcessingEngine"); }
+""")
+
+from ohos.multimedia.image.image use PixelMap;
+
+enum QualityLevel : i32 {
+    NONE = 0,
+    LOW = 1,
+    MEDIUM = 2,
+    HIGH = 3
+}
+
+interface ImageProcessor {
+@overload("enhanceDetail")
+@promise EnhanceDetailWithRes(sourceImage: PixelMap, width: i32, height: i32, level: Optional<QualityLevel>): PixelMap;
+
+@overload("enhanceDetail")
+@promise EnhanceDetailWithRatio(sourceImage: PixelMap, scale: f64, level: Optional<QualityLevel>): PixelMap;
+
+@overload("enhanceDetailSync")
+EnhanceDetailSyncWithRes(sourceImage: PixelMap, width: i32, height: i32, level: Optional<QualityLevel>): PixelMap;
+
+@overload("enhanceDetailSync")
+EnhanceDetailSyncWithRatio(sourceImage: PixelMap, scale: f64, level: Optional<QualityLevel>): PixelMap;
+}
+
+@promise function InitializeEnvironment(): void;
+@promise function DeinitializeEnvironment(): void;
+
+function create(): ImageProcessor;

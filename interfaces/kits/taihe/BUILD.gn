@@ -1,0 +1,150 @@
+# Copyright (c) 2026 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/config/components/ets_frontend/ets2abc_config.gni")
+import("//build/ohos.gni")
+import("//build/ohos/taihe_idl/taihe.gni")
+import("//foundation/multimedia/video_processing_engine/config.gni")
+
+subsystem_name = "multimedia"
+part_name = "video_processing_engine"
+taihe_generated_file_path = "$taihe_file_path/out/$subsystem_name/$part_name"
+
+config("video_processing_engine_taihe_config") {
+  visibility = [ ":*" ]
+  include_dirs = [ "include" ]
+}
+
+copy_taihe_idl("copy_video_processing_engine_taihe") {
+  sources = [
+    "$INTERFACES_DIR/kits/taihe/idl/ohos.multimedia.videoProcessingEngine.taihe",
+  ]
+
+  external_deps = [
+    "image_framework:copy_image_taihe"
+  ]
+}
+
+ohos_taihe("run_taihe") {
+  taihe_generated_file_path = "$taihe_generated_file_path"
+  deps = [ ":copy_video_processing_engine_taihe" ]
+  outputs = [
+    "$taihe_generated_file_path/src/ohos.multimedia.videoProcessingEngine.ani.cpp",
+    "$taihe_generated_file_path/src/ohos.multimedia.videoProcessingEngine.abi.c",
+  ]
+}
+
+generate_static_abc("video_processing_engine_taihe_abc") {
+  base_url = "$taihe_generated_file_path"
+  files = [ "$taihe_generated_file_path/@ohos.multimedia.videoProcessingEngine.ets" ]
+  is_boot_abc = "True"
+  device_dst_file = "/system/framework/video_processing_engine_taihe_abc.abc"
+  dependencies = [ ":run_taihe" ]
+}
+
+ohos_prebuilt_etc("video_processing_engine_etc") {
+  source = "$target_out_dir/video_processing_engine_taihe_abc.abc"
+  module_install_dir = "framework"
+  part_name = "$part_name"
+  subsystem_name = "$subsystem_name"
+  deps = [ ":video_processing_engine_taihe_abc" ]
+}
+
+group("video_processing_engine_taihe_group") {
+  deps = [
+    ":video_processing_engine_etc",
+    ":video_processing_engine_taihe_core",
+  ]
+}
+
+group("video_processing_engine_taihe_gen_only") {
+  deps = [ ":run_taihe" ]
+}
+
+taihe_shared_library("video_processing_engine_taihe") {
+  taihe_generated_file_path = "$taihe_generated_file_path"
+  subsystem_name = "$subsystem_name"
+  part_name = "$part_name"
+
+  public_configs = [ ":video_processing_engine_taihe_config" ]
+
+  include_dirs = [
+    "include/video_processing_engine_taihe.h",
+    "$DFX_DIR/include",
+    "$INTERFACES_DIR/kits/js",
+    "$INTERFACES_INNER_API_DIR",
+    "$CAPI_DIR/image_processing/include/",
+    "$ALGORITHM_COMMON_DIR/include/",
+    "$INTERFACES_CAPI_DIR",
+  ]
+
+  sources = get_target_outputs(":run_taihe")
+  sources += [
+    "src/video_processing_engine_taihe.cpp",
+  ]
+
+  deps = [
+    ":run_taihe",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/framework:videoprocessingengine",
+  ]
+
+  external_deps = [
+    "c_utils:utils",
+    "drivers_interface_display:libdisplay_commontype_proxy_2.1",
+    "graphic_surface:surface",
+    "hilog:libhilog",
+    "hitrace:hitrace_meter",
+    "image_framework:image_utils",
+    "image_framework:image_native",
+    "image_framework:pixelmap",
+    "image_framework:image",
+    "image_framework:image_taihe",
+    "ipc:ipc_napi",
+    "media_foundation:native_media_core",
+    "media_foundation:media_foundation",
+    "runtime_core:ani_helpers",
+  ]
+
+  cflags = [
+    "-DIMAGE_DEBUG_FLAG",
+    "-DIMAGE_COLORSPACE_FLAG",
+  ]
+
+  sanitize = {
+    boundary_sanitize = true
+    cfi = true
+    cfi_cross_dso = true
+    integer_overflow = true
+    ubsan = true
+    debug = false
+  }
+}
+
+taihe_shared_library("video_processing_engine_taihe_core") {
+  taihe_generated_file_path = "$taihe_generated_file_path"
+  subsystem_name = "$subsystem_name"
+  part_name = "$part_name"
+  shlib_type = "ani"
+
+  sources = [ "src/ani_constructor.cpp" ]
+  deps = [ ":video_processing_engine_taihe" ]
+
+  sanitize = {
+    boundary_sanitize = true
+    cfi = true
+    cfi_cross_dso = true
+    integer_overflow = true
+    ubsan = true
+    debug = false
+  }
+}
