@@ -44,7 +44,8 @@
         "egl",
         "opengles",
         "bounds_checking_function",
-        "opencl-headers"
+        "opencl-headers",
+        "window_manager"
       ],
       "third_party": [
       ]
