@@ -721,10 +721,11 @@ bool VpeNapi::ParseDetailImageParameter(napi_env env, napi_callback_info info, N
     return true;
 }
 
-bool VpeNapi::ParseLCDParameter(napi_env env, napi_callback_info info, NapiValues& nVal)
+bool VpeNapi::ParseLCDParameter(napi_env env, napi_callback_info info)
 {
     VPETrace vpeTrace("VpeNapi::DetailEnhance");
     std::lock_guard<std::mutex> lock(g_contrastLock);
+    NapiValues nVal;
     nVal.argc = NUM_3;
     napi_value argValue[NUM_3] = {0};
     nVal.argv = argValue;
@@ -766,8 +767,7 @@ napi_value VpeNapi::SetLcdImage(napi_env env, napi_callback_info info)
         VPE_LOGE("context == nullptr");
         return result;
     }
-    NapiValues nVal;
-    if (!ParseLCDParameter(env, info, nVal)) {
+    if (!ParseLCDParameter(env, info)) {
         VPE_LOGE("parse parameter failed");
         return result;
     }

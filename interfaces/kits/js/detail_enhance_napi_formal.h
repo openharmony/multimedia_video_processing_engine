@@ -125,7 +125,7 @@ private:
 
     // contrast enhancer
     static bool InitContrastAlgo(napi_env env);
-    static bool ParseLCDParameter(napi_env env, napi_callback_info info, NapiValues& nVal);
+    static bool ParseLCDParameter(napi_env env, napi_callback_info info);
     static bool ParseDetailImageParameter(napi_env env, napi_callback_info info, NapiValues& nVal);
     static bool GenerateRegionHist(napi_env env, ContrastEnhanceContext* context);
     static bool UpdateMetadataBasedOnHist(ContrastEnhanceContext* context);
