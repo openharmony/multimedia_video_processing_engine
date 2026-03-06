@@ -47,6 +47,12 @@ namespace ANI::Vpe {
 void InitializeEnvironment() {}
 void DeinitializeEnvironment() {}
 
+void taiheVpe::ThrowExceptionError(const int32_t errCode, const std::string& errMsg)
+{
+    VPE_LOGE("errCode: %{public}d, errMsg: %{public}s", errCode, errMsg.c_str());
+    taihe::set_business_error(errCode, errMsg);
+}
+
 taiheVpe::ImageProcessor create()
 {
     return make_holder<ImageProcessorImpl, taiheVpe::ImageProcessor>();
@@ -86,6 +92,44 @@ void ImageProcessorImpl::ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhan
     detailContext->inputPixelMap = pixelMapImpl->GetNativePtr();
 }
 
+std::shared_ptr<PixelMap> ImageProcessorImpl::PrepareDstPixelMap(DetailEnhanceContext* context)
+{
+    CHECK_AND_RETURN_RET_LOG(context->inputPixelMap->GetWidth() >= MIN_RESOLUTION_DETAIL &&
+        context->inputPixelMap->GetHeight() >= MIN_RESOLUTION_DETAIL &&
+        context->inputPixelMap->GetWidth() <= MAX_RESOLUTION_DETAIL &&
+        context->inputPixelMap->GetHeight() <= MAX_RESOLUTION_DETAIL,
+        nullptr, "invalid resolution");
+    InitializationOptions opts {
+        .size = {
+            .width = static_cast<int>(context->xArg),
+            .height = static_cast<int>(context->yArg),
+        },
+    };
+    VPE_LOGD("res:w %{public}d, h %{public}d, -> w %{public}d, h %{public}d",
+        context->inputPixelMap->GetWidth(), context->inputPixelMap->GetHeight(),
+        static_cast<int>(context->xArg), static_cast<int>(context->yArg));
+    std::unique_ptr<PixelMap> outputPtr = context->inputPixelMap->Create(*context->inputPixelMap, opts);
+    if (outputPtr == nullptr) {
+        ThrowExceptionError(IMAGE_PROCESSING_ERROR_INVALID_VALUE, "create failed");
+        return nullptr;
+    }
+    std::shared_ptr<PixelMap> dstPixelMap{std::move(outputPtr)};
+    return dstPixelMap;
+}
+
+bool ImageProcessorImpl::SetDetailAlgoParam(int level)
+{
+    DetailEnhancerParameters param {
+        .uri = "",
+        .level = static_cast<DetailEnhancerLevel>(level),
+    };
+    if (g_detailEnh->SetParameter(param)!= VPE_ALGO_ERR_OK) {
+        ThrowExceptionError(IMAGE_PROCESSING_ERROR_CREATE_FAILED, "set parameter failed");
+        return false;
+    }
+    return true;
+}
+
 std::shared_ptr<OHOS::Media::PixelMap> ImageProcessorImpl::EnhanceDetail(
     std::unique_ptr<DetailEnhanceContext>& detailContext)
 {
@@ -98,10 +142,84 @@ std::shared_ptr<OHOS::Media::PixelMap> ImageProcessorImpl::EnhanceDetail(
     return outputPixelMap;
 }
 
+bool ImageProcessorImpl::InitDetailAlgo()
+{
+    VPETrace vpeTrace("ImageProcessorImpl::DetailEnhanceInitAlgo");
+    if (g_detailEnh != nullptr) {
+        VPE_LOGW("DetailEnhancerImage handle has created");
+        return true;
+    }
+    g_detailEnh = DetailEnhancerImage::Create();
+    CHECK_AND_RETURN_RET_LOG(g_detailEnh != nullptr, false, "create DetailEnhancerImage failed");
+    return true;
+}
+
+bool ImageProcessorImpl::ConvertPixelmapToSurfaceBuffer(const std::shared_ptr<OHOS::Media::PixelMap>& pixelmap,
+    sptr<SurfaceBuffer>& bufferImpl)
+{
+    BufferRequestConfig bfConfig = {};
+    bfConfig.width = pixelmap->GetWidth();
+    bfConfig.height = pixelmap->GetHeight();
+    bfConfig.usage = BUFFER_USAGE_CPU_READ | BUFFER_USAGE_CPU_WRITE | BUFFER_USAGE_MEM_DMA | BUFFER_USAGE_MEM_MMZ_CACHE;
+    bfConfig.strideAlignment = bfConfig.width;
+    bfConfig.format = GraphicPixelFormat::GRAPHIC_PIXEL_FMT_RGBA_8888;
+    bfConfig.timeout = 0;
+    bfConfig.colorGamut = GraphicColorGamut::GRAPHIC_COLOR_GAMUT_SRGB;
+    bfConfig.transform = GraphicTransformType::GRAPHIC_ROTATE_NONE;
+    CHECK_AND_RETURN_RET_LOG((bufferImpl->Alloc(bfConfig) == GSERROR_OK), false, "invalid OH_PixelmapNative image");
+    return true;
+}
+
+sptr<SurfaceBuffer> ImageProcessorImpl::GetSurfaceBufferFromDMAPixelMap(
+    const std::shared_ptr<OHOS::Media::PixelMap>& pixelmap)
+{
+    CHECK_AND_RETURN_RET_LOG(pixelmap != nullptr, nullptr, "pixelmap == nullptr");
+    if (pixelmap->GetAllocatorType() == AllocatorType::DMA_ALLOC) {
+        return reinterpret_cast<SurfaceBuffer*>(pixelmap->GetFd());
+    }
+    auto buffer = SurfaceBuffer::Create();
+    CHECK_AND_RETURN_RET_LOG(buffer != nullptr, nullptr, "get surface buffer failed!");
+    CHECK_AND_RETURN_RET_LOG(ConvertPixelmapToSurfaceBuffer(pixelmap, buffer), nullptr,
+        "get surface buffer failed!");
+    return buffer;
+}
+
 std::shared_ptr<OHOS::Media::PixelMap> ImageProcessorImpl::EnhanceDetailImpl(
     std::unique_ptr<DetailEnhanceContext>& detailContext)
 {
-    return nullptr;
+    VPETrace vpeTrace("ImageProcessorImpl::DetailEnhanceImpl");
+    if (context == nullptr) {
+        VPE_LOGE("context == nullptr");
+        return nullptr;
+    }
+    if (context->inputPixelMap->GetPixelFormat() == PixelFormat::YCBCR_P010 ||
+        context->inputPixelMap->GetPixelFormat() == PixelFormat::YCRCB_P010) {
+        VPE_LOGI("not support P010");
+        return context->inputPixelMap;
+    }
+    if (!InitDetailAlgo(env)) {
+        VPE_LOGE("init algo failed");
+        ThrowExceptionError(env, IMAGE_PROCESSING_ERROR_CREATE_FAILED, "init algo failed");
+        return nullptr;
+    }
+    if (!SetDetailAlgoParam(env, context->qualityLevel)) {
+        VPE_LOGE("set detail param failed");
+        return nullptr;
+    }
+    if (context->inputPixelMap == nullptr) {
+        VPE_LOGE("*context->inputPixelMap == nullptr");
+        return nullptr;
+    }
+    auto dstPixelMap = PrepareDstPixelMap(env, context);
+    if (dstPixelMap == nullptr) {
+        VPE_LOGE("move failed");
+        return nullptr;
+    }
+    auto output = GetSurfaceBufferFromDMAPixelMap(dstPixelMap);
+    auto input = GetSurfaceBufferFromDMAPixelMap(context->inputPixelMap);
+    CHECK_AND_RETURN_RET_LOG((g_detailEnh != nullptr && g_detailEnh->Process(input, output) == VPE_ALGO_ERR_OK),
+        nullptr, "process failed");
+    return dstPixelMap;
 }
 
 taiheImage::PixelMap ImageProcessorImpl::EnhanceDetailWithRes(taiheImage::weak::PixelMap sourceImage, int width,
