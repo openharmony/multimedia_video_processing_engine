@@ -34,6 +34,9 @@
 #include "vpe_utils.h"
 
 namespace {
+constexpr int32_t MIN_RESOLUTION_DETAIL = 32; // min support resolution 32, consistent with fwk
+constexpr int32_t MAX_RESOLUTION_DETAIL = 8192; // max support resolution 8192, consistent with fwk
+static std::shared_ptr<OHOS::Media::VideoProcessingEngine::DetailEnhancerImage> g_detailEnh{};
 static std::mutex g_detailTaskLock{std::mutex()};
 }
 
@@ -47,7 +50,7 @@ namespace ANI::Vpe {
 void InitializeEnvironment() {}
 void DeinitializeEnvironment() {}
 
-void taiheVpe::ThrowExceptionError(const int32_t errCode, const std::string& errMsg)
+void ImageProcessorImpl::ThrowExceptionError(const int32_t errCode, const std::string& errMsg)
 {
     VPE_LOGE("errCode: %{public}d, errMsg: %{public}s", errCode, errMsg.c_str());
     taihe::set_business_error(errCode, errMsg);
@@ -92,7 +95,7 @@ void ImageProcessorImpl::ParseDetailEnhanceParameter(std::unique_ptr<DetailEnhan
     detailContext->inputPixelMap = pixelMapImpl->GetNativePtr();
 }
 
-std::shared_ptr<PixelMap> ImageProcessorImpl::PrepareDstPixelMap(DetailEnhanceContext* context)
+std::shared_ptr<PixelMap> ImageProcessorImpl::PrepareDstPixelMap(std::unique_ptr<DetailEnhanceContext>& context)
 {
     CHECK_AND_RETURN_RET_LOG(context->inputPixelMap->GetWidth() >= MIN_RESOLUTION_DETAIL &&
         context->inputPixelMap->GetHeight() >= MIN_RESOLUTION_DETAIL &&
@@ -185,7 +188,7 @@ sptr<SurfaceBuffer> ImageProcessorImpl::GetSurfaceBufferFromDMAPixelMap(
 }
 
 std::shared_ptr<OHOS::Media::PixelMap> ImageProcessorImpl::EnhanceDetailImpl(
-    std::unique_ptr<DetailEnhanceContext>& detailContext)
+    std::unique_ptr<DetailEnhanceContext>& context)
 {
     VPETrace vpeTrace("ImageProcessorImpl::DetailEnhanceImpl");
     if (context == nullptr) {
@@ -197,12 +200,12 @@ std::shared_ptr<OHOS::Media::PixelMap> ImageProcessorImpl::EnhanceDetailImpl(
         VPE_LOGI("not support P010");
         return context->inputPixelMap;
     }
-    if (!InitDetailAlgo(env)) {
+    if (!InitDetailAlgo()) {
         VPE_LOGE("init algo failed");
-        ThrowExceptionError(env, IMAGE_PROCESSING_ERROR_CREATE_FAILED, "init algo failed");
+        ThrowExceptionError(IMAGE_PROCESSING_ERROR_CREATE_FAILED, "init algo failed");
         return nullptr;
     }
-    if (!SetDetailAlgoParam(env, context->qualityLevel)) {
+    if (!SetDetailAlgoParam(context->qualityLevel)) {
         VPE_LOGE("set detail param failed");
         return nullptr;
     }
@@ -210,7 +213,7 @@ std::shared_ptr<OHOS::Media::PixelMap> ImageProcessorImpl::EnhanceDetailImpl(
         VPE_LOGE("*context->inputPixelMap == nullptr");
         return nullptr;
     }
-    auto dstPixelMap = PrepareDstPixelMap(env, context);
+    auto dstPixelMap = PrepareDstPixelMap(context);
     if (dstPixelMap == nullptr) {
         VPE_LOGE("move failed");
         return nullptr;
