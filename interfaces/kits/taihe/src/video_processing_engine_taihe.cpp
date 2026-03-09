@@ -136,6 +136,10 @@ bool ImageProcessorImpl::SetDetailAlgoParam(int level)
 std::shared_ptr<OHOS::Media::PixelMap> ImageProcessorImpl::EnhanceDetail(
     std::unique_ptr<DetailEnhanceContext>& detailContext)
 {
+    if (detailContext == nullptr) {
+        VPE_LOGE("detail context is nullptr");
+        return nullptr;
+    }
     std::shared_ptr<OHOS::Media::PixelMap> outputPixelMap = EnhanceDetailImpl(detailContext);
     detailContext->inputPixelMap = nullptr; // Dereferencing prevents memory leaks
     if (outputPixelMap == nullptr) {
