@@ -61,6 +61,14 @@ private:
         taiheImage::weak::PixelMap sourceImage, double scale, taihe::optional_view<taiheVpe::QualityLevel> level);
     std::shared_ptr<OHOS::Media::PixelMap> EnhanceDetail(std::unique_ptr<DetailEnhanceContext>& detailContext);
     std::shared_ptr<OHOS::Media::PixelMap> EnhanceDetailImpl(std::unique_ptr<DetailEnhanceContext>& context);
+    std::shared_ptr<OHOS::Media::PixelMap> PrepareDstPixelMap(std::unique_ptr<DetailEnhanceContext>& context);
+    bool SetDetailAlgoParam(int level);
+    bool InitDetailAlgo();
+    bool ConvertPixelmapToSurfaceBuffer(const std::shared_ptr<OHOS::Media::PixelMap>& pixelmap,
+        OHOS::sptr<OHOS::SurfaceBuffer>& bufferImpl);
+    OHOS::sptr<OHOS::SurfaceBuffer> GetSurfaceBufferFromDMAPixelMap(
+        const std::shared_ptr<OHOS::Media::PixelMap>& pixelmap);
+    void ThrowExceptionError(const int32_t errCode, const std::string& errMsg);
 };
 }
 #endif
