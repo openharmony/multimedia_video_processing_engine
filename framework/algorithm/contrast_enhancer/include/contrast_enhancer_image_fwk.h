@@ -40,6 +40,9 @@ public:
         std::tuple<int, int, double, double, double, int> pixelmapInfo) override;
     VPEAlgoErrCode UpdateMetadataBasedOnPixel(OHOS::Rect displayArea, OHOS::Rect curPixelmapArea,
         OHOS::Rect completePixelmapArea, sptr<SurfaceBuffer> surfaceBuffer, float fullRatio) override;
+    VPEAlgoErrCode ComposeFOVImage(OHOS::Rect displayArea, sptr<SurfaceBuffer> oriBuffer,
+        sptr<SurfaceBuffer> lhdrBuffer, sptr<SurfaceBuffer> outBuffer, ContrastEnhancerInfo info) override;
+
 private:
     std::shared_ptr<ContrastEnhancerBase> GetAlgorithm(ContrastEnhancerType feature);
     std::shared_ptr<ContrastEnhancerBase> CreateAlgorithm(ContrastEnhancerType feature);

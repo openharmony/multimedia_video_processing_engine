@@ -161,6 +161,14 @@ VPEAlgoErrCode ContrastEnhancerImageFwk::UpdateMetadataBasedOnPixel(OHOS::Rect d
     return algoImpl->UpdateMetadataBasedOnPixel(displayArea, curPixelmapArea, completePixelmapArea,
         surfaceBuffer, fullRatio);
 }
+
+VPEAlgoErrCode ComposeFOVImage(OHOS::Rect displayArea, sptr<SurfaceBuffer> oriBuffer,
+    sptr<SurfaceBuffer> lhdrBuffer, sptr<SurfaceBuffer> outBuffer, ContrastEnhancerInfo info)
+{
+    VPE_LOGI("ContrastEnhancerImageFwk ComposeFOVImage Succeed");
+    return VPE_ALGO_ERR_OK;
+}
+
 } // namespace VideoProcessingEngine
 } // namespace Media
 } // namespace OHOS
