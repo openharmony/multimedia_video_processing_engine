@@ -101,6 +101,19 @@ public:
     virtual VPEAlgoErrCode UpdateMetadataBasedOnHist(OHOS::Rect displayArea, sptr<SurfaceBuffer> surfaceBuffer,
         std::tuple<int, int, double, double, double, int> pixelmapInfo) = 0;
 
+    /**
+     * @brief 使用LHDR图合成局部优化结果图
+     * @syscap
+     * @param displayArea 送显区域
+     * @param oriBuffer 输入
+     * @param lhdrBuffer 输入
+     * @param outBuffer 输出
+     * @param info 显示图片信息
+     * @return 返回错误码 VPEAlgoErrCode
+     * @since 16
+     */
+     virtual VPEAlgoErrCode ComposeFOVImage()(OHOS::Rect displayArea, sptr<SurfaceBuffer> surfaceBuffer,
+        sptr<SurfaceBuffer> lhdrBuffer, sptr<SurfaceBuffer> outBuffer, ContrastEnhancerInfo info) = 0;
 protected:
     ContrastEnhancerImage() = default;
     virtual ~ContrastEnhancerImage() = default;
