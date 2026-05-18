@@ -112,7 +112,11 @@ public:
      * @return 返回错误码 VPEAlgoErrCode
      * @since 16
      */
+<<<<<<< HEAD
      virtual VPEAlgoErrCode ComposeFOVImage()(OHOS::Rect displayArea, sptr<SurfaceBuffer> oriBuffer,
+=======
+     virtual VPEAlgoErrCode ComposeFOVImage()(OHOS::Rect displayArea, sptr<SurfaceBuffer> surfaceBuffer,
+>>>>>>> e9a07d481b329d8d1dbee427a92fe3cf8c5f1385
         sptr<SurfaceBuffer> lhdrBuffer, sptr<SurfaceBuffer> outBuffer, ContrastEnhancerInfo info) = 0;
 protected:
     ContrastEnhancerImage() = default;
