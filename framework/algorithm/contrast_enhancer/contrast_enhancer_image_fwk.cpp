@@ -162,7 +162,7 @@ VPEAlgoErrCode ContrastEnhancerImageFwk::UpdateMetadataBasedOnPixel(OHOS::Rect d
         surfaceBuffer, fullRatio);
 }
 
-VPEAlgoErrCode ComposeFOVImage(OHOS::Rect displayArea, sptr<SurfaceBuffer> oriBuffer,
+VPEAlgoErrCode ContrastEnhancerImageFwk::ComposeFOVImage(OHOS::Rect displayArea, sptr<SurfaceBuffer> oriBuffer,
     sptr<SurfaceBuffer> lhdrBuffer, sptr<SurfaceBuffer> outBuffer, ContrastEnhancerInfo info)
 {
     (void)displayArea;
