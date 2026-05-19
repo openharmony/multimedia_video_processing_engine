@@ -74,7 +74,9 @@
               "detail_enhancer_common.h",
               "detail_enhancer_image.h",
               "detail_enhancer_video_common.h",
-              "detail_enhancer_video.h"
+              "detail_enhancer_video.h",
+              "contrast_enhancer_common.h",
+              "contrast_enhancer_image.h"
             ],
             "header_base": "//foundation/multimedia/video_processing_engine/interfaces/inner_api"
           }

@@ -22,13 +22,23 @@ namespace OHOS {
 namespace Media {
 namespace VideoProcessingEngine {
 enum ContrastEnhancerType {
-    ADAPTIVE_FOV,
+    ADAPTIVE_FOV = 0,
+    ADAPTIVE_FOV2 = 1,
     INVALID_CONTRAST_ENHANCER_TYPE,
 };
 
 struct ContrastEnhancerParameters {
     std::string uri{};
     ContrastEnhancerType type{INVALID_CONTRAST_ENHANCER_TYPE};
+};
+
+struct ContrastEnhancerInfo {
+    int pixelmapId;
+    int contentId;
+    double curRatio;
+    double maxRatio;
+    double defaultRatio;
+    int animationDuration;
 };
 } // namespace VideoProcessingEngine
 } // namespace Media
