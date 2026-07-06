@@ -240,6 +240,8 @@ ohos_shared_library("videoprocessingengine") {
     "skia:skia_canvaskit",
     "opencl-headers:libcl",
     "bounds_checking_function:libsec_static",
+    "egl:libEGL",
+    "opengles:libGLES",
   ]
 
   subsystem_name = "multimedia"
