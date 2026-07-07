@@ -239,7 +239,7 @@ ohos_shared_library("videoprocessingengine") {
     "samgr:samgr_proxy",
     "skia:skia_canvaskit",
     "opencl-headers:libcl",
-    "bounds_checking_function:libsec_static",
+    "bounds_checking_function:libsec_shared",
     "egl:libEGL",
     "opengles:libGLES",
   ]
