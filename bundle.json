@@ -45,7 +45,8 @@
         "opengles",
         "bounds_checking_function",
         "opencl-headers",
-        "window_manager"
+        "window_manager",
+        "taihe_ffi_gen"
       ],
       "third_party": [
       ]
