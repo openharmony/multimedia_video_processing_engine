@@ -196,6 +196,9 @@ VideoProcessing_ErrorCode OH_VideoProcessingCallback_BindOnNewOutputBuffer(Video
 
 bool OH_VideoProcessing_IsAutoEffectSupported(uint32_t type)
 {
+    if (access("/system/lib64/libvideoprocessingengine_ext.z.so", 0)) {
+        return false;
+    }
     if (type != VIDEO_PROCESSING_TYPE_AUTOEFFECT_AISR) {
         VPE_LOGE("UseAutoEffect invalid type: 0x%{public}x", type);
         return false;
@@ -205,6 +208,9 @@ bool OH_VideoProcessing_IsAutoEffectSupported(uint32_t type)
  
 VideoProcessing_ErrorCode OH_VideoProcessing_UseAutoEffect(uint32_t type, bool enable, const char* name)
 {
+    if (access("/system/lib64/libvideoprocessingengine_ext.z.so", 0)) {
+        return VIDEO_PROCESSING_ERROR_OPERATION_NOT_PERMITTED;
+    }
     if (type != VIDEO_PROCESSING_TYPE_AUTOEFFECT_AISR) {
         return VIDEO_PROCESSING_ERROR_INVALID_VALUE;
     }
@@ -219,6 +225,9 @@ VideoProcessing_ErrorCode OH_VideoProcessing_UseAutoEffect(uint32_t type, bool e
 VideoProcessing_ErrorCode OH_VideoProcessing_SetAutoEffectParam(
     uint32_t type, const char* name, const OH_AVFormat* param)
 {
+    if (access("/system/lib64/libvideoprocessingengine_ext.z.so", 0)) {
+        return VIDEO_PROCESSING_ERROR_OPERATION_NOT_PERMITTED;
+    }
     VPE_LOGI("OH_VideoProcessing_SetAutoEffectParam start");
     if (type != VIDEO_PROCESSING_TYPE_AUTOEFFECT_AISR) {
         return VIDEO_PROCESSING_ERROR_INVALID_VALUE;
