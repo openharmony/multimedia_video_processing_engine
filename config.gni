@@ -32,6 +32,7 @@ ALGORITHM_EXTENSION_SKIA_DIR        = "$ALGORITHM_DIR/extensions/skia"
 ALGORITHM_COMMON_DIR                = "$ALGORITHM_DIR/common"
 DETAIL_ENHANCER_DIR                 = "$ALGORITHM_DIR/detail_enhancer"
 DETAIL_ENHANCER_VIDEO_DIR           = "$ALGORITHM_DIR/detail_enhancer_video"
+AUTO_EFFECT_AISR_VIDEO_DIR          = "$ALGORITHM_DIR/auto_effect_aisr_video"
 VIDEO_REFRESHRATE_PREDICTION_DIR    = "$ALGORITHM_DIR/video_variable_refresh_rate"
 
 SERVICES_DIR                       = "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/services"
