@@ -827,6 +827,16 @@ void VpeVideoImpl::CheckAndUpdateProducerCache()
     }
 }
 
+bool VpeVideoImpl::GetAutoEffectAisrEnable()
+{
+    return isAutoEffectAisrEnable_.load();
+}
+ 
+void VpeVideoImpl::SetAutoEffectAisrEnable(bool processEnable)
+{
+    isAutoEffectAisrEnable_.store(processEnable);
+}
+
 void VpeVideoImpl::ProcessBuffers()
 {
     if (!isRunning_.load()) {
@@ -858,6 +868,7 @@ void VpeVideoImpl::ProcessBuffers()
                 continue;
             }
         } else {
+            DealAutoEffectAisrAlgo(srcBufferInfo, dstBufferInfo);
             BypassBuffer(srcBufferInfo, dstBufferInfo);
         }
     }
@@ -865,6 +876,19 @@ void VpeVideoImpl::ProcessBuffers()
 
     isProcessing_ = false;
     cvDone_.notify_all();
+}
+
+void VpeVideoImpl::DealAutoEffectAisrAlgo(SurfaceBufferInfo& srcBufferInfo, SurfaceBufferInfo& dstBufferInfo)
+{
+    if (isAutoEffectAisrEnable_) {
+        GernerateAisrMetadata(srcBufferInfo.buffer, dstBufferInfo.buffer, srcBufferInfo.fence);
+    }
+}
+
+VPEAlgoErrCode VpeVideoImpl::GernerateAisrMetadata([[maybe_unused]]sptr<SurfaceBuffer>& srcBuffer,
+    [[maybe_unused]]sptr<SurfaceBuffer>& dstBuffer, [[maybe_unused]]sptr<SyncFence> infenceFd)
+{
+    return VPE_ALGO_ERR_OK;
 }
 
 bool VpeVideoImpl::GetConsumerAndProducerBuffer(SurfaceBufferInfo& srcBufferInfo, SurfaceBufferInfo& dstBufferInfo)
