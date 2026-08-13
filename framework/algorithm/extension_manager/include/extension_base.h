@@ -30,6 +30,7 @@ enum class ExtensionType {
     VIDEO_REFRESHRATE_PREDICTION,
     AIHDR_ENHANCER,
     CONTRAST_ENHANCER,
+    AUTO_EFFECT_AISR,
 };
 
 enum class Rank : uint32_t {
