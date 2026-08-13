@@ -299,6 +299,34 @@ typedef void (*OH_VideoProcessingCallback_OnState)(OH_VideoProcessing* videoProc
 typedef void (*OH_VideoProcessingCallback_OnNewOutputBuffer)(OH_VideoProcessing* videoProcessor, uint32_t index,
     void* userData);
 
+/**
+ * @brief Used to define video aisr autoeffect in XComponent.
+ *
+ * Use {@link OH_VideoProcessing_IsAutoEffectSupported} to query if aisr autoeffect is supported.
+ * @since 26.1.0
+ */
+extern const int32_t VIDEO_PROCESSING_TYPE_AUTOEFFECT_AISR;
+ 
+/**
+ * @brief Sets the key value for enabling or disabling AutoEffect.
+ *
+ * Use {@link OH_AVFormat_SetIntValue} to set the enable value (0 is false, 1 is true) to the AVFormat parameter.
+ * Use {@link OH_VideoProcessing_SetAutoEffectParam} to set the parameters to the video processing instance.
+ * @since 26.1.0
+ */
+extern const char *VIDEO_AUTOEFFECT_ENABLE;
+	 
+/**
+ * @brief Sets the AISR strength.
+ *
+ * Use {@link OH_AVFormat_SetFloatValue} to set the strength value to the AVFormat parameter.
+ * When the value is in the range [0.0, 1.0], the larger the value, the better the image quality,
+ * If this parameter is set to a value less than 0, the image quality enhancement is adaptive.
+ * Use {@link OH_VideoProcessing_SetAutoEffectParam} to set the parameters of the video processing instance.
+ * @since 26.1.0
+ */
+extern const char *VIDEO_AUTOEFFECT_AISR_STRENGTH;
+
 #ifdef __cplusplus
 }
 #endif
