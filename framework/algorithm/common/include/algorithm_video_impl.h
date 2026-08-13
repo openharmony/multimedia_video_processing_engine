@@ -72,6 +72,8 @@ protected:
     VPEAlgoErrCode Deinitialize();
     void RefreshBuffers();
     void OnOutputFormatChanged(const Format& format);
+    void SetAutoEffectAisrEnable(bool processEnable);
+    bool GetAutoEffectAisrEnable();
 
     // These funcions may be overried by derived class as necessary.
     virtual VPEAlgoErrCode OnInitialize();
@@ -85,6 +87,9 @@ protected:
     virtual bool IsConsumerBufferValid(const sptr<SurfaceBuffer>& buffer);
     virtual VPEAlgoErrCode UpdateRequestCfg(const sptr<Surface>& surface, BufferRequestConfig& requestCfg);
     virtual void UpdateRequestCfg(const sptr<SurfaceBuffer>& consumerBuffer, BufferRequestConfig& requestCfg);
+    virtual VPEAlgoErrCode GernerateAisrMetadata(
+        sptr<SurfaceBuffer>& srcBuffer, sptr<SurfaceBuffer>& dstBuffer, sptr<SyncFence> infenceFd);
+    void DealAutoEffectAisrAlgo(SurfaceBufferInfo& srcBufferInfo, SurfaceBufferInfo& dstBufferInfo);
 
 private:
     enum class VPEState : int {
@@ -223,6 +228,7 @@ private:
     std::unordered_map<uint32_t, SurfaceBufferInfo> producerBufferCache_{};
     std::queue<SurfaceBufferInfo> attachBufferQueue_{};
     std::set<uint32_t> attachBufferIDs_{};
+    std::atomic<bool> isAutoEffectAisrEnable_{false};
     // Guarded by bufferLock_ end
 };
 } // namespace VideoProcessingEngine
