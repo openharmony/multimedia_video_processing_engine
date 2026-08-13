@@ -24,6 +24,7 @@
 // Feature altorithm header files begin
 #include "detail_enhancer_video_fwk.h"
 // Feature altorithm header files end
+#include "auto_effect_aisr_video.h"
 
 using namespace OHOS;
 using namespace OHOS::Media::VideoProcessingEngine;
@@ -34,12 +35,18 @@ std::unordered_map<uint32_t, std::function<std::shared_ptr<VpeVideo>(void)>> g_c
     // Feature altorithm header creator begin
     { VIDEO_TYPE_DETAIL_ENHANCER, &DetailEnhancerVideoFwk::Create },
     // Feature altorithm header creator end
+    { VIDEO_TYPE_AUTO_EFFECT_AISR, &AutoEffectAisrVideo::Create },
 };
 
 std::unordered_map<uint32_t, std::function<bool(const OHOS::Media::Format& parameter)>> g_isSupporteds = {
     // NOTE: Add feature altorithm IsSupported here
     // Feature altorithm header isSupported begin
     // Feature altorithm header isSupported end
+    { VIDEO_TYPE_AUTO_EFFECT_AISR, &AutoEffectAisrVideo::IsSupported },
+};
+
+std::unordered_map<uint32_t, std::function<bool(const sptr<Surface>& surface)>> g_isSurfaceSupporteds = {
+    { VIDEO_TYPE_AUTO_EFFECT_AISR, &AutoEffectAisrVideo::IsSurfaceSupported },
 };
 }
 
