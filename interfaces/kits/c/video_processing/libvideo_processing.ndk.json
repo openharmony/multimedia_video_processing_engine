@@ -99,5 +99,32 @@
         "first_introduced": "22",
         "name": "VIDEO_METADATA_GENERATOR_STYLE_CONTROL",
         "type": "variable"
+    },
+    {
+        "first_introduced": "26.1.0",
+        "name": "OH_VideoProcessing_IsAutoEffectSupported"
+    },
+    {
+        "first_introduced": "26.1.0",
+        "name": "OH_VideoProcessing_UseAutoEffect"
+    },
+    {
+        "first_introduced": "26.1.0",
+        "name": "OH_VideoProcessing_SetAutoEffectParam"
+    },
+    {
+        "first_introduced": "26.1.0",
+        "name": "VIDEO_PROCESSING_TYPE_AUTOEFFECT_AISR",
+        "type": "variable"
+    },
+    {
+        "first_introduced": "26.1.0",
+        "name": "VIDEO_AUTOEFFECT_ENABLE",
+        "type": "variable"
+    },
+    {
+        "first_introduced": "26.1.0",
+        "name": "VIDEO_AUTOEFFECT_AISR_STRENGTH",
+        "type": "variable"
     }
 ]
