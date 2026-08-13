@@ -111,6 +111,27 @@ std::shared_ptr<ColorSpaceConverterBase> ExtensionManager::CreateColorSpaceConve
     return impl;
 }
 
+std::shared_ptr<DetailEnhancerBase> ExtensionManager::CreateAutoEffectAisr() const
+{
+    VPE_LOGI("ExtensionManager::CreateAutoEffectAisr start");
+    CHECK_AND_RETURN_RET_LOG(initialized_ == true, nullptr, "CreateAutoEffectAisr: Not initialized");
+    auto extension = FindAutoEffectAisrExtension();
+    CHECK_AND_RETURN_RET_LOG(extension != nullptr, nullptr, "CreateAutoEffectAisr: get an empty extension");
+    // Use dlsym to get creator from ext .so directly, avoiding CFI cross-DSO failure
+    // caused by static_pointer_cast<AutoEffectAisrExtension> and subsequent indirect calls
+    using AutoEffectAisrCreator = void*(*)();
+    auto creator = reinterpret_cast<AutoEffectAisrCreator>(dlsym(g_algoHandle, "CreateAutoEffectAisrVideo"));
+    CHECK_AND_RETURN_RET_LOG(creator != nullptr, nullptr,
+        "CreateAutoEffectAisr: dlsym CreateAutoEffectAisrVideo failed: %{public}s", dlerror());
+    void* rawImpl = creator();
+    CHECK_AND_RETURN_RET_LOG(rawImpl != nullptr, nullptr,
+        "CreateAutoEffectAisr: CreateAutoEffectAisrVideo returned null");
+    VPE_LOGI("ExtensionManager::CreateAutoEffectAisr success");
+    return std::shared_ptr<DetailEnhancerBase>(
+        static_cast<DetailEnhancerBase*>(rawImpl),
+        [](DetailEnhancerBase* p) { delete p; });
+}
+
 std::shared_ptr<VideoRefreshRatePredictionBase> ExtensionManager::CreateVideoRefreshRatePredictor() const
 {
     std::shared_ptr<ExtensionBase> extension;
@@ -509,6 +530,12 @@ T ExtensionManager::BuildCaps(const ExtensionList& extensionList) const
                 CHECK_AND_LOG(err == VPE_ALGO_ERR_OK, "Build caps failed, extension: %{public}s",
                     extension->info.name.c_str());
             }
+        } else if constexpr (std::is_same_v<T, AutoEffectAisrCapabilityMap>) {
+            if (extension->info.type == ExtensionType::AUTO_EFFECT_AISR) {
+                err = BuildAutoEffectAisrCaps(extension, idx, capMap);
+                CHECK_AND_LOG(err == VPE_ALGO_ERR_OK, "Build caps failed, extension: %{public}s",
+                    extension->info.name.c_str());
+            }
         } else if constexpr (std::is_same_v<T, AihdrEnhancerCapabilityMap>) {
             if (extension->info.type == ExtensionType::AIHDR_ENHANCER) {
                 err = BuildAihdrEnhancerCaps(extension, idx, capMap);
@@ -521,6 +548,23 @@ T ExtensionManager::BuildCaps(const ExtensionList& extensionList) const
         }
     }
     return capMap;
+}
+
+std::shared_ptr<ExtensionBase> ExtensionManager::FindAutoEffectAisrExtension() const
+{
+    VPE_LOGI("FindAutoEffectAisrExtension start");
+    auto extensionList = LoadExtensions();
+    CHECK_AND_RETURN_RET_LOG(!extensionList.empty(), nullptr, "FindAutoEffectAisrExtension: No extension found");
+    VPE_LOGI("FindAutoEffectAisrExtension: extensionList size=%{public}zu", extensionList.size());
+    // Find AUTO_EFFECT_AISR extension by type without static_pointer_cast to avoid CFI cross-DSO failure
+    for (auto& ext : extensionList) {
+        if (ext != nullptr && ext->info.type == ExtensionType::AUTO_EFFECT_AISR) {
+            VPE_LOGI("FindAutoEffectAisrExtension: found extension name: %{public}s", ext->info.name.c_str());
+            return ext;
+        }
+    }
+    VPE_LOGI("FindAutoEffectAisrExtension: AUTO_EFFECT_Aisr not found in extension list");
+    return nullptr;
 }
 
 std::shared_ptr<ColorSpaceConverterExtension> ExtensionManager::FindColorSpaceConverterExtension(
@@ -755,6 +799,29 @@ VPEAlgoErrCode ExtensionManager::BuildAihdrEnhancerCaps(const std::shared_ptr<Ex
     }
     return err;
 }
+
+VPEAlgoErrCode ExtensionManager::BuildAutoEffectAisrCaps(const std::shared_ptr<ExtensionBase>& ext, size_t idx,
+    AutoEffectAisrCapabilityMap& autoEffectAisrCapabilityMap) const
+{
+    // Use dlsym to get BuildCapabilities from ext .so directly, avoiding CFI cross-DSO failure
+    using AutoEffectAisrCapsBuilder = void(*)(AutoEffectAisrCapability*);
+    auto capsBuilder = reinterpret_cast<AutoEffectAisrCapsBuilder>(dlsym(g_algoHandle,
+        "BuildAutoEffectVideoCapabilities"));
+    AutoEffectAisrCapability capabilities{};
+    if (capsBuilder != nullptr) {
+        capsBuilder(&capabilities);
+    }
+    auto itr = autoEffectAisrCapabilityMap.find(0);
+    if (itr == autoEffectAisrCapabilityMap.end()) {
+        autoEffectAisrCapabilityMap.emplace(0, idx);
+    } else {
+        if (capabilities.rank == Rank::RANK_HIGH) {
+            itr->second = idx;
+        }
+    }
+    return VPE_ALGO_ERR_OK;
+}
+
 VPEAlgoErrCode ExtensionManager::BuildContrastEnhancerCaps(const std::shared_ptr<ExtensionBase>& ext, size_t idx,
     ContrastEnhancerCapabilityMap& contrastEnhancerCapabilityMap) const
 {
