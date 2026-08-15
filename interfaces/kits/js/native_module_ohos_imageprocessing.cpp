@@ -35,7 +35,7 @@ static napi_value Export(napi_env env, napi_value exports)
 /*
  * module define
  */
-static napi_module videoProcessingModule = {
+static napi_module videoProcessingEngineModule = {
     .nm_version = 1,
     .nm_flags = 0,
     .nm_filename = nullptr,
@@ -48,9 +48,9 @@ static napi_module videoProcessingModule = {
 /*
  * module register
  */
-extern "C" __attribute__((constructor)) void VideoProcessingModule(void)
+extern "C" __attribute__((constructor)) void RegisterVideoProcessingEngineModule(void)
 {
-    napi_module_register(&videoProcessingModule);
+    napi_module_register(&videoProcessingEngineModule);
 }
 } // namespace Media
 } // namespace OHOS

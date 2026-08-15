@@ -56,7 +56,9 @@
         "//foundation/multimedia/video_processing_engine/framework:videoprocessingengine",
         "//foundation/multimedia/video_processing_engine/services:video_processing_service_group",
         "//foundation/multimedia/video_processing_engine/interfaces/kits/taihe:video_processing_engine_taihe_gen_only",
-        "//foundation/multimedia/video_processing_engine/interfaces/kits/taihe:video_processing_engine_taihe_group"
+        "//foundation/multimedia/video_processing_engine/interfaces/kits/taihe:video_processing_engine_taihe_group",
+        "//foundation/multimedia/video_processing_engine/interfaces/kits/taihe:video_processing_taihe_group",
+        "//foundation/multimedia/video_processing_engine/framework:videoprocessing_napi"
       ],
       "inner_kits": [
         {

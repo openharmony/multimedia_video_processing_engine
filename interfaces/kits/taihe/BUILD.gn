@@ -18,8 +18,10 @@ import("//foundation/multimedia/video_processing_engine/config.gni")
 
 subsystem_name = "multimedia"
 part_name = "video_processing_engine"
-taihe_generated_file_path = "$taihe_file_path/out/$subsystem_name/$part_name"
 
+# =============== videoProcessingEngine Module ===============
+videoProcessingEngine = "videoProcessingEngine"
+video_processing_engine_taihe_generated_file_path = "$taihe_file_path/out/$subsystem_name/$part_name/$videoProcessingEngine"
 config("video_processing_engine_taihe_config") {
   visibility = [ ":*" ]
   include_dirs = [ "include" ]
@@ -36,17 +38,17 @@ copy_taihe_idl("copy_video_processing_engine_taihe") {
 }
 
 ohos_taihe("run_taihe") {
-  taihe_generated_file_path = "$taihe_generated_file_path"
+  taihe_generated_file_path = "$video_processing_engine_taihe_generated_file_path"
   deps = [ ":copy_video_processing_engine_taihe" ]
   outputs = [
-    "$taihe_generated_file_path/src/ohos.multimedia.videoProcessingEngine.ani.cpp",
-    "$taihe_generated_file_path/src/ohos.multimedia.videoProcessingEngine.abi.c",
+    "$video_processing_engine_taihe_generated_file_path/src/ohos.multimedia.videoProcessingEngine.ani.cpp",
+    "$video_processing_engine_taihe_generated_file_path/src/ohos.multimedia.videoProcessingEngine.abi.c",
   ]
 }
 
 generate_static_abc("video_processing_engine_taihe_abc") {
-  base_url = "$taihe_generated_file_path"
-  files = [ "$taihe_generated_file_path/@ohos.multimedia.videoProcessingEngine.ets" ]
+  base_url = "$video_processing_engine_taihe_generated_file_path"
+  files = [ "$video_processing_engine_taihe_generated_file_path/@ohos.multimedia.videoProcessingEngine.ets" ]
   is_boot_abc = "True"
   device_dst_file = "/system/framework/video_processing_engine_taihe_abc.abc"
   dependencies = [ ":run_taihe" ]
@@ -72,7 +74,7 @@ group("video_processing_engine_taihe_gen_only") {
 }
 
 taihe_shared_library("video_processing_engine_taihe") {
-  taihe_generated_file_path = "$taihe_generated_file_path"
+  taihe_generated_file_path = "$video_processing_engine_taihe_generated_file_path"
   subsystem_name = "$subsystem_name"
   part_name = "$part_name"
 
@@ -113,6 +115,7 @@ taihe_shared_library("video_processing_engine_taihe") {
     "media_foundation:native_media_core",
     "media_foundation:media_foundation",
     "runtime_core:ani_helpers",
+    "napi:ace_napi",
   ]
 
   cflags = [
@@ -131,13 +134,117 @@ taihe_shared_library("video_processing_engine_taihe") {
 }
 
 taihe_shared_library("video_processing_engine_taihe_core") {
-  taihe_generated_file_path = "$taihe_generated_file_path"
+  taihe_generated_file_path = "$video_processing_engine_taihe_generated_file_path"
   subsystem_name = "$subsystem_name"
   part_name = "$part_name"
   shlib_type = "ani"
 
   sources = [ "src/ani_constructor.cpp" ]
   deps = [ ":video_processing_engine_taihe" ]
+
+  sanitize = {
+    boundary_sanitize = true
+    cfi = true
+    cfi_cross_dso = true
+    integer_overflow = true
+    ubsan = true
+    debug = false
+  }
+}
+
+# =============== videoProcessing Module ===============
+videoProcessing = "videoProcessing"
+video_processing_taihe_generated_file_path = "$taihe_file_path/out/$subsystem_name/$part_name/$videoProcessing"
+config("video_processing_taihe_config") {
+  visibility = [ ":*" ]
+  include_dirs = [ "include" ]
+}
+
+copy_taihe_idl("copy_video_processing_taihe") {
+  sources = [
+    "$INTERFACES_DIR/kits/taihe/idl/ohos.multimedia.videoProcessing.taihe",
+  ]
+}
+
+ohos_taihe("run_taihe_video_processing") {
+  taihe_generated_file_path = "$video_processing_taihe_generated_file_path"
+  deps = [ ":copy_video_processing_taihe" ]
+  outputs = [
+    "$video_processing_taihe_generated_file_path/src/ohos.multimedia.videoProcessing.ani.cpp",
+    "$video_processing_taihe_generated_file_path/src/ohos.multimedia.videoProcessing.abi.c",
+  ]
+}
+
+generate_static_abc("video_processing_taihe_abc") {
+  base_url = "$video_processing_taihe_generated_file_path"
+  files = [ "$video_processing_taihe_generated_file_path/@ohos.multimedia.videoProcessing.ets" ]
+  is_boot_abc = "True"
+  device_dst_file = "/system/framework/video_processing_taihe_abc.abc"
+  dependencies = [ ":run_taihe_video_processing" ]
+}
+
+ohos_prebuilt_etc("video_processing_etc") {
+  source = "$target_out_dir/video_processing_taihe_abc.abc"
+  module_install_dir = "framework"
+  part_name = "$part_name"
+  subsystem_name = "$subsystem_name"
+  deps = [ ":video_processing_taihe_abc" ]
+}
+
+group("video_processing_taihe_gen_only") {
+  deps = [ ":run_taihe_video_processing" ]
+}
+
+group("video_processing_taihe_group") {
+  deps = [
+    ":video_processing_etc",
+    ":video_processing_taihe_native",
+  ]
+}
+
+taihe_shared_library("video_processing_taihe_native") {
+  taihe_generated_file_path = "$video_processing_taihe_generated_file_path"
+  subsystem_name = "$subsystem_name"
+  part_name = "$part_name"
+  public_configs = [ ":video_processing_taihe_config" ]
+
+  include_dirs = [
+    "include",
+    "$DFX_DIR/include",
+    "$INTERFACES_DIR/kits/js",
+    "$INTERFACES_INNER_API_DIR",
+    "$CAPI_DIR/image_processing/include/",
+    "$ALGORITHM_COMMON_DIR/include/",
+    "$INTERFACES_CAPI_DIR",
+  ]
+
+  sources = get_target_outputs(":run_taihe_video_processing")
+  sources += [
+    "src/video_processing_taihe.cpp",
+    "src/video_processing_ani_constructor.cpp",
+  ]
+
+  deps = [
+    ":run_taihe_video_processing",
+    "$VIDEO_PROCESSING_ENGINE_ROOT_DIR/framework:videoprocessingengine",
+  ]
+
+  external_deps = [
+    "c_utils:utils",
+    "drivers_interface_display:libdisplay_commontype_proxy_2.1",
+    "hilog:libhilog",
+    "hitrace:hitrace_meter",
+    "ipc:ipc_napi",
+    "media_foundation:native_media_core",
+    "media_foundation:media_foundation",
+    "runtime_core:ani_helpers",
+    "napi:ace_napi",
+  ]
+
+  cflags = [
+    "-DIMAGE_DEBUG_FLAG",
+    "-DIMAGE_COLORSPACE_FLAG",
+  ]
 
   sanitize = {
     boundary_sanitize = true
