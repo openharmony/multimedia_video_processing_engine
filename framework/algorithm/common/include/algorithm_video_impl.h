@@ -41,6 +41,9 @@
 namespace OHOS {
 namespace Media {
 namespace VideoProcessingEngine {
+static constexpr uint64_t VIDEO_DEFAULT_USAGE =
+    BUFFER_USAGE_CPU_READ | BUFFER_USAGE_CPU_WRITE | BUFFER_USAGE_MEM_DMA | BUFFER_USAGE_MEM_MMZ_CACHE;
+
 class VpeVideoImpl : public VpeVideo, public std::enable_shared_from_this<VpeVideoImpl> {
 public:
     VPEAlgoErrCode RegisterCallback(const std::shared_ptr<VpeVideoCallback>& callback) override;
