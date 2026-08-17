@@ -18,7 +18,6 @@
 #include "algorithm_utils.h"
 #include "extension_manager.h"
 #include "securec.h"
-#include "vpe_controller_common.h"
 #include "vpe_log.h"
 #include "vpe_sa_utils.h"
 #include "video_processing_client.h"
