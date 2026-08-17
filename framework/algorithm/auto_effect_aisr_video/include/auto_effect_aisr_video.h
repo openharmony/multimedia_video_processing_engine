@@ -53,7 +53,7 @@ protected:
     VPEAlgoErrCode OnInitialize() override;
     VPEAlgoErrCode OnDeinitialize() override;
     VPEAlgoErrCode Process(const sptr<SurfaceBuffer>& sourceImage,
-        sptr<SurfaceBuffer>& destinationImage, sptr<SyncFence> infenceFd = nullptr) override;
+        sptr<SurfaceBuffer>& destinationImage) override;
     VPEAlgoErrCode UpdateRequestCfg(const sptr<Surface>& surface, BufferRequestConfig& requestCfg) override;
     void UpdateRequestCfg(const sptr<SurfaceBuffer>& consumerBuffer, BufferRequestConfig& requestCfg) override;
  
