@@ -350,7 +350,7 @@ bool OH_VideoProcessing_IsAutoEffectSupported(uint32_t type);
 VideoProcessing_ErrorCode OH_VideoProcessing_UseAutoEffect(uint32_t type, bool enable, const char *name);
  
 /**
- * @brief Sets parameters for the automatic effect associated with the XComponent. 
+ * @brief Sets parameters for the automatic effect associated with the XComponent.
  * Currently, the AutoEffect only takes effect on the last invoked XComponent.
  * @param type [in] Specify AutoEffect to use.
  * @param name [in] Specifies the name of an XComponent. If the current application has multiple XComponents
