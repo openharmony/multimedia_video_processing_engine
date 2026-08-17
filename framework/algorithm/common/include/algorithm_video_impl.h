@@ -89,7 +89,6 @@ protected:
     virtual void UpdateRequestCfg(const sptr<SurfaceBuffer>& consumerBuffer, BufferRequestConfig& requestCfg);
     virtual VPEAlgoErrCode GernerateAisrMetadata(
         sptr<SurfaceBuffer>& srcBuffer, sptr<SurfaceBuffer>& dstBuffer, sptr<SyncFence> infenceFd);
-    void DealAutoEffectAisrAlgo(SurfaceBufferInfo& srcBufferInfo, SurfaceBufferInfo& dstBufferInfo);
 
 private:
     enum class VPEState : int {
@@ -169,6 +168,7 @@ private:
         const LogInfo& logInfo);
     VPEAlgoErrCode ExecuteWithCheck(std::function<bool(void)>&& checker,
         std::function<VPEAlgoErrCode(void)>&& operation, const std::string& errorMessage, const LogInfo& logInfo);
+    void DealAutoEffectAisrAlgo(SurfaceBufferInfo& srcBufferInfo, SurfaceBufferInfo& dstBufferInfo);
 
     // Common
     uint32_t type_{};
