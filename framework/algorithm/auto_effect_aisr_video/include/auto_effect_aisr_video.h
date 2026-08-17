@@ -21,8 +21,6 @@
  
 #include "algorithm_video_impl.h"
 #include "detail_enhancer_base.h"
-#include "video_processing_callback_listener_base.h"
-#include "video_processing_server_listener_base.h"
  
 namespace OHOS {
 namespace Media {
