@@ -204,7 +204,6 @@ VPEAlgoErrCode AutoEffectAisrVideo::OnInitialize()
  
     // Connect to VideoProcessingManager and register server listener for policy control
     VideoProcessingManager::GetInstance().Connect();
-    CHECK_AND_RETURN_RET_LOG(RegisterServerListener(), VPE_ALGO_ERR_UNKNOWN, "Failed to register server listener!");
  
     // Enable protection if auto-disable is set
     if (isAutoDisable_) {
@@ -218,8 +217,6 @@ VPEAlgoErrCode AutoEffectAisrVideo::OnInitialize()
 VPEAlgoErrCode AutoEffectAisrVideo::OnDeinitialize()
 {
     std::lock_guard<std::mutex> lock(lock_);
-    UnRegisterAlgorithmCallbackLocked();
-    UnregisterServerListener();
     if (algo_ != nullptr) {
         VPE_LOGI("OnDeinitialize");
         algo_->Deinit();
@@ -235,10 +232,6 @@ VPEAlgoErrCode AutoEffectAisrVideo::Process(const sptr<SurfaceBuffer>& sourceIma
     CHECK_AND_RETURN_RET_LOG(sourceImage != nullptr && destinationImage != nullptr, VPE_ALGO_ERR_INVALID_VAL,
         "Invalid input: source or destination image is null!");
     CHECK_AND_RETURN_RET_LOG(IsInitialized(), VPE_ALGO_ERR_INVALID_OPERATION, "NOT initialized!");
-    if (!RegisterAlgorithmCallback()) {
-        VPE_LOGE("Process: RegisterAlgorithmCallback failed");
-        return VPE_ALGO_ERR_INVALID_STATE;
-    }
     std::shared_ptr<DetailEnhancerBase> algo;
     {
         std::lock_guard<std::mutex> lock(lock_);
@@ -351,99 +344,6 @@ VPEAlgoErrCode AutoEffectAisrVideo::GernerateAisrMetadata(sptr<SurfaceBuffer>& s
     return VPE_ALGO_ERR_OK;
 }
  
-bool AutoEffectAisrVideo::RegisterAlgorithmCallback()
-{
-    std::lock_guard<std::mutex> lock(lock_);
-    return RegisterAlgorithmCallbackLocked();
-}
- 
-bool AutoEffectAisrVideo::RegisterAlgorithmCallbackLocked()
-{
-    if (algo_ == nullptr) {
-        VPE_LOGE("RegisterAlgorithmCallbackLocked: algo_ is null");
-        return false;
-    }
-    if (listener_ != nullptr) {
-        VPE_LOGI("RegisterAlgorithmCallbackLocked: already registered");
-        return true;
-    }
-    listener_ = std::make_shared<AlgorithmCallback>(*this);
-    CHECK_AND_RETURN_RET_LOG(listener_ != nullptr, false, "Failed to create algorithm callback!");
-    VPEAlgoErrCode err = algo_->RegisterCallback(listener_);
-    CHECK_AND_RETURN_RET_LOG(err == VPE_ALGO_ERR_OK, false, "Failed to register callback, ret=%{public}d!", err);
-    VPE_LOGI("RegisterAlgorithmCallbackLocked success");
-    return true;
-}
- 
-bool AutoEffectAisrVideo::UnRegisterAlgorithmCallback()
-{
-    std::lock_guard<std::mutex> lock(lock_);
-    return UnRegisterAlgorithmCallbackLocked();
-}
- 
-bool AutoEffectAisrVideo::UnRegisterAlgorithmCallbackLocked()
-{
-    if (listener_ == nullptr) {
-        return true;
-    }
-    if (algo_ == nullptr) {
-        VPE_LOGE("UnRegisterAlgorithmCallbackLocked: algo_ is null");
-        listener_ = nullptr;
-        return true;
-    }
-    VPEAlgoErrCode err = algo_->UnregisterCallback();
-    listener_ = nullptr;
-    CHECK_AND_RETURN_RET_LOG(err == VPE_ALGO_ERR_OK, false, "Failed to unregister callback, ret=%{public}d!", err);
-    return true;
-}
- 
-bool AutoEffectAisrVideo::RegisterServerListener()
-{
-    std::lock_guard<std::mutex> lock(lock_);
-    if (serverListener_ != nullptr) {
-        return true;
-    }
-    serverListener_ = std::make_shared<ServerListener>(*this);
-    CHECK_AND_RETURN_RET_LOG(serverListener_ != nullptr, false, "Failed to create server listener!");
-    VPEAlgoErrCode err = VideoProcessingManager::GetInstance().RegisterServerListener(serverListener_);
-    CHECK_AND_RETURN_RET_LOG(err == VPE_ALGO_ERR_OK, false, "Failed to register server listener, ret=%{public}d!", err);
-    return true;
-}
- 
-void AutoEffectAisrVideo::UnregisterServerListener()
-{
-    if (serverListener_ == nullptr) {
-        return;
-    }
-    VPEAlgoErrCode err = VideoProcessingManager::GetInstance().UnregisterServerListener(serverListener_);
-    serverListener_ = nullptr;
-    if (err != VPE_ALGO_ERR_OK) {
-        VPE_LOGE("Failed to unregister server listener, ret=%{public}d!", err);
-    }
-}
- 
-void AutoEffectAisrVideo::ServerListener::OnServerDied()
-{
-    VPE_LOGI("ServerListener::OnServerDied");
-    std::lock_guard<std::mutex> lock(owner_.lock_);
-    owner_.UnRegisterAlgorithmCallbackLocked();
-    if (owner_.algo_ != nullptr) {
-        owner_.algo_->Deinit();
-        owner_.algo_ = nullptr;
-    }
-    owner_.UnregisterServerListener();
-}
- 
-void AutoEffectAisrVideo::AlgorithmCallback::OnPolicyControl(bool isAlgorithmEnable)
-{
-    VPE_LOGI("OnPolicyControl: %{public}d", isAlgorithmEnable);
-    if (isAlgorithmEnable) {
-        owner_.Enable();
-    } else {
-        owner_.Disable();
-    }
-}
- 
 void AutoEffectAisrVideo::RegisterInVpeMap(const std::string& name)
 {
     std::lock_guard<std::mutex> lock(g_autoEffectLock);
@@ -471,10 +371,6 @@ AutoEffectAisrVideo::ParamError AutoEffectAisrVideo::SetNodeId(const Format& par
         return PARAM_ERR_NOT_FOUND;
     }
     VPE_LOGI("SetNodeId: %{public}" PRId64, nodeId);
-    if (!RegisterAlgorithmCallbackLocked()) {
-        VPE_LOGE("SetNodeId: RegisterAlgorithmCallbackLocked failed");
-        return PARAM_ERR_INVALID;
-    }
     CHECK_AND_RETURN_RET_LOG(algo_ != nullptr, PARAM_ERR_INVALID, "SetNodeId: algo_ is null");
     VPEAlgoErrCode ret = algo_->SetNodeId(static_cast<uint64_t>(nodeId));
     if (ret == VPE_ALGO_ERR_INVALID_VAL) {
