@@ -156,8 +156,6 @@ private:
         AihdrEnhancerCapabilityMap& aihdrEnhancerCapabilityMap) const;
     VPEAlgoErrCode BuildDetailEnhancerCaps(const std::shared_ptr<ExtensionBase>& ext, size_t idx,
         DetailEnhancerCapabilityMap& detailEnhancerCapabilityMap) const;
-    VPEAlgoErrCode BuildAutoEffectAisrCaps(const std::shared_ptr<ExtensionBase>& ext, size_t idx,
-        AutoEffectAisrCapabilityMap& autoEffectAisrCapabilityMap) const;
     VPEAlgoErrCode BuildContrastEnhancerCaps(const std::shared_ptr<ExtensionBase>& ext, size_t idx,
     ContrastEnhancerCapabilityMap& contrastEnhancerCapabilityMap) const;
     VPEAlgoErrCode ExtractColorSpaceConverterCap(const ColorSpaceConverterCapability& cap, size_t idx,
