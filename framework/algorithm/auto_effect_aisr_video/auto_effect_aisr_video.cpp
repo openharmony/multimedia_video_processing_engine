@@ -31,8 +31,6 @@ namespace {
 std::mutex g_autoEffectLock{};
 std::unordered_map<std::string, bool> g_autoEffectMap{};
 std::unordered_map<std::string, std::weak_ptr<VpeVideo>> g_vpeMap{};
-constexpr int FEATURE_PARAM_GET_SUPPORTED = 1;
-constexpr int PRODUCT_PARAM_GET_SUPPORTED = 3;
 } // namespace
  
 std::shared_ptr<VpeVideoImpl> AutoEffectAisrVideo::Create()
