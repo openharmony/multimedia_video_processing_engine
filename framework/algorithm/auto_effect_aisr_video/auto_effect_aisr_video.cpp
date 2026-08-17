@@ -69,39 +69,13 @@ bool AutoEffectAisrVideo::IsSupported(const OHOS::Media::Format& parameter)
  
 bool AutoEffectAisrVideo::IsSurfaceSupported(const sptr<Surface>& surface)
 {
+    (void)surface;
     return true;
 }
  
 bool AutoEffectAisrVideo::IsProductSupported()
 {
-    static std::atomic<bool> cached{false};
-    static std::atomic<bool> queried{false};
-    if (queried.load()) {
-        return cached.load();
-    }
-    struct FeatureParameter param = { false, "" };
-    std::vector<uint8_t> parameter = VpeSaUtils::StructToVector(param);
-    ErrCode ret = VideoProcessingManager::GetInstance().GetFeatureParameter(VIDEO_TYPE_DETAIL_ENHANCER,
-        CTRL_TAG_AUTO_EFFECT_AISR_ENABLE, parameter);
-    if (ret == VPE_ALGO_ERR_SA_NOT_READY) {
-        VPE_LOGI("IsSystemSupported: SA not ready, wait for SA sync load");
-        VideoProcessingManager::GetInstance().LoadSync();
-        ret = VideoProcessingManager::GetInstance().GetFeatureParameter(VIDEO_TYPE_DETAIL_ENHANCER,
-            CTRL_TAG_AUTO_EFFECT_AISR_ENABLE, parameter);
-    }
-    if (ret != VPE_ALGO_ERR_OK) {
-        VPE_LOGE("IsSystemSupported: GetFeatureParameter failed %{public}d", ret);
-        return false;
-    }
-    if (parameter.size() != sizeof(struct FeatureParameter)) {
-        VPE_LOGE("IsSystemSupported: vector size mismatch");
-        return false;
-    }
-    auto* getPara = reinterpret_cast<struct FeatureParameter*>(parameter.data());
-    cached = getPara->isSupported;
-    queried = true;
-    VPE_LOGI("IsSystemSupported: %{public}d", cached.load());
-    return cached.load();
+    return false;
 }
  
 VPEAlgoErrCode AutoEffectAisrVideo::UseAutoEffect(uint32_t type, bool enable, const char* name)
@@ -201,9 +175,6 @@ VPEAlgoErrCode AutoEffectAisrVideo::OnInitialize()
  
     CHECK_AND_RETURN_RET_LOG(algo->Init() == VPE_ALGO_ERR_OK, VPE_ALGO_ERR_UNKNOWN, "Failed to init algorithm!");
  
-    // Connect to VideoProcessingManager and register server listener for policy control
-    VideoProcessingManager::GetInstance().Connect();
- 
     // Enable protection if auto-disable is set
     if (isAutoDisable_) {
         CHECK_AND_RETURN_RET_LOG(algo->EnableProtection(true) == VPE_ALGO_ERR_OK,
@@ -272,7 +243,6 @@ VPEAlgoErrCode AutoEffectAisrVideo::SetParameter(const Format& parameter)
 {
     std::function<ParamError(const Format&)> setters[] = {
         [this](const Format& parameter) { return SetAutoEffectName(parameter); },
-        [this](const Format& parameter) { return SetNodeId(parameter); },
     };
  
     CHECK_AND_RETURN_RET_LOG(IsInitialized(), VPE_ALGO_ERR_INVALID_OPERATION, "NOT initialized!");
@@ -328,10 +298,8 @@ VPEAlgoErrCode AutoEffectAisrVideo::SetAutoEffectEnabledInner(bool enable, bool 
 VPEAlgoErrCode AutoEffectAisrVideo::GernerateAisrMetadata(sptr<SurfaceBuffer>& srcBuffer,
     sptr<SurfaceBuffer>& dstBuffer, sptr<SyncFence> infenceFd)
 {
-    if (infenceFd != nullptr && infenceFd->IsValid()) {
-        infenceFd->Wait(WAIT_FOR_EVER);
-        srcBuffer->InvalidateCache();
-    }
+    (void)dstBuffer;
+    (void)infenceFd;
     if (strength_.load() < 0.0f) {
         return Process(srcBuffer, srcBuffer);
     }
@@ -360,25 +328,6 @@ AutoEffectAisrVideo::ParamError AutoEffectAisrVideo::SetAutoEffectName(const For
     }
     VPE_LOGI("SetAutoEffectName: %{public}s", name.c_str());
     RegisterInVpeMap(name);
-    return PARAM_ERR_OK;
-}
- 
-AutoEffectAisrVideo::ParamError AutoEffectAisrVideo::SetNodeId(const Format& parameter)
-{
-    int64_t nodeId = 0;
-    if (!parameter.GetLongValue(ParameterKey::DETAIL_ENHANCER_NODE_ID, nodeId)) {
-        return PARAM_ERR_NOT_FOUND;
-    }
-    VPE_LOGI("SetNodeId: %{public}" PRId64, nodeId);
-    CHECK_AND_RETURN_RET_LOG(algo_ != nullptr, PARAM_ERR_INVALID, "SetNodeId: algo_ is null");
-    VPEAlgoErrCode ret = algo_->SetNodeId(static_cast<uint64_t>(nodeId));
-    if (ret == VPE_ALGO_ERR_INVALID_VAL) {
-        return PARAM_ERR_NOT_FOUND;
-    }
-    if (ret != VPE_ALGO_ERR_OK) {
-        VPE_LOGE("Failed to set nodeId to algorithm, ret=%{public}d", ret);
-        return PARAM_ERR_INVALID;
-    }
     return PARAM_ERR_OK;
 }
  
