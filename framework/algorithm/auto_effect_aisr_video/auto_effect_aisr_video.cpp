@@ -226,7 +226,7 @@ VPEAlgoErrCode AutoEffectAisrVideo::OnDeinitialize()
 }
  
 VPEAlgoErrCode AutoEffectAisrVideo::Process(const sptr<SurfaceBuffer>& sourceImage,
-    sptr<SurfaceBuffer>& destinationImage, sptr<SyncFence> infenceFd)
+    sptr<SurfaceBuffer>& destinationImage)
 {
     VPE_LOGI("AutoEffectAisrVideo::Process start, strength: %{public}f", strength_.load());
     CHECK_AND_RETURN_RET_LOG(sourceImage != nullptr && destinationImage != nullptr, VPE_ALGO_ERR_INVALID_VAL,
