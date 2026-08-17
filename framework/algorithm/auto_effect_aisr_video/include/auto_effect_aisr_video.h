@@ -39,8 +39,8 @@ public:
     static VPEAlgoErrCode SetAutoEffectEnabled(bool enable, bool hasEnable,
         const char* name, float strength, bool hasStrength);
  
-    explicit AutoEffectAisrVideo(uint32_t type, bool disable)
-        : VpeVideoImpl(type, false, VIDEO_DEFAULT_USAGE, disable), isAutoDisable_(disable) {}
+    explicit AutoEffectAisrVideo(uint32_t type)
+        : VpeVideoImpl(type) {}
     ~AutoEffectAisrVideo() override;
     AutoEffectAisrVideo(const AutoEffectAisrVideo&) = delete;
     AutoEffectAisrVideo& operator=(const AutoEffectAisrVideo&) = delete;
