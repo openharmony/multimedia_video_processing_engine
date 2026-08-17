@@ -530,12 +530,6 @@ T ExtensionManager::BuildCaps(const ExtensionList& extensionList) const
                 CHECK_AND_LOG(err == VPE_ALGO_ERR_OK, "Build caps failed, extension: %{public}s",
                     extension->info.name.c_str());
             }
-        } else if constexpr (std::is_same_v<T, AutoEffectAisrCapabilityMap>) {
-            if (extension->info.type == ExtensionType::AUTO_EFFECT_AISR) {
-                err = BuildAutoEffectAisrCaps(extension, idx, capMap);
-                CHECK_AND_LOG(err == VPE_ALGO_ERR_OK, "Build caps failed, extension: %{public}s",
-                    extension->info.name.c_str());
-            }
         } else if constexpr (std::is_same_v<T, AihdrEnhancerCapabilityMap>) {
             if (extension->info.type == ExtensionType::AIHDR_ENHANCER) {
                 err = BuildAihdrEnhancerCaps(extension, idx, capMap);
