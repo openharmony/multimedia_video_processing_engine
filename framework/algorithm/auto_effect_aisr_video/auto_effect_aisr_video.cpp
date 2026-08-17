@@ -38,7 +38,7 @@ constexpr int PRODUCT_PARAM_GET_SUPPORTED = 3;
 std::shared_ptr<VpeVideoImpl> AutoEffectAisrVideo::Create()
 {
     VPE_LOGI("AutoEffectAisrVideo::Create start");
-    auto obj = std::make_shared<AutoEffectAisrVideo>(VIDEO_TYPE_AUTO_EFFECT_AISR, true);
+    auto obj = std::make_shared<AutoEffectAisrVideo>(VIDEO_TYPE_AUTO_EFFECT_AISR);
     CHECK_AND_RETURN_RET_LOG(obj != nullptr, nullptr, "Failed to create auto effect!");
     CHECK_AND_RETURN_RET_LOG(obj->Initialize() == VPE_ALGO_ERR_OK, nullptr, "Failed to initialize auto effect!");
     VPE_LOGI("AutoEffectAisrVideo::Create success");
