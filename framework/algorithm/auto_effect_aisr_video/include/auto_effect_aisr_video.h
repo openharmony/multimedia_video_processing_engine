@@ -70,7 +70,6 @@ private:
  
     ParamError SetAutoEffectStrength(const Format& parameter);
     ParamError SetAutoEffectName(const Format& parameter);
-    ParamError SetNodeId(const Format& parameter);
  
     std::mutex lock_{};
     std::shared_ptr<DetailEnhancerBase> algo_{};
