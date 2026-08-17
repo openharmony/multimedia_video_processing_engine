@@ -20,6 +20,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "algorithm_video_common.h"
 #include "vpe_log.h"
 
 using namespace OHOS::Media::VideoProcessingEngine;
