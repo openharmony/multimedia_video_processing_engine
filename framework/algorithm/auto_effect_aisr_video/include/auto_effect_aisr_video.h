@@ -60,41 +60,8 @@ protected:
     void UpdateRequestCfg(const sptr<SurfaceBuffer>& consumerBuffer, BufferRequestConfig& requestCfg) override;
  
 private:
-    class ServerListener : public VideoProcessingServerListenerBase {
-    public:
-        explicit ServerListener(AutoEffectAisrVideo& owner) : owner_(owner) {}
-        ~ServerListener() override = default;
-        ServerListener(const ServerListener&) = delete;
-        ServerListener& operator=(const ServerListener&) = delete;
-        ServerListener(ServerListener&&) = delete;
-        ServerListener& operator=(ServerListener&&) = delete;
- 
-        void OnServerDied() final;
-    private:
-        AutoEffectAisrVideo& owner_;
-    };
- 
-    class AlgorithmCallback : public VideoProcessingCallbackListenerBase {
-    public:
-        explicit AlgorithmCallback(AutoEffectAisrVideo& owner) : owner_(owner) {}
-        ~AlgorithmCallback() override = default;
-        AlgorithmCallback(const AlgorithmCallback&) = delete;
-        AlgorithmCallback& operator=(const AlgorithmCallback&) = delete;
-        AlgorithmCallback(AlgorithmCallback&&) = delete;
-        AlgorithmCallback& operator=(AlgorithmCallback&&) = delete;
- 
-        void OnPolicyControl(bool isAlgorithmEnable) final;
-    private:
-        AutoEffectAisrVideo& owner_;
-    };
- 
     VPEAlgoErrCode SetAutoEffectEnabledInner(bool enable, bool hasEnable, float strength, bool hasStrength);
-    bool RegisterAlgorithmCallback();
-    bool RegisterAlgorithmCallbackLocked();
-    bool UnRegisterAlgorithmCallback();
-    bool UnRegisterAlgorithmCallbackLocked();
-    bool RegisterServerListener();
-    void UnregisterServerListener();
+
     void RegisterInVpeMap(const std::string& name);
  
     enum ParamError {
@@ -108,8 +75,6 @@ private:
     ParamError SetNodeId(const Format& parameter);
  
     std::mutex lock_{};
-    std::shared_ptr<AlgorithmCallback> listener_{};
-    std::shared_ptr<ServerListener> serverListener_{};
     std::shared_ptr<DetailEnhancerBase> algo_{};
     std::string effectName_;
     std::atomic<float> strength_{-1.0f};
