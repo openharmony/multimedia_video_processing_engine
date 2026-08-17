@@ -794,28 +794,6 @@ VPEAlgoErrCode ExtensionManager::BuildAihdrEnhancerCaps(const std::shared_ptr<Ex
     return err;
 }
 
-VPEAlgoErrCode ExtensionManager::BuildAutoEffectAisrCaps(const std::shared_ptr<ExtensionBase>& ext, size_t idx,
-    AutoEffectAisrCapabilityMap& autoEffectAisrCapabilityMap) const
-{
-    // Use dlsym to get BuildCapabilities from ext .so directly, avoiding CFI cross-DSO failure
-    using AutoEffectAisrCapsBuilder = void(*)(AutoEffectAisrCapability*);
-    auto capsBuilder = reinterpret_cast<AutoEffectAisrCapsBuilder>(dlsym(g_algoHandle,
-        "BuildAutoEffectVideoCapabilities"));
-    AutoEffectAisrCapability capabilities{};
-    if (capsBuilder != nullptr) {
-        capsBuilder(&capabilities);
-    }
-    auto itr = autoEffectAisrCapabilityMap.find(0);
-    if (itr == autoEffectAisrCapabilityMap.end()) {
-        autoEffectAisrCapabilityMap.emplace(0, idx);
-    } else {
-        if (capabilities.rank == Rank::RANK_HIGH) {
-            itr->second = idx;
-        }
-    }
-    return VPE_ALGO_ERR_OK;
-}
-
 VPEAlgoErrCode ExtensionManager::BuildContrastEnhancerCaps(const std::shared_ptr<ExtensionBase>& ext, size_t idx,
     ContrastEnhancerCapabilityMap& contrastEnhancerCapabilityMap) const
 {
