@@ -42,6 +42,7 @@ struct DetailEnhancerParameters {
     std::string uri{};
     DetailEnhancerLevel level{DETAIL_ENH_LEVEL_LOW};
     int contentId;
+    float strength{1.0f};
 };
 } // namespace VideoProcessingEngine
 } // namespace Media

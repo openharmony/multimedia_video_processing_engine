@@ -57,6 +57,7 @@ enum VpeVideoType : uint32_t {
      */
     VIDEO_TYPE_DETAIL_ENHANCER = 0x4,
     VIDEO_TYPE_AIHDR_ENHANCER = 0x8,
+    VIDEO_TYPE_AUTO_EFFECT_AISR = 0x30,
 };
 
 /**
@@ -249,6 +250,14 @@ public:
      * @since 6.0
      */
     static constexpr std::string_view DETAIL_ENHANCER_NODE_ID{"NodeId"};
+
+    /**
+     * @brief The key is used to identify the surface node name.
+     *
+     * @since 26.1.0
+     * @version 26.1.0
+     */
+    static constexpr std::string_view SURFACE_NODE_NAME{"SurfaceNodeName"};
 
 private:
     ParameterKey() = delete;

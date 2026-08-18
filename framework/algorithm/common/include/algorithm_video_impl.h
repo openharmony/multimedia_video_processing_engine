@@ -41,6 +41,9 @@
 namespace OHOS {
 namespace Media {
 namespace VideoProcessingEngine {
+static constexpr uint64_t VIDEO_DEFAULT_USAGE =
+    BUFFER_USAGE_CPU_READ | BUFFER_USAGE_CPU_WRITE | BUFFER_USAGE_MEM_DMA | BUFFER_USAGE_MEM_MMZ_CACHE;
+
 class VpeVideoImpl : public VpeVideo, public std::enable_shared_from_this<VpeVideoImpl> {
 public:
     VPEAlgoErrCode RegisterCallback(const std::shared_ptr<VpeVideoCallback>& callback) override;
@@ -72,6 +75,8 @@ protected:
     VPEAlgoErrCode Deinitialize();
     void RefreshBuffers();
     void OnOutputFormatChanged(const Format& format);
+    void SetAutoEffectAisrEnable(bool processEnable);
+    bool GetAutoEffectAisrEnable();
 
     // These funcions may be overried by derived class as necessary.
     virtual VPEAlgoErrCode OnInitialize();
@@ -85,6 +90,8 @@ protected:
     virtual bool IsConsumerBufferValid(const sptr<SurfaceBuffer>& buffer);
     virtual VPEAlgoErrCode UpdateRequestCfg(const sptr<Surface>& surface, BufferRequestConfig& requestCfg);
     virtual void UpdateRequestCfg(const sptr<SurfaceBuffer>& consumerBuffer, BufferRequestConfig& requestCfg);
+    virtual VPEAlgoErrCode GernerateAisrMetadata(
+        sptr<SurfaceBuffer>& srcBuffer, sptr<SurfaceBuffer>& dstBuffer, sptr<SyncFence> infenceFd);
 
 private:
     enum class VPEState : int {
@@ -164,6 +171,7 @@ private:
         const LogInfo& logInfo);
     VPEAlgoErrCode ExecuteWithCheck(std::function<bool(void)>&& checker,
         std::function<VPEAlgoErrCode(void)>&& operation, const std::string& errorMessage, const LogInfo& logInfo);
+    void DealAutoEffectAisrAlgo(SurfaceBufferInfo& srcBufferInfo, SurfaceBufferInfo& dstBufferInfo);
 
     // Common
     uint32_t type_{};
@@ -223,6 +231,7 @@ private:
     std::unordered_map<uint32_t, SurfaceBufferInfo> producerBufferCache_{};
     std::queue<SurfaceBufferInfo> attachBufferQueue_{};
     std::set<uint32_t> attachBufferIDs_{};
+    std::atomic<bool> isAutoEffectAisrEnable_{false};
     // Guarded by bufferLock_ end
 };
 } // namespace VideoProcessingEngine

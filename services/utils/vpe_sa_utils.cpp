@@ -20,12 +20,16 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "algorithm_video_common.h"
 #include "vpe_log.h"
 
 using namespace OHOS::Media::VideoProcessingEngine;
 
 namespace {
 constexpr uint32_t DEV_VALUE_SIZE = 256;
+std::unordered_map<uint32_t, std::string> g_featureToStr = {
+    { VIDEO_TYPE_AUTO_EFFECT_AISR, "AUTO_EFFECT_AISR" },
+};
 }
 
 std::string VpeSaUtils::GetProcessName()

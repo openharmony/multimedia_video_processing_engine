@@ -43,6 +43,7 @@
 #include "colorspace_converter_display_extension.h"
 #include "metadata_generator_extension.h"
 #include "detail_enhancer_extension.h"
+#include "auto_effect_aisr_extension.h"
 #include "contrast_enhancer_extension.h"
 #include "video_refreshrate_prediction_extension.h"
 #include "utils.h"
@@ -84,6 +85,7 @@ using AihdrEnhancerCapabilityMap =
         std::tuple<ColorSpaceDescription, GraphicPixelFormat>,
         std::vector<std::tuple<Rank, int32_t, size_t>>>;
 using ContrastEnhancerCapabilityMap = std::map<ContrastEnhancerType, size_t>;
+using AutoEffectAisrCapabilityMap = std::map<uint32_t, size_t>;
 
 using ColorSpaceConverterDisplaySet = std::set<std::shared_ptr<ColorSpaceConverterDisplayBase>>;
 using ColorSpaceConverterDisplayExtensionSet = std::set<std::shared_ptr<ColorSpaceConverterDisplayExtension>>;
@@ -104,6 +106,7 @@ public:
     std::shared_ptr<DetailEnhancerBase> CreateDetailEnhancer(uint32_t level) const;
     std::shared_ptr<VideoRefreshRatePredictionBase> CreateVideoRefreshRatePredictor() const;
     std::shared_ptr<ContrastEnhancerBase> CreateContrastEnhancer(ContrastEnhancerType type) const;
+    std::shared_ptr<DetailEnhancerBase> CreateAutoEffectAisr() const;
 
     using InstanceVariableType = std::variant<std::shared_ptr<ColorSpaceConverter>,
                                                 std::shared_ptr<MetadataGenerator>,
@@ -133,6 +136,7 @@ private:
     std::shared_ptr<AihdrEnhancerExtension> FindAihdrEnhancerExtension(const FrameInfo &inputInfo) const;
     std::shared_ptr<DetailEnhancerExtension> FindDetailEnhancerExtension(uint32_t level) const;
     std::shared_ptr<ContrastEnhancerExtension> FindContrastEnhancerExtension(ContrastEnhancerType type) const;
+    std::shared_ptr<ExtensionBase> FindAutoEffectAisrExtension() const;
     ExtensionList LoadExtensions() const;
     VPEAlgoErrCode LoadStaticExtensions(ExtensionList& extensionList) const;
     ExtensionList LoadStaticImageExtensions(

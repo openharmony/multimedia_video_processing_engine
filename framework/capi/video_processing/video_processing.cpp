@@ -18,6 +18,9 @@
 #include <atomic>
 #include <functional>
 
+#include "auto_effect_aisr_video.h"
+#include "native_avformat.h"
+#include "video_processing_utils.h"
 #include "vpe_log.h"
 #include "video_processing_capi_capability.h"
 #include "video_environment_native.h"
@@ -31,10 +34,13 @@ using namespace OHOS::Media::VideoProcessingEngine;
 const int32_t VIDEO_PROCESSING_TYPE_COLOR_SPACE_CONVERSION = 0x1;
 const int32_t VIDEO_PROCESSING_TYPE_METADATA_GENERATION = 0x2;
 const int32_t VIDEO_PROCESSING_TYPE_DETAIL_ENHANCER = 0x4;
+const int32_t VIDEO_PROCESSING_TYPE_AUTOEFFECT_AISR = 0x8;
 // Video processing parameter keys:
 // Detail enhancement:
 const char* VIDEO_DETAIL_ENHANCER_PARAMETER_KEY_QUALITY_LEVEL = "QualityLevel";
 const char* VIDEO_METADATA_GENERATOR_STYLE_CONTROL = "StyleControl";
+const char* VIDEO_AUTOEFFECT_ENABLE = "enable";
+const char* VIDEO_AUTOEFFECT_AISR_STRENGTH = "strength";
 
 namespace {
 // Call video processing interface
@@ -186,4 +192,65 @@ VideoProcessing_ErrorCode OH_VideoProcessingCallback_BindOnNewOutputBuffer(Video
         [&onNewOutputBuffer](std::shared_ptr<VideoProcessingCallbackNative>& obj) {
             return obj->BindOnNewOutputBuffer(onNewOutputBuffer);
         });
+}
+
+bool OH_VideoProcessing_IsAutoEffectSupported(uint32_t type)
+{
+    if (access("/system/lib64/libvideoprocessingengine_ext.z.so", 0)) {
+        return false;
+    }
+    if (type != VIDEO_PROCESSING_TYPE_AUTOEFFECT_AISR) {
+        VPE_LOGE("UseAutoEffect invalid type: 0x%{public}x", type);
+        return false;
+    }
+    return AutoEffectAisrVideo::IsProductSupported();
+}
+ 
+VideoProcessing_ErrorCode OH_VideoProcessing_UseAutoEffect(uint32_t type, bool enable, const char* name)
+{
+    if (access("/system/lib64/libvideoprocessingengine_ext.z.so", 0)) {
+        return VIDEO_PROCESSING_ERROR_OPERATION_NOT_PERMITTED;
+    }
+    if (type != VIDEO_PROCESSING_TYPE_AUTOEFFECT_AISR) {
+        return VIDEO_PROCESSING_ERROR_INVALID_VALUE;
+    }
+    if (!AutoEffectAisrVideo::IsProductSupported()) {
+        VPE_LOGE("UseAutoEffect: auto effect is not supported, type: 0x%{public}x", type);
+        return VIDEO_PROCESSING_ERROR_OPERATION_NOT_PERMITTED;
+    }
+    return VideoProcessingUtils::InnerErrorToCAPI(
+        AutoEffectAisrVideo::UseAutoEffect(VIDEO_TYPE_AUTO_EFFECT_AISR, enable, name));
+}
+ 
+VideoProcessing_ErrorCode OH_VideoProcessing_SetAutoEffectParam(
+    uint32_t type, const char* name, const OH_AVFormat* param)
+{
+    if (access("/system/lib64/libvideoprocessingengine_ext.z.so", 0)) {
+        return VIDEO_PROCESSING_ERROR_OPERATION_NOT_PERMITTED;
+    }
+    VPE_LOGI("OH_VideoProcessing_SetAutoEffectParam start");
+    if (type != VIDEO_PROCESSING_TYPE_AUTOEFFECT_AISR) {
+        return VIDEO_PROCESSING_ERROR_INVALID_VALUE;
+    }
+    if (!AutoEffectAisrVideo::IsProductSupported()) {
+        VPE_LOGE("SetAutoEffectParam: auto effect is not supported, type: 0x%{public}x", type);
+        return VIDEO_PROCESSING_ERROR_OPERATION_NOT_PERMITTED;
+    }
+    CHECK_AND_RETURN_RET_LOG(name != nullptr, VIDEO_PROCESSING_ERROR_INVALID_VALUE, "name is null!");
+    CHECK_AND_RETURN_RET_LOG(param != nullptr, VIDEO_PROCESSING_ERROR_INVALID_VALUE, "param is null!");
+    auto* mutableParam = const_cast<OH_AVFormat*>(param);
+    int32_t enable = 0;
+    bool hasEnable = OH_AVFormat_GetIntValue(mutableParam, VIDEO_AUTOEFFECT_ENABLE, &enable);
+    if (!hasEnable) {
+        enable = 0; // default false
+    }
+    float strength = -1.0f;
+    bool hasStrength = OH_AVFormat_GetFloatValue(mutableParam, VIDEO_AUTOEFFECT_AISR_STRENGTH, &strength);
+ 
+    if (strength > 1.0f || strength < 0.0f) {
+        VPE_LOGE("SetAutoEffectParam: invalid strength %{public}f, must be in [0.0, 1.0]", strength);
+        return VIDEO_PROCESSING_ERROR_INVALID_VALUE;
+    }
+    return VideoProcessingUtils::InnerErrorToCAPI(
+        AutoEffectAisrVideo::SetAutoEffectEnabled(static_cast<bool>(enable), hasEnable, name, strength, hasStrength));
 }
