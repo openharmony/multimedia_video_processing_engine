@@ -48,6 +48,19 @@ std::unordered_map<uint32_t, std::function<bool(const OHOS::Media::Format& param
 std::unordered_map<uint32_t, std::function<bool(const sptr<Surface>& surface)>> g_isSurfaceSupporteds = {
     { VIDEO_TYPE_AUTO_EFFECT_AISR, &AutoEffectAisrVideo::IsSurfaceSupported },
 };
+
+std::unordered_map<uint32_t, std::function<int32_t(VpeVideo::SettingsChangeCallback)>>
+    g_registerSettingsChangeCallback = {
+    // NOTE: Add feature altorithm GetParameter here. Every time a new client is created for communication
+    // Feature altorithm header GetParameter begin
+    // Feature altorithm header GetParameter end
+};
+ 
+std::unordered_map<uint32_t, std::function<int32_t(void)>> g_unregisterSettingsChangeCallback = {
+    // NOTE: Add feature altorithm GetParameter here. Every time a new client is created for communication
+    // Feature altorithm header GetParameter begin
+    // Feature altorithm header GetParameter end
+};
 }
 
 std::shared_ptr<VpeVideo> VpeVideo::Create(uint32_t type)
@@ -144,4 +157,24 @@ VPEAlgoErrCode VpeVideo::RenderOutputBufferAtTime([[maybe_unused]] uint32_t inde
     [[maybe_unused]] int64_t renderTimestamp)
 {
     return VPE_ALGO_ERR_OK;
+}
+
+int32_t VpeVideo::RegisterSettingsChangeCallback(uint32_t type, SettingsChangeCallback callback)
+{
+    auto it = g_registerSettingsChangeCallback.find(type);
+    if (it == g_registerSettingsChangeCallback.end()) {
+        VPE_LOGE("Unsupported type: 0x%{public}x", type);
+        return VPE_ALGO_ERR_INVALID_PARAM;
+    }
+    return it->second(callback);
+}
+ 
+int32_t VpeVideo::UnregisterSettingsChangeCallback(uint32_t type)
+{
+    auto it = g_unregisterSettingsChangeCallback.find(type);
+    if (it == g_unregisterSettingsChangeCallback.end()) {
+        VPE_LOGE("Unsupported type: 0x%{public}x", type);
+        return VPE_ALGO_ERR_INVALID_PARAM;
+    }
+    return it->second();
 }

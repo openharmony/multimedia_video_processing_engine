@@ -31,6 +31,7 @@ namespace Media {
 namespace VideoProcessingEngine {
 class __attribute__((visibility("default"))) VpeVideo {
 public:
+    using SettingsChangeCallback = std::function<void(int32_t feature, int32_t tag, int32_t param)>;
     /**
      * @brief Create a VpeVideo object.
      * @param type Use VIDEO_TYPE_XXX to specify the processing type. For details, see {@link VpeVideoType}.
@@ -56,6 +57,9 @@ public:
      * @since 6.0
      */
     static bool IsSupported(void);
+
+    static int32_t RegisterSettingsChangeCallback(uint32_t type, SettingsChangeCallback callback);
+    static int32_t UnregisterSettingsChangeCallback(uint32_t type);
 
     /**
      * @brief Register callback object.
