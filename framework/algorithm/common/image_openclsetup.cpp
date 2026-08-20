@@ -144,6 +144,8 @@ static cl_int ChooseDevice(ClContext *pCtx, cl_device_id *targetDevice, cl_uchar
             break;
         }
     }
+    CHECK_AND_RETURN_RET_LOG(!((cl_uint)(-1) == pCtx->idxDevices[pCtx->idxPlatforms]), CL_DEVICE_NOT_FOUND,
+        "[GPU]: There is no  GPU to use. exit.");
     if (deviceName != nullptr) {
         constexpr int deviceLength = 32;
         status = clGetDeviceInfo(pCtx->devices[pCtx->idxPlatforms][pCtx->idxDevices[pCtx->idxPlatforms]],
