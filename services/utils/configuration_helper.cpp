@@ -15,7 +15,9 @@
 
 #include "configuration_helper.h"
 
+#include <charconv>
 #include <functional>
+#include <system_error>
 
 #include <securec.h>
 #include <unistd.h>
@@ -25,6 +27,23 @@
 using namespace OHOS::Media::VideoProcessingEngine;
 
 namespace {
+template <typename T>
+bool ParseXmlInteger(const std::string& text, T& value)
+{
+    if (text.empty()) {
+        return false;
+    }
+    T parsed{};
+    const char* first = text.data();
+    const char* last = first + text.size();
+    auto [ptr, ec] = std::from_chars(first, last, parsed);
+    if (ec != std::errc() || ptr != last) {
+        return false;
+    }
+    value = parsed;
+    return true;
+}
+
 inline const std::string GetElementInfo(const xmlNode& parent, const std::string& tag,
     std::function<const std::string(const xmlNode&)>&& getter)
 {
@@ -133,7 +152,7 @@ bool ConfigurationHelper::GetElementValue(const xmlNode& parent, const std::stri
     if (text.empty()) {
         return false;
     }
-    return sscanf_s(text.c_str(), "%u", &value) == 1;
+    return ParseXmlInteger(text, value);
 }
 
 bool ConfigurationHelper::GetElementValue(const xmlNode& parent, const std::string& tag, int& value) const
@@ -143,7 +162,7 @@ bool ConfigurationHelper::GetElementValue(const xmlNode& parent, const std::stri
     if (text.empty()) {
         return false;
     }
-    return sscanf_s(text.c_str(), "%d", &value) == 1;
+    return ParseXmlInteger(text, value);
 }
 
 bool ConfigurationHelper::GetElementValue(const xmlNode& parent, const std::string& tag, uint64_t& value) const
@@ -153,7 +172,7 @@ bool ConfigurationHelper::GetElementValue(const xmlNode& parent, const std::stri
     if (text.empty()) {
         return false;
     }
-    return sscanf_s(text.c_str(), "%lu", &value) == 1;
+    return ParseXmlInteger(text, value);
 }
 
 bool ConfigurationHelper::GetElementValue(const xmlNode& parent, const std::string& tag, bool& value) const
