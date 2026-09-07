@@ -657,6 +657,30 @@ HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0310, TestSize.Level0)
 }
 
 /**
+ * @tc.number    : VPE_VIDEO_API_TEST_0311
+ * @tc.name      : GENERATION DOUBLE FREE
+ * @tc.desc      : function test
+ */
+HWTEST_F(VpeVideoApiTest, VPE_VIDEO_API_TEST_0311, TestSize.Level0)
+{
+    OH_VideoProcessing_InitializeEnvironment();
+    OH_VideoProcessing* videoProcessor = nullptr;
+    VideoProcessing_ErrorCode ret = OH_VideoProcessing_Create(&videoProcessor,
+        VIDEO_PROCESSING_TYPE_METADATA_GENERATION);
+    if (g_suppported) {
+        ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
+        OH_VideoProcessing_Destroy(videoProcessor);
+        videoProcessor = nullptr;
+        ret = OH_VideoProcessing_Create(&videoProcessor,
+        VIDEO_PROCESSING_TYPE_METADATA_GENERATION);
+        ASSERT_EQ(ret, VIDEO_PROCESSING_SUCCESS);
+        OH_VideoProcessing_Destroy(videoProcessor);
+    } else {
+        ASSERT_NE(ret, VIDEO_PROCESSING_SUCCESS);
+    }
+}
+
+/**
  * @tc.number    : VPE_VIDEO_API_TEST_0320
  * @tc.name      : call OH_VideoProcessing_Start
  * @tc.desc      : function test
