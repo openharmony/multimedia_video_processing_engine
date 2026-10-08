@@ -34,6 +34,7 @@ declare_args() {
     aihdr_enhancer_unit_test = true
     contrast_enhancer_unit_test = true
     services_fuzzer_test = true
+    autoeffect_fuzzer_test = true
   } else {
     vpe_support_demo_test = false
     vpe_support_unit_test = false
@@ -53,6 +54,7 @@ declare_args() {
     service_unit_test = false
     contrast_enhancer_unit_test = false
     services_fuzzer_test = false
+    autoeffect_fuzzer_test = false
   }
   vpe_support_ndk_module_test = true
 }
@@ -136,6 +138,11 @@ group("fuzz_test") {
   if (services_fuzzer_test) {
     deps += [
        "fuzztest/services_fuzzer:ServicesFuzzTest",
+    ]
+  }
+  if (autoeffect_fuzzer_test) {
+    deps += [
+       "fuzztest/autoeffect_fuzzer:AutoEffectFuzzTest",
     ]
   }
 }
