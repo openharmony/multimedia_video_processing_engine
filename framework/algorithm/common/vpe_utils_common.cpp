@@ -174,7 +174,7 @@ bool VpeUtils::CopyNV12SurfaceBufferToPixelmap(const sptr<SurfaceBuffer>& buffer
         static_cast<int32_t>(yuvInfo.uvHeight) : (pixelmap->GetHeight() + 1) / 2); // 2
     
     int32_t bufferUvStride = buffer->GetStride();
-    int32_t bufferUvOffset = buffer->GetStride() * buffer->GetHeight();
+    uint32_t bufferUvOffset = buffer->GetStride() * buffer->GetHeight();
     int32_t bufferUvHeight = (buffer->GetHeight() + 1) / 2;
     void *planesInfoPtr = nullptr;
     buffer->GetPlanesInfo(&planesInfoPtr);
@@ -183,7 +183,7 @@ bool VpeUtils::CopyNV12SurfaceBufferToPixelmap(const sptr<SurfaceBuffer>& buffer
     if (planesInfo != nullptr) {
         int idx = (pixelmap->GetPixelFormat() == OHOS::Media::PixelFormat::NV12) ? 1 : 2; // 1 NV12, 2 NV21
         bufferUvStride = static_cast<int32_t>(planesInfo->planes[idx].columnStride);
-        bufferUvOffset = static_cast<int32_t>(planesInfo->planes[idx].offset);
+        bufferUvOffset = static_cast<uint32_t>(planesInfo->planes[idx].offset);
         if (bufferUvStride != 0) {
             bufferUvHeight = static_cast<int32_t>(planesInfo->planes[idx].offset) / bufferUvStride;
         }
